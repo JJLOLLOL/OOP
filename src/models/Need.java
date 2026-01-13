@@ -1,5 +1,4 @@
 package models;
-
 public class Need {
     private String name;
     private double value; // 0 to 100
