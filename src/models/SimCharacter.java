@@ -63,7 +63,7 @@ public class SimCharacter extends Character {
 
     @Override
     public void displayInfo() {
-        System.out.println("=== " + name + " (" + age + ") ===");
+        System.out.println("=== " + name + " (" + agegroup + ") ===");
         System.out.println("Money: $" + String.format("%.2f", money));
 //        System.out.println("Career: " + career);
         System.out.println("--- Needs ---");
