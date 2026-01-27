@@ -1,0 +1,135 @@
+┌──────────────────────────────────────────────┐
+│            WELCOME TO THE SIMS               │
+├──────────────────────────────────────────────┤
+│ Create Your SIM Character                    │
+│                                              │
+│ Name   : ??                                  │
+│ Age    : --                                  │
+│ Gender : --                                  │
+│                                              │
+└──────────────────────────────────────────────┘
+> Enter Name: 
+
+┌──────────────────────────────────────────────┐
+│            WELCOME TO THE SIMS               │
+├──────────────────────────────────────────────┤
+│ Create Your SIM Character                    │
+│                                              │
+│ Name   : John Doe                            │
+│ Age    : ??                                  │
+│ Gender : --                                  │
+│                                              │
+└──────────────────────────────────────────────┘
+> Enter Age:
+
+┌──────────────────────────────────────────────┐
+│            WELCOME TO THE SIMS               │
+├──────────────────────────────────────────────┤
+│ Create Your SIM Character                    │
+│                                              │
+│ Name   : John Doe                            │
+│ Age    : 21                                  │
+│ Gender : ??                                  │
+│                                              │
+└──────────────────────────────────────────────┘
+> Enter Gender (M/F):
+
+┌──────────────────────────────────────────────┐
+│            WELCOME TO THE SIMS               │
+├──────────────────────────────────────────────┤
+│ Create Your SIM Character                    │
+│                                              │
+│ Name   : John Doe                            │
+│ Age    : 21                                  │
+│ Gender : Male                                │
+│                                              │
+├──────────────────────────────────────────────┤
+│ [1] Confirm & Start Game                     │
+│ [2] Edit Details                             │
+│ [3] Exit Game                                │
+└──────────────────────────────────────────────┘
+> Select option:
+
+
+
+
+--------------------------------------------------------- [Main Menu, If only one SIM created ]
+┌───────────────┬──────────────────────────────────────────────────────┐
+│ Day 0 | 08:00 | SIM: John Doe (21M)        Status: Idle              │
+├───────────────┴─────────────┬────────────────────────────────────────┤
+│ Location : Home             │ OPTIONS                                │
+│ Money    : $0.00            ├────────────────────────────────────────┤
+│ Mood     : Good             │ [1] Sleep                              │
+│                             │ [2] Eat                                │
+│ Hunger   [##########] 100%  │ [3] Shower                             │
+│ Energy   [##########] 100%  │ [4] Toilet                             │
+│ Hygiene  [##########] 100%  │ [5] Watch TV                           │
+│ Bladder  [##########] 100%  │ [6] Locations                          │
+│ Social   [##########] 100%  │ [7] Create SIM                         │
+│ Fun      [##########] 100%  │ [8] Exit Game                          │
+└─────────────────────────────┴────────────────────────────────────────┘
+> Select option:
+
+
+--------------------------------------------------------- [Main Menu If Multi SIMs available ]
+┌───────────────┬──────────────────────────────────────────────────────┐
+│ Day 0 | 08:00 | SIM: John Doe (21M)        Status: Idle              │
+├───────────────┴─────────────┬────────────────────────────────────────┤
+│ Location : Home             │ OPTIONS                                │
+│ Money    : $0.00            ├────────────────────────────────────────┤
+│ Mood     : Good             │ [1] Sleep                              │
+│                             │ [2] Eat                                │
+│ Hunger   [##########] 100%  │ [3] Shower                             │
+│ Energy   [##########] 100%  │ [4] Toilet                             │
+│ Hygiene  [##########] 100%  │ [5] Watch TV                           │
+│ Bladder  [##########] 100%  │ [6] Locations                          │
+│ Social   [##########] 100%  │ [7] Change SIM                         │
+│ Fun      [##########] 100%  │ [8] Exit Game                          │
+└─────────────────────────────┴────────────────────────────────────────┘
+> Select option:
+
+--------------------------------------------------------- [Sub Main Menu when changing location]
+┌───────────────┬──────────────────────────────────────────────────────┐
+│ Day 0 | 08:00 | SIM: John Doe (21M)        Status: Choosing Location |
+├───────────────┴─────────────┬────────────────────────────────────────┤
+│ Current : Home              │ DESTINATIONS                           │
+│                             ├────────────────────────────────────────┤
+│                             │ [1] Office                             │
+│                             │ [2] Park                               │
+│                             │ [3] Mall                               │
+│                             │ [4] Restaurant                         │
+│                             │ [5] Back                               │
+│                             │ [6] Exit Game                          │
+│                             │                                        │
+└─────────────────────────────┴────────────────────────────────────────┘
+> Select destination:
+
+
+┌───────────────┬──────────────────────────────────────────────────────┐
+│ Day 0 | 09:30 | SIM: John Doe (21M)        Status: Working (Auto)    │
+├───────────────┴─────────────┬────────────────────────────────────────┤
+│ Location : Office           │ AUTO MODE                              │
+│ Money    : $120.00          │ Remaining Time                         │
+│ Mood     : Focused          │ ⏳ 07h 30m                             │
+│                             ├────────────────────────────────────────┤
+│ Hunger   [######----]  60%  │ [1] Change SIM                         │
+│ Energy   [#####-----]  50%  │ [2] Cancel Action                      │
+│ Hygiene  [########--]  80%  │ [3] Exit Game                          │
+│ Bladder  [#######---]  70%  │                                        │
+│ Social   [########--]  80%  │                                        │
+│ Fun      [####------]  40%  │                                        │
+└─────────────────────────────┴────────────────────────────────────────┘
+> Select option:
+
+
+
+
+
+
+
+
+--------------------------------------------
+Things to consider:
+1. we let user input an age value of their own or fixed age like 21, or a fixed range like 21 - 40
+2. confirm during work it auto refills? not additional sub actitivies to simulate like Home scenario
+3. what happens if u r in character 2 and character 1 is still working, and maybe work end like 1700h, what will the character 1 do when ure still in character 2
