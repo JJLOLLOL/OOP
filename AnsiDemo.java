@@ -45,44 +45,40 @@ public class AnsiDemo {
 
         clearScreen();
 
+String ui =
+"┌──────────────────────────────────────────────┐\n" +
+"│ " + CYAN + "           WELCOME TO THE SIMS" + RESET +
+"               │\n" +
+"├──────────────────────────────────────────────┤\n" +
+"│ " + GRAY + "Create Your SIM Character 2" + RESET +
+"                  │\n" +
+"│                                              │\n" +
+"│ " + BLUE + "Name   :" + RESET + " Mary Jane                           │\n" +
+"│ " + BLUE + "Age    :" + RESET + " 20                                  │\n" +
+"│ " + BLUE + "Gender :" + RESET + " Female                              │\n" +
+"│                                              │\n" +
+"├──────────────────────────────────────────────┤\n" +
+"│ [1] Confirm & Start Game                     │\n" +
+"│ [2] Edit Details                             │\n" +
+"│ [3] Exit Game                                │\n" +
+"└──────────────────────────────────────────────┘\n" +
+GRAY + "> Select option: " + RESET + "\n\n";
 
-System.out.println("┌───────────────┬──────────────────────────────────────────────────────┐");
-System.out.println("│ " + CYAN + "Day 0 | 08:00" + RESET +
-                   " | " + BOLD + "SIM: John Doe (21M)" + RESET +
-                   "        " + CYAN + "Status: Walking" + RESET +
-                   "           │");
-System.out.println("├───────────────┴─────────────┬────────────────────────────────────────┤");
+System.out.print(ui);
 
-System.out.println("│ " + BLUE + "Location : Park" + RESET +
-                   "             │ " + BOLD + "OPTIONS" + RESET +
-                   "                                │");
 
-System.out.println("│ " + YELLOW + "Money    : $0.00" + RESET +
-                   "            ├────────────────────────────────────────┤");
 
-System.out.println("│ Mood     : Good             │ [1] Walk                               │");
-System.out.println("│                             │ [2] Socialise                          │");
 
-System.out.println("│ Hunger   " + GREEN + "[##########] 100%" + RESET +
-                   "  │ [3] Relax                              │");
 
-System.out.println("│ Energy   " + GREEN + "[##########] 100%" + RESET +
-                   "  │ [4] Exercise                           │");
 
-System.out.println("│ Hygiene  " + GREEN + "[##########] 100%" + RESET +
-                   "  │ [5] Locations                          │");
 
-System.out.println("│ Bladder  " + GREEN + "[##########] 100%" + RESET +
-                   "  │ [6] Create SIM                         │");
 
-System.out.println("│ Social   " + GREEN + "[##########] 100%" + RESET +
-                   "  │ [7] Exit Game                          │");
 
-System.out.println("│ Fun      " + GREEN + "[##########] 100%" + RESET +
-                   "  │                                        │");
 
-System.out.println("└─────────────────────────────┴────────────────────────────────────────┘");
-System.out.print(GRAY + "> Select option: " + RESET);
+
+
+
+
 
         System.out.flush();
     }
