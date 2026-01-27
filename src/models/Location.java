@@ -1,8 +1,8 @@
 package src.models;
+import src.models.activities.Activity;
 
-public abstract class Location {
-    protected String name;
-    protected String description;
+public class Location {
+    public Activity activity;
 
     public Location(String name, String description) {
         this.name = name;
