@@ -1,12 +1,20 @@
 package src.models;
+import java.util.ArrayList;
 import models.Activity;
 import models.NPCCharacter;
-import java.util.ArrayList;
 
 public class Location {
-    ArrayList<Activity> activities = new ArrayList<Activity>();
+    public ArrayList<Activity> activities;
     public String LocationName;
-    ArrayList<NPCCharacter> npcs = new ArrayList<NPCCharacter>();
+    public ArrayList<NPCCharacter> npcs;
+
+    public Location(String LocationName, ArrayList<Activity> activities, ArrayList<NPCCharacter> npcs) {
+        this.LocationName = LocationName;
+        this.activities = activities;
+        this.npcs = npcs;
+    }
+
+   
 
     public ArrayList<Activity> getActivities() {
         return activities;
