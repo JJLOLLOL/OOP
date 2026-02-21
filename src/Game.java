@@ -30,8 +30,8 @@ public class Game {
 
         player = new SimCharacter(name, 20, "Non-binary");
 
-        npcs.add(new NPCCharacter("Bella Goth", 25, "Female", "Socialite"));
-        npcs.add(new NPCCharacter("Mortimer Goth", 30, "Male", "Scientist"));
+        npcs.add(new NPCCharacter("Bella Goth", 25, "Female"));
+        npcs.add(new NPCCharacter("Mortimer Goth", 30, "Male"));
 
         System.out.println("Game Initialized!");
     }

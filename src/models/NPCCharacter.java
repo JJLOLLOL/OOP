@@ -1,21 +1,43 @@
 package models;
 
-public class NPCCharacter extends Character {
-    private String relationshipStatus; // This is the relationships status: "Stranger", "Friend", etc.
-    private int relationshipScore; // -100 to 100 (For Negative and Positive
+import java.util.HashMap;
+import java.util.Map;
 
-    public NPCCharacter(String name, int age, String gender, String occupation) {
-        super(name, age, gender);
+public class NPCCharacter extends Character {
+    private String relationshipStatus;
+    private int relationshipScore; 
+    private Map<Integer, Activity> schedule; 
+
+    public NPCCharacter(String name, int agegroup, String gender) {
+        super(name, agegroup, gender);
         this.relationshipScore = 0;
-        this.relationshipStatus = "Stranger"; // This is the default status
+        this.relationshipStatus = "Stranger";
+        this.schedule = new HashMap<>();
     }
 
     @Override
     public void update(int minutesPassed) {
-        // NPC AI logic (move around, do random things)
-        // For Phase 1, basic placeholder
-        if (Math.random() < 0.1) {
-            // Randomly change location or something
+        int currentHour = (minutesPassed / 60) % 24;
+        Activity scheduledActivity = getScheduledActivity(currentHour);
+        if (scheduledActivity != null) {
+            updateLocationBasedOnActivity(scheduledActivity);
+        }
+        decayRelationships();
+    }
+    
+    private void updateLocationBasedOnActivity(Activity activity) {
+        String activityName = activity.getName().toLowerCase();
+        
+        if (activityName.contains("work") || activityName.contains("job")) {
+            setLocation("Work"); // Could be Hospital, Office, etc.
+        } else if (activityName.contains("sleep") || activityName.contains("rest")) {
+            setLocation("Home");
+        } else if (activityName.contains("eat")) {
+            setLocation("Restaurant");
+        } else if (activityName.contains("gym") || activityName.contains("exercise")) {
+            setLocation("Gym");
+        } else {
+            setLocation(activity.getName());
         }
     }
 
@@ -25,7 +47,6 @@ public class NPCCharacter extends Character {
     }
 
     public void interact(SimCharacter sim, String interactionType) {
-        // Simple interaction logic
         if (interactionType.equals("Talk")) {
             relationshipScore += 5;
             System.out.println(sim.getName() + " talked to " + name + ". Relationship improved.");
@@ -34,6 +55,15 @@ public class NPCCharacter extends Character {
             System.out.println(sim.getName() + " argued with " + name + ". Relationship worsened.");
         }
         updateRelationshipStatus();
+        reactToInteraction(interactionType);
+    }
+
+    public void reactToInteraction(String interactionType) {
+        if (interactionType.equals("Talk")) {
+            System.out.println(name + " responds positively to the conversation.");
+        } else if (interactionType.equals("Argue")) {
+            System.out.println(name + " responds negatively and walks away.");
+        }
     }
 
     private void updateRelationshipStatus() {
@@ -47,5 +77,26 @@ public class NPCCharacter extends Character {
             relationshipStatus = "Enemy";
         else
             relationshipStatus = "Nemesis";
+    }
+
+    public void decayRelationships() {
+        if (relationshipScore > 0) {
+            relationshipScore--;
+        }
+        updateRelationshipStatus();
+    }
+
+    public void scheduleActivity(int hour, Activity activity) {
+        if (hour >= 0 && hour < 24) {
+            schedule.put(hour, activity);
+        }
+    }
+
+    public Activity getScheduledActivity(int hour) {
+        return schedule.getOrDefault(hour, null);
+    }
+
+    public Map<Integer, Activity> getSchedule() {
+        return schedule;
     }
 }

@@ -1,3 +1,4 @@
+package models;
 
 public class Career {
     public  String title;
