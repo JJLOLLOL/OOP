@@ -1,4 +1,4 @@
-
+package models;
 
 public class Skills{
     public String skillname;
