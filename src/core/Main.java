@@ -3,7 +3,6 @@ package core;
 public class Main {
     static void main(String[] args) {
         GameEngine engine = new GameEngine();
-        engine.initialize();
-        engine.startGame();
+        engine.start();
     }
 }
