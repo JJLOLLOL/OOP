@@ -1,3 +1,5 @@
+package core;
+
 import models.*;
 import models.NPCCharacter;
 import models.SimCharacter;
@@ -6,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-public class Game {
+public class GameEngine {
     private SimCharacter player;
     private List<NPCCharacter> npcs;
     private int gameTimeMinutes; // Total minutes passed
@@ -16,7 +18,7 @@ public class Game {
     // Time constants
     private static final int MINUTES_PER_TICK = 30;
 
-    public Game() {
+    public GameEngine() {
         this.npcs = new ArrayList<>();
         this.scanner = new Scanner(System.in);
         this.gameTimeMinutes = 8 * 60; // Start at 8:00 AM
