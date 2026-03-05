@@ -1,6 +1,6 @@
 package models;
 
-import models.activities.Activity;
+import models.activities.*;
 import models.needs.*;
 import java.util.HashMap;
 import java.util.Map;

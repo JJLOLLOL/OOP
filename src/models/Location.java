@@ -2,7 +2,7 @@ package models;
 import java.util.ArrayList;
 
 import models.NPCCharacter;
-import models.activities.Activity;
+import models.activities.*;
 
 public class Location {
     public ArrayList<Activity> activities;

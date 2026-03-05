@@ -2,7 +2,7 @@ package models;
 
 import java.util.ArrayList;
 
-import models.activities.Activity;
+import models.activities.*;
 
 public class House extends Location {
     
