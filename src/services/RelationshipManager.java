@@ -34,6 +34,10 @@ public class RelationshipManager {
         .changeScore(value);
   }
 
+  public void interact(Character from, Character to, InteractionType interaction) {
+    updateStatus(from, to, interaction.getValue());
+  }
+
   public int getScore(Character from, Character to) {
     if (!relationships.containsKey(from))
       return 0;

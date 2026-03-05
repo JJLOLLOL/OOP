@@ -3,6 +3,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SimCharacter extends Character {
+    private boolean currentlyPlaying;
+    private double money;
+    
     private Map<String, Need> needs = new HashMap<>();
 //    private Map<String, Skill> skills;
     private double money;
