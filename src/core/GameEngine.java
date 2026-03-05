@@ -36,30 +36,6 @@ public class GameEngine {
         setIsRunning(false);
     }
 
-//    private void displayHUD() {
-//        System.out.println("\n------------------------------------------------");
-//        System.out.println("Time: " + formatTime(gameTimeMinutes));
-//        player.displayInfo();
-//        System.out.println("------------------------------------------------");
-//    }
-
-//    private String formatTime(int totalMinutes) {
-//        int day = (totalMinutes / (24 * 60)) + 1;
-//        int hour = (totalMinutes % (24 * 60)) / 60;
-//        int minute = totalMinutes % 60;
-//        return String.format("Day %d, %02d:%02d", day, hour, minute);
-//    }
-
-//    private void displayMenu() {
-//        System.out.println("1. Eat");
-//        System.out.println("2. Sleep");
-//        System.out.println("3. Work");
-//        System.out.println("4. Socialize");
-//        System.out.println("5. Do Nothing (Wait)");
-//        System.out.println("6. Quit");
-//        System.out.print("Choose an action: ");
-//    }
-
 //    private void handleInput() {
 //        String choice = scanner.nextLine();
 //        Activity activity = null;
@@ -117,19 +93,6 @@ public class GameEngine {
 //        if (activity != null) {
 //            player.performActivity(activity);
 //            advanceTime(activity.getDurationMinutes());
-//        }
-//    }
-
-//    private void advanceTime(int minutes) {
-//        gameTimeMinutes += minutes;
-//        player.update(minutes);
-//        for (NPCCharacter npc : npcs) {
-//            npc.update(minutes);
-//        }
-//
-//        // Critical status check
-//        if (player.getNeeds().get("Hunger").getValue() <= 0) {
-//            System.out.println("WARNING: Your Sim is starving!");
 //        }
 //    }
 }

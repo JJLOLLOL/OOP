@@ -16,7 +16,6 @@ public class MainState implements GameState {
 
     }
 
-
     @Override
     public void handleInput(String input, GameEngine engine) {
 

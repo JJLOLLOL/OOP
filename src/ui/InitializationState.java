@@ -39,7 +39,8 @@ public class InitializationState implements GameState {
         npcCharacterList.add(new NPCCharacter("Bella Goth", 25, "Female"));
         npcCharacterList.add(new NPCCharacter("Mortimer Goth", 30, "Male"));
 
-        System.out.println("Game Initialized!");
+        GameLayout permanentLayout = new GameLayout();
+        permanentLayout.render();
         engine.setGameState(new MainState());
     }
 
