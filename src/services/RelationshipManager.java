@@ -1,7 +1,12 @@
-package models;
+package services;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import models.Character;
+import models.Relationship;
+
+import Types.InteractionType;
 
 public class RelationshipManager {
   private Map<Character, Map<Character, Relationship>> relationships = new HashMap<>();
@@ -11,13 +16,22 @@ public class RelationshipManager {
     relationships.putIfAbsent(c, new HashMap<>());
   }
   
+  public void updateStatus(Character from, Character to, InteractionType type) {
+    register(from);
+    register(to);
+    relationships
+        .computeIfAbsent(from, k -> new HashMap<>())
+        .computeIfAbsent(to, k -> new Relationship(0))
+        .applyInteraction(type, from.getName(), to.getName());
+  }
+  
   public void updateStatus(Character from, Character to, int value) {
     register(from);
     register(to);
     relationships
-      .computeIfAbsent(from, k -> new HashMap<>())
-      .computeIfAbsent(to, k -> new Relationship(0))
-      .changeScore(value);
+        .computeIfAbsent(from, k -> new HashMap<>())
+        .computeIfAbsent(to, k -> new Relationship(0))
+        .changeScore(value);
   }
 
   public int getScore(Character from, Character to) {
