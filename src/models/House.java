@@ -5,10 +5,9 @@ import java.util.ArrayList;
 public class House extends Location {
 
     int houseTier;
-    double houseRate;
-    double housePrice;
+    double houseRate; 
+    double housePrice; 
     boolean isOwned;
-
 
 
     public House(String LocationName, ArrayList<Activity> activities, ArrayList<NPCCharacter> npcs, double housePrice, double houseRate, int houseTier) {

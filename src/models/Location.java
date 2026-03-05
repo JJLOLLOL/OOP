@@ -13,7 +13,6 @@ public class Location {
         this.activities = activities;
         this.npcs = npcs;
     }
-
    
 
     public ArrayList<Activity> getActivities() {
