@@ -1,6 +1,7 @@
 import models.*;
 import models.NPCCharacter;
 import models.SimCharacter;
+import models.activities.Activity;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -3,6 +3,8 @@ package models;
 import java.util.HashMap;
 import java.util.Map;
 
+import models.activities.Activity;
+
 public class NPCCharacter extends Character {
     private String relationshipStatus;
     private int relationshipScore; 

@@ -1,11 +1,14 @@
-package models;
+package models.activities;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class Activity {
     private String name;
     private int durationMinutes;
-    private Map<String, Double> needEffects; // e.g., "Hunger" -> 20.0 (restores hunger), "Energy" -> -5.0 (drains energy)
+    
+    private Map<String, Double> needEffects; // e.g., "Hunger" -> 20.0 (restores hunger), "Energy" -> -5.0 (drains
+                                             // energy)
 
     public Activity(String name, int durationMinutes) {
         this.name = name;

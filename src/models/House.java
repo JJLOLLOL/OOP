@@ -2,6 +2,8 @@ package models;
 
 import java.util.ArrayList;
 
+import models.activities.Activity;
+
 public class House extends Location {
     
     public House(String LocationName, ArrayList<Activity> activities, ArrayList<NPCCharacter> npcs) {
