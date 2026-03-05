@@ -40,4 +40,22 @@ public class RelationshipManager {
     Relationship r = relationships.get(from).get(to);
     return r == null ? 0 : r.getScore();
   }
+  
+  public String getStatus(Character from, Character to) {
+    if (!relationships.containsKey(from))
+      return "Stranger";
+    Relationship r = relationships.get(from).get(to);
+    return r == null ? "Stranger" : r.getStatus();
+  }
+  
+  public void decayRelationships() {
+    for (Character from : relationships.keySet()) {
+      for (Character to : relationships.get(from).keySet()) {
+        Relationship r = relationships.get(from).get(to);
+        if (r.getScore() > 0) {
+          r.changeScore(-1);
+        }
+      }
+    }
+  }
 }
