@@ -6,6 +6,9 @@ public class Career implements ProgressBar{
     public double duration; //in hours to represent duration the Sim is at work
     public double progress;
     public int level;
+    public String[] roles_array = {"Intern", "Junior Employee", "Employee", "Senior Employee", "Manager", "Director", "Executive"};
+    public String role;
+    public String[] careers = {"Software Developer", "Engineer", "Doctor", "Teacher", "Lawyer"};
 
     public Career(String title, double salary, double duration) {
         this.title = title;

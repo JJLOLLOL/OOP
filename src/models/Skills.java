@@ -4,7 +4,7 @@ public class Skills implements ProgressBar{
     public String skillName;
     public int level;
     public double progress;
-
+    public String[] skills_array;
     public Skills(String skillName){
         this.skillName = skillName;
         this.level = 1;
