@@ -1,16 +1,21 @@
 package models;
 
-public class Career {
+public class Career implements ProgressBar{
     public  String title;
     public double salary;
-    public double duration;
-    public int progression;
+    public double duration; //in hours to represent duration the Sim is at work
+    public double progress;
+    public int level;
+    public String[] roles_array = {"Intern", "Junior Employee", "Employee", "Senior Employee", "Manager", "Director", "Executive"};
+    public String role;
+    public String[] careers = {"Software Developer", "Engineer", "Doctor", "Teacher", "Lawyer"};
 
     public Career(String title, double salary, double duration) {
         this.title = title;
         this.salary = salary;
+        this.level = 1;
         this.duration = duration;
-        this.progression = 0;
+        this.progress = 0.0;
     }
 
     public String getTitle() {
@@ -21,8 +26,18 @@ public class Career {
         return salary;
     }
 
-    public int getProgression() {
-        return progression;
+    @Override
+    public double getProgress() {
+        return progress;
+    }
+
+    @Override
+    public void addProgress(double amount){
+        this.progress += amount;
+        if (this.progress >= 100.0) {
+            this.level++;
+            this.progress -= 100.0;
+        }
     }
 
     public double getDuration() {
