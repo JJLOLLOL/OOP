@@ -27,7 +27,6 @@ public class InitializationState implements GameState {
         System.out.println("Enter your SIM's name:");
         String name = scanner.nextLine();
         handleInput(name, engine);
-        scanner.close();
     }
 
     @Override
@@ -39,8 +38,6 @@ public class InitializationState implements GameState {
         npcCharacterList.add(new NPCCharacter("Bella Goth", 25, "Female"));
         npcCharacterList.add(new NPCCharacter("Mortimer Goth", 30, "Male"));
 
-        GameLayout permanentLayout = new GameLayout();
-        permanentLayout.render();
         engine.setGameState(new MainState());
     }
 

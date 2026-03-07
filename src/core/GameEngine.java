@@ -1,5 +1,6 @@
 package core;
 
+import ui.GameLayout;
 import ui.GameState;
 import ui.InitializationState;
 
