@@ -29,16 +29,66 @@
 ### Main Attributes (Dynamic Needs)
 *Note: These attributes undergo continuous change over time regardless of player action.*
 
-| Attribute | Associated Activity | Effect/Notes |
+| Needs | Associated Activity | Effect/Notes |
 | :--- | :--- | :--- |
 | **Hunger** | Eat | Might cost money. |
 | **Social** | Talk to NPC | Affects relationship status. |
-| **Bladder** | Toilet Break | Restores bladder need. |
 | **Energy** | Sleep | Restores energy. |
 | **Hygiene** | Shower | Restores hygiene. |
 | **Fun** | Watch TV | Increases fun. |
 | **Money** | Work | Increases balance, consumes time/energy. |
 | **Mood** | *Derived* | Calculated based on overall status. |
+
+#### Need Class Usage Reference (`src/models/needs/`)
+
+The dynamic needs system is centered on `Need.java` and extended by subclasses:
+`Hunger`, `Social`, `Energy`, `Hygiene`, and `Fun`.
+
+Base API in `Need.java` (used by all subclasses):
+
+| Method | Purpose | Typical Usage |
+| :--- | :--- | :--- |
+| `decay()` | Decreases current value by `decayRate` each tick. | Call once per game-time tick/hour for each need. |
+| `adjustNeed(double amount)` | Increases/decreases a need based on activity effects. | Use positive values for recovery (`+20`), negative for penalties (`-10`). |
+| `isCriticallyLow()` | Returns `true` when value is at/below `20`. | Check after decay/activity to trigger warnings or penalties. |
+| `onCriticallyLow(SimCharacter character)` | Abstract hook for need-specific critical behavior/message. | Implemented differently in each subclass; call when `isCriticallyLow()` is true. |
+| `getNeedName()` | Returns display name (e.g., `"Hunger"`). | CLI labels, logs, UI output. |
+| `getValue()` | Returns current value (`0`-`100`). | Mood calculation, rule checks, status screens. |
+| `getDecayRate()` | Returns per-tick decay amount. | Balancing/debugging simulation pacing. |
+| `setDecayRate(double decayRate)` | Updates decay speed (throws error if negative). | Difficulty scaling or special events. |
+| `toString()` | Returns formatted bar like `[#####-----] 50/100`. | Direct CLI rendering of need status. |
+
+Notes on value handling:
+
+* Need values are clamped between `0` and `100` by `setValue(...)` (internal/protected).
+* Default starting value for each need is `80`.
+
+Subclass-specific critical handlers:
+
+* `Hunger.java` -> `onCriticallyLow(...)`: prints starving warning.
+* `Energy.java` -> `onCriticallyLow(...)`: prints exhausted warning.
+* `Fun.java` -> `onCriticallyLow(...)`: prints bored warning.
+* `Hygiene.java` -> `onCriticallyLow(...)`: prints dirty warning.
+* `Social.java` -> `onCriticallyLow(...)`: prints lonely warning.
+
+Default decay rates by subclass constructor:
+
+* `Hunger`: `2.0`
+* `Energy`: `1.5`
+* `Social`: `1.0`
+* `Hygiene`: `1.0`
+* `Fun`: `1.0`
+
+Suggested tick flow for collaborators:
+
+1. For each need, call `decay()`.
+2. If activity happened, call `adjustNeed(...)` on relevant needs.
+3. For each need, if `isCriticallyLow()` then call `onCriticallyLow(simCharacter)`.
+4. Print/update status using `toString()` or `getValue()`.
+
+Scope note:
+
+* `Money` and `Mood` are listed as main attributes in gameplay design, but they are not currently implemented in `src/models/needs/` as `Need` subclasses.
 
 ---
 
