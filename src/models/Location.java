@@ -38,6 +38,16 @@ public class Location {
     public void setNpcs(ArrayList<NPCCharacter> npcs) {
         this.npcs = npcs;
     }
+    public ArrayList<NPCCharacter> addNpcCharacters(ArrayList<NPCCharacter> npcs, NPCCharacter npc) {
+        npcs.add(npc);
+        return npcs;
+    }
+
+    public ArrayList<NPCCharacter> removeNpcCharacters(ArrayList<NPCCharacter> npcs, NPCCharacter npc) {
+        npcs.remove(npc);
+        return npcs;
+    }
+
 
 
 }
