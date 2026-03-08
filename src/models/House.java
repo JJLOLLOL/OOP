@@ -3,6 +3,7 @@ package models;
 import java.util.ArrayList;
 
 public class House extends Location {
+    //add 5 max furnitures only.
 
     int houseTier;
     double houseRate; 
