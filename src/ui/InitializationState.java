@@ -2,6 +2,7 @@ package ui;
 
 import core.GameEngine;
 import core.Main;
+import models.Location;
 import models.NPCCharacter;
 // import models.SimCharacter;
 import models.Location;

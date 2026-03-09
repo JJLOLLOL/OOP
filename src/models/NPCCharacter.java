@@ -37,21 +37,6 @@ public class NPCCharacter extends Character {
         return schedule;
     }
 
-    @Override
-    public void update(int minutesPassed) {
-        int currentHour = (minutesPassed / 60) % 24;
-        Location scheduledLocation = schedule.get(currentHour);
-        if (scheduledLocation != null && !scheduledLocation.equals(getLocation())) {
-            setLocation(scheduledLocation);
-            System.out.println(getName() + " has moved to " + scheduledLocation.getLocationName() + " at hour " + currentHour);
-        }
-    }
-
-    @Override
-    public void displayInfo() {
-        System.out.println("[NPC] " + getName() + " | Location: " + getLocation().getLocationName());
-    }
-
     public void displaySchedule() {
         System.out.println("Schedule for " + getName() + ":");
         for (Map.Entry<Integer, Location> entry : schedule.entrySet()) {
