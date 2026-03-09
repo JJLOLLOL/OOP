@@ -42,27 +42,6 @@ public class NPCCharacter extends Character {
         System.out.println("[NPC] " + getName() + " | Location: " + getLocation());
     }
 
-    public void interact(SimCharacter sim, InteractionType interactionType) {
-        reactToInteraction(interactionType);
-    }
-
-    public void reactToInteraction(InteractionType interactionType) {
-        switch (interactionType) {
-            case TALK:
-                System.out.println(getName() + " responds positively to the conversation.");
-                break;
-            case COMPLIMENT:
-                System.out.println(getName() + " smiles and thanks you warmly.");
-                break;
-            case ARGUE:
-                System.out.println(getName() + " responds negatively and walks away.");
-                break;
-            case INSULT:
-                System.out.println(getName() + " looks hurt and storms off angrily.");
-                break;
-        }
-    }
-
     public void scheduleActivity(int hour, Activity activity) {
         if (hour >= 0 && hour < 24) {
             schedule.put(hour, activity);
