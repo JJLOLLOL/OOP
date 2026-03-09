@@ -5,25 +5,47 @@ import java.util.Map;
 import models.needs.*;
 
 public class SimCharacter extends Character {
-    private final Map<String, Need> needs = new HashMap<>();
-    // private Map<String, Skill> skills;
+    private boolean currentlyPlaying;
     private double money;
-    // private String career; // Placeholder for now
+    private House house;
+    private Map<String, Need> needs = new HashMap<>();
+    private HashMap<String, Skills> skills = new HashMap<>();
+    private Career career;
 
-    public SimCharacter(String name, int age, String gender) {
-        super(name, age, gender);
-        this.money = 1000.0; // Starting money
-        // this.career = "Unemployed";
-        // this.skills = new HashMap<>();
-        initializeNeeds();
-        // initializeSkills();
+    public SimCharacter(String name, int age, String gender, Location defaultLocation, Career career) {
+        super(name, age, gender, defaultLocation);
+        this.money = 1000.0;
+        this.career = career;
+        initialiseNeeds();
     }
 
-    @Override
-    public void update(int minutesPassed) {
-
+    private void initialiseNeeds() {
+        needs.put("Hunger", new Hunger());
+        needs.put("Hygiene", new Hygiene());
+        needs.put("Energy", new Energy());
+        needs.put("Fun", new Fun());
+        needs.put("Social", new Social());
     }
 
+    public void intialiseSkills() {
+        skills.put("Cooking", new Skills("Cooking"));
+        skills.put("Fitness", new Skills("Fitness"));
+        skills.put("Programming", new Skills("Programming"));
+        skills.put("Charisma", new Skills("Charisma"));
+        skills.put("Creativity", new Skills("Creativity"));
+        skills.put("Logic", new Skills("Logic"));
+        skills.put("Gardening", new Skills("Gardening"));
+        skills.put("Music", new Skills("Music"));
+        skills.put("Writing", new Skills("Writing"));
+        skills.put("Painting", new Skills("Painting"));
+    }
+
+    // getters & setters
+    public void setMoney(double amount) {
+        money += amount;
+    }
+    public double getMoney() {
+        return money;
     private void initializeNeeds() {
         // Core gameplay mechanics: Needs
         registerNeed(new Hunger());
@@ -61,6 +83,9 @@ public class SimCharacter extends Character {
     }
 
     @Override
+    public void update(int minutesPassed) {
+    }
+    @Override
     public void displayInfo() {
         System.out.println("=== " + name + " (" + agegroup + ") ===");
         System.out.println("Money: $" + String.format("%.2f", money));
@@ -76,7 +101,6 @@ public class SimCharacter extends Character {
         System.out.println("==================");
     }
 
-    public Map<String, Need> getNeeds() {
-        return needs;
+    public void performActivity(Activity activity) {
     }
 }

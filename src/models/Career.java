@@ -1,31 +1,46 @@
 package models;
 
-public class Career {
-    public  String title;
-    public double salary;
-    public double duration;
-    public int progression;
+public class Career implements ProgressBar {
+    private CareerList currentCareer;
+    private int currentRank;
+    private double salary;
+    private double progress;
 
-    public Career(String title, double salary, double duration) {
-        this.title = title;
-        this.salary = salary;
-        this.duration = duration;
-        this.progression = 0;
+    public Career(CareerList currentCareer) {
+        this.currentCareer = currentCareer;
+        this.currentRank = 1;
+        this.progress = 0.0;
     }
 
+    // Getter and Setter methods
     public String getTitle() {
-        return title;
+        return currentCareer.getTitle();
     }
-
     public double getSalary() {
-        return salary;
+        return salary * CareerRank.getSalaryMultiplier(currentRank);
+    }
+    public double getWorkingHours() {
+        return currentCareer.getWorkingHours();
+    }
+    public String getRank(){
+        return CareerRank.getTitle(currentRank);
+    }
+    public void setRank(int rank) {
+        this.currentRank = rank;
     }
 
-    public int getProgression() {
-        return progression;
+    //abstract methods from ProgressBar
+    @Override
+    public double getProgress() {
+        return progress;
     }
 
-    public double getDuration() {
-        return duration;
+    @Override
+    public void addProgress(double amount){
+        this.progress += amount;
+        if (this.progress >= 100.0) {
+            this.currentRank++;
+            this.progress -= 100.0; // resets progress
+        }
     }
 }

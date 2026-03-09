@@ -5,7 +5,6 @@ public abstract class Character {
     private int age;
     private String gender;
     private Location location;
-    private Career career;
 
     public Character(String name, int age , String gender, Location defaultLocation) {
         this.name = name;
