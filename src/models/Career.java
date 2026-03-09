@@ -1,41 +1,32 @@
 package models;
 
-public class Career implements ProgressBar{
-    public  String title;
-    public double salary;
-    public double duration; //in hours to represent duration the Sim is at work
-    public double progress;
-    public int level;
-    public String role;
+public class Career implements ProgressBar {
+    private CareerList currentCareer;
+    private int currentRank;
+    private double salary;
+    private double progress;
 
-    public Career(String title, double salary, double duration, String role) {
-        this.title = title;
-        this.salary = salary;
-        this.level = 1;
-        this.duration = duration;
+    public Career(CareerList currentCareer) {
+        this.currentCareer = currentCareer;
+        this.currentRank = 1;
         this.progress = 0.0;
-        this.role = role;
     }
 
     // Getter and Setter methods
     public String getTitle() {
-        return title;
+        return currentCareer.getTitle();
     }
-
     public double getSalary() {
-        return salary;
+        return salary * CareerRank.getSalaryMultiplier(currentRank);
     }
-
-    public double getDuration() {
-        return duration;
+    public double getWorkingHours() {
+        return currentCareer.getWorkingHours();
     }
-
-    public String getRole(){
-        return role;
+    public String getRank(){
+        return CareerRank.getTitle(currentRank);
     }
-
-    public void setRole(String role){
-        this.role = role;
+    public void setRank(int rank) {
+        this.currentRank = rank;
     }
 
     //abstract methods from ProgressBar
@@ -48,36 +39,8 @@ public class Career implements ProgressBar{
     public void addProgress(double amount){
         this.progress += amount;
         if (this.progress >= 100.0) {
-            this.level++;
-            this.progress -= 100.0;
-            updateRole();
+            this.currentRank++;
+            this.progress -= 100.0; // resets progress
         }
     }
-
-    private void updateRole() {
-        if (this.level >= 7) {
-            this.role = CareerRoles.EXECUTIVE;
-        }
-        else if (this.level == 6) {
-            this.role = CareerRoles.DIRECTOR;
-        }
-        else if (this.level == 5){
-            this.role = CareerRoles.MANAGER;
-        }
-        else if (this.level == 4){
-            this.role = CareerRoles.SENIOR;
-        }
-        else if (this.level == 3){
-            this.role = CareerRoles.EMPLOYEE;
-        }
-        else if (this.level == 2){
-            this.role = CareerRoles.JUNIOR;
-        }
-        else {
-            this.role = CareerRoles.INTERN;
-        }
-    }
-
-
-
 }
