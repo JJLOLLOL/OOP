@@ -1,13 +1,18 @@
 package core;
 
+import models.Location;
 import models.SimCharacter;
 import ui.GameState;
+
+import java.util.Scanner;
 
 public class GameEngine {
     private static GameEngine instance;
     private SimCharacter activePlayer;
+    private Location currentLocation;
     private boolean isRunning;
     private GameState activeState;
+    private Scanner scanner;
 
     public GameEngine() {}
 
@@ -20,6 +25,14 @@ public class GameEngine {
 
     public SimCharacter getActivePlayer(){
         return activePlayer;
+    }
+
+    public Location getCurrentLocation() {
+        return currentLocation;
+    }
+
+    public void setCurrentLocation(Location newLocation) {
+        currentLocation = newLocation;
     }
 
     public void setActivePlayer(SimCharacter character) {
@@ -44,6 +57,9 @@ public class GameEngine {
             setIsRunning(true);
             while (isRunning) {
                 activeState.render(this);
+
+                String input = scanner.nextLine().trim();
+                activeState.handleInput(input, this);
             }
         } else {
             System.out.println("Game engine failed to start!");
