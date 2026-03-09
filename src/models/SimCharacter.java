@@ -44,63 +44,8 @@ public class SimCharacter extends Character {
     public void setMoney(double amount) {
         money += amount;
     }
+
     public double getMoney() {
         return money;
-    private void initializeNeeds() {
-        // Core gameplay mechanics: Needs
-        registerNeed(new Hunger());
-        registerNeed(new Energy());
-        registerNeed(new Hygiene());
-        registerNeed(new Fun());
-        registerNeed(new Social());
-    }
-
-    private void registerNeed(Need need) {
-        needs.put(need.getNeedName(), need);
-    }
-
-    public void performActivity(Activity activity) {
-        System.out.println(name + " is doing " + activity.getName() + "...");
-
-        Map<String, Double> effects = activity.getNeedEffects();
-        for (Map.Entry<String, Double> entry : effects.entrySet()) {
-            String needName = entry.getKey();
-            Double amount = entry.getValue();
-
-            if (needName.equals("Money")) {
-                this.money += amount;
-            } else if (needs.containsKey(needName)) {
-                needs.get(needName).adjustNeed(amount);
-            }
-        }
-
-        if (activity.getName().equals("Work")) {
-            // Work improves Logic slightly?
-            // Skills.get("Logic").practice(10.0);
-        } else if (activity.getName().equals("Socialize")) {
-            // skills.get("Charisma").practice(15.0);
-        }
-    }
-
-    @Override
-    public void update(int minutesPassed) {
-    }
-    @Override
-    public void displayInfo() {
-        System.out.println("=== " + name + " (" + agegroup + ") ===");
-        System.out.println("Money: $" + String.format("%.2f", money));
-        // System.out.println("Career: " + career);
-        System.out.println("--- Needs ---");
-        for (Need need : needs.values()) {
-            System.out.println(need.toString());
-        }
-        // System.out.println("--- Skills ---");
-        // for (Skill skill : skills.values()) {
-        // System.out.println(skill.toString());
-        // }
-        System.out.println("==================");
-    }
-
-    public void performActivity(Activity activity) {
     }
 }
