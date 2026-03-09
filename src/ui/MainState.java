@@ -4,12 +4,15 @@ import core.GameEngine;
 
 import java.util.Scanner;
 
-public class MainState implements GameState {
+public class MainState extends BaseState {
     protected Scanner scanner;
 
     public MainState(){
         this.scanner = new Scanner(System.in);
     }
+
+    @Override
+    public void onEnter(GameEngine engine) {}
 
     @Override
     public void render(GameEngine engine) {

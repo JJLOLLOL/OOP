@@ -8,68 +8,95 @@ import java.util.List;
 import java.util.Scanner;
 
 public class GameLayout {
-    private static final int LEFT = 30;
-    private static final int RIGHT = 46;
-    public Scanner scanner;
-    public GameLayout() {
-        this.scanner = new Scanner(System.in);
-    }
+    private static final int CELL_WIDTH = 30;
+    private static final int CONTENT_ROWS = 16;
+    private static final int frameStartRow = 3;
 
-//    Need to store attributes in memory of game engine
-    List<String> left = Arrays.asList(
-        Colour.CYAN + "Location : " + Colour.RESET + "Home",
-        Colour.YELLOW + "Money    : " + Colour.RESET + "$0.00",
-        Colour.BLUE + "Mood     : " + Colour.RESET + "Good",
-        "",
-        stat("Hunger ", 100),
-        stat("Energy ", 100),
-        stat("Hygiene", 100),
-        stat("Bladder", 100),
-        stat("Social ", 100),
-        stat("Fun    ", 100)
-    );
+    public static void drawFrame(String leftTitle, String rightTitle) {
+        clearScreen();
+        String lTitle = center(leftTitle, CELL_WIDTH);
+        String rTitle = center(rightTitle, CELL_WIDTH);
 
-//    Options are static for now, eventually its based on activities at Home
-    public List<String> setOptions(ArrayList<String> options) {
-        List<String> optionsList = new ArrayList<>();
-        optionsList.add(Colour.GRAY + "OPTIONS" + Colour.RESET);
-        for (int i = 0; i < options.size(); i++) {
-            optionsList.add("[" + (i + 1) + "] " + options.get(i));
+        // Top border + title row + divider
+        System.out.println(Colour.CYAN + "┌" + "─".repeat(CELL_WIDTH + 2) + "┬" + "─".repeat(CELL_WIDTH + 2) + "┐" + Colour.RESET);
+        System.out.println(Colour.CYAN + "│ " + Colour.RESET + Colour.BOLD + Colour.WHITE + lTitle + Colour.RESET + Colour.CYAN + " │ " + Colour.RESET + Colour.BOLD + Colour.WHITE + rTitle + Colour.RESET + Colour.CYAN + " │" + Colour.RESET);
+        System.out.println(Colour.CYAN + "├" + "─".repeat(CELL_WIDTH + 2) + "┼" + "─".repeat(CELL_WIDTH + 2) + "┤" + Colour.RESET);
+
+        // Empty content rows
+        for (int i = 0; i < CONTENT_ROWS; i++) {
+            System.out.println(Colour.CYAN + "│ " + Colour.RESET + " ".repeat(CELL_WIDTH) + Colour.CYAN + " │ " + Colour.RESET + " ".repeat(CELL_WIDTH) + Colour.CYAN + " │" + Colour.RESET);
         }
-        return optionsList;
+
+        // Bottom border + status box
+        System.out.println(Colour.CYAN + "└" + "─".repeat(CELL_WIDTH + 2) + "┴" + "─".repeat(CELL_WIDTH + 2) + "┘" + Colour.RESET);
+        System.out.println(Colour.CYAN + "┌" + "─".repeat((CELL_WIDTH + 2) * 2 + 1) + "┐" + Colour.RESET);
+        System.out.println(Colour.CYAN + "│ " + Colour.RESET + " ".repeat((CELL_WIDTH + 2) * 2 - 1) + Colour.CYAN + " │" + Colour.RESET);
+        System.out.println(Colour.CYAN + "└" + "─".repeat((CELL_WIDTH + 2) * 2 + 1) + "┘" + Colour.RESET);
+        System.out.print(Colour.CYAN + " ❯ " + Colour.RESET);
+        System.out.flush();
     }
 
-    public void render(GameEngine engine) {
-        ArrayList<String> options = new ArrayList<>();
-        options.add("Eat");
-        options.add("Sleep");
-        options.add("Quit Game");
-        List<String> right = this.setOptions(options);
-        int rows = Math.max(left.size(), right.size());
-        System.out.println("┌" + "─".repeat(LEFT) + "┬" + "─".repeat(RIGHT) + "┐");
-        System.out.println("├" + "─".repeat(LEFT) + "┴" + "─".repeat(RIGHT) + "┤");
-        for (int i = 0; i < rows; i++) {
-            String l = i < left.size() ? left.get(i) : "";
-            String r = i < right.size() ? right.get(i) : "";
-            row(l, r);
+    public static void updateLeftCell(List<String> lines) {
+        updateCell(lines, 0);
+    }
+
+    public static void updateRightCell(List<String> lines) {
+        updateCell(lines, 1);
+    }
+
+    public static void updateStatusBar(String message) {
+        int statusRow = frameStartRow + CONTENT_ROWS + 3;
+        System.out.print("\033[s");
+        moveCursor(statusRow, 2);
+        String content = padOrTruncate(message, (CELL_WIDTH + 2) * 2 - 1);
+        System.out.print(Colour.YELLOW + content + Colour.RESET);
+        System.out.print("\033[u");
+        System.out.flush();
+    }
+
+    private static void updateCell(List<String> lines, int cellIndex) {
+        int col = (cellIndex == 0) ? 2 : (CELL_WIDTH + 4);
+        System.out.print("\033[s");
+        for (int row = 0; row < CONTENT_ROWS; row++) {
+            moveCursor(frameStartRow + 1 + row, col);
+            String content  = (row < lines.size()) ? lines.get(row) : "";
+            int    padding  = Math.max(0, CELL_WIDTH - stripAnsi(content).length());
+            System.out.print(content + " ".repeat(padding));
         }
-        System.out.println("└" + "─".repeat(LEFT) + "┴" + "─".repeat(RIGHT) + "┘");
+        System.out.print("\033[u");
+        System.out.flush();
+    }
+    
+    public static String statBar(String label, double value, int barLen) {
+        int filled = Math.max(0, Math.min(barLen, (int) Math.round((value / 100.0) * barLen)));
+        String colour = value >= 60 ? Colour.GREEN : value >= 30 ? Colour.YELLOW : Colour.RED;
+        String bar    = "█".repeat(filled) + "░".repeat(barLen - filled);
+        return String.format("%s%-8s %s%s%s %3.0f%%", Colour.WHITE, label, colour, bar, Colour.RESET, value);
     }
 
-    private static void row(String left, String right) {
-        System.out.println("│ " + pad(left, LEFT - 1) + "│ " + pad(right, RIGHT - 1) + "│");
+    public static String center(String s, int width) {
+        int pad = Math.max(0, width - s.length());
+        return " ".repeat(pad / 2) + s + " ".repeat(pad - pad / 2);
     }
 
-    private static String pad(String text, int width) {
-        int visible = text.replaceAll("\\u001B\\[[;\\d]*m", "").length();
-        int spaces = width - visible;
-        if (spaces < 0) {
-            spaces = 0;
-        }
-        return text + " ".repeat(spaces);
+    private static void clearScreen() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
     }
 
-    public static String stat(String name, int value) {
-        return name + " [" + ProgressBar.bar(value) + "]";
+    private static void moveCursor(int row, int col)  {
+        System.out.print("\033[" + row + ";" + col + "H");
     }
+
+    public static String stripAnsi(String s) {
+        return s.replaceAll("\033\\[[;\\d]*m", "");
+    }
+
+    public static String padOrTruncate(String s, int width) {
+        String stripped = stripAnsi(s);
+        if (stripped.length() > width) return s.substring(0, width);
+        return s + " ".repeat(width - stripped.length());
+    }
+
+
 }
