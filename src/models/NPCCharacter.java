@@ -2,16 +2,13 @@ package models;
 
 import java.util.HashMap;
 import java.util.Map;
+import Types.InteractionType;
 
 public class NPCCharacter extends Character {
-    private String relationshipStatus;
-    private int relationshipScore; 
-    private Map<Integer, Activity> schedule; 
+    private Map<Integer, Activity> schedule;
 
     public NPCCharacter(String name, int agegroup, String gender) {
-        super(name, agegroup, gender);
-        this.relationshipScore = 0;
-        this.relationshipStatus = "Stranger";
+        super(name, agegroup, gender, "Home");
         this.schedule = new HashMap<>();
     }
 
@@ -22,14 +19,13 @@ public class NPCCharacter extends Character {
         if (scheduledActivity != null) {
             updateLocationBasedOnActivity(scheduledActivity);
         }
-        decayRelationships();
     }
     
     private void updateLocationBasedOnActivity(Activity activity) {
         String activityName = activity.getName().toLowerCase();
         
         if (activityName.contains("work") || activityName.contains("job")) {
-            setLocation("Work"); // Could be Hospital, Office, etc.
+            setLocation("Work");
         } else if (activityName.contains("sleep") || activityName.contains("rest")) {
             setLocation("Home");
         } else if (activityName.contains("eat")) {
@@ -43,47 +39,28 @@ public class NPCCharacter extends Character {
 
     @Override
     public void displayInfo() {
-        System.out.println("[NPC] " + name + " | Rel: " + relationshipStatus + " (" + relationshipScore + ")");
+        System.out.println("[NPC] " + getName() + " | Location: " + getLocation());
     }
 
-    public void interact(SimCharacter sim, String interactionType) {
-        if (interactionType.equals("Talk")) {
-            relationshipScore += 5;
-            System.out.println(sim.getName() + " talked to " + name + ". Relationship improved.");
-        } else if (interactionType.equals("Argue")) {
-            relationshipScore -= 10;
-            System.out.println(sim.getName() + " argued with " + name + ". Relationship worsened.");
-        }
-        updateRelationshipStatus();
+    public void interact(SimCharacter sim, InteractionType interactionType) {
         reactToInteraction(interactionType);
     }
 
-    public void reactToInteraction(String interactionType) {
-        if (interactionType.equals("Talk")) {
-            System.out.println(name + " responds positively to the conversation.");
-        } else if (interactionType.equals("Argue")) {
-            System.out.println(name + " responds negatively and walks away.");
+    public void reactToInteraction(InteractionType interactionType) {
+        switch (interactionType) {
+            case TALK:
+                System.out.println(getName() + " responds positively to the conversation.");
+                break;
+            case COMPLIMENT:
+                System.out.println(getName() + " smiles and thanks you warmly.");
+                break;
+            case ARGUE:
+                System.out.println(getName() + " responds negatively and walks away.");
+                break;
+            case INSULT:
+                System.out.println(getName() + " looks hurt and storms off angrily.");
+                break;
         }
-    }
-
-    private void updateRelationshipStatus() {
-        if (relationshipScore > 50)
-            relationshipStatus = "Friend";
-        else if (relationshipScore > 0)
-            relationshipStatus = "Acquaintance";
-        else if (relationshipScore > -25)
-            relationshipStatus = "Stranger"; // 0 to -25
-        else if (relationshipScore > -100)
-            relationshipStatus = "Enemy";
-        else
-            relationshipStatus = "Nemesis";
-    }
-
-    public void decayRelationships() {
-        if (relationshipScore > 0) {
-            relationshipScore--;
-        }
-        updateRelationshipStatus();
     }
 
     public void scheduleActivity(int hour, Activity activity) {
