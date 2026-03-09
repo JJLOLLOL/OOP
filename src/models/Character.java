@@ -13,10 +13,6 @@ public abstract class Character {
         this.location = defaultLocation;
     }
 
-    // Behaviours
-    public abstract void update(int minutesPassed);
-    public abstract void displayInfo();
-
     // getters & setters
     public String getName() {
         return name;

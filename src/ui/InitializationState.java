@@ -2,6 +2,7 @@ package ui;
 
 import core.GameEngine;
 import core.Main;
+import models.Location;
 import models.NPCCharacter;
 import models.SimCharacter;
 
@@ -33,10 +34,11 @@ public class InitializationState implements GameState {
     public void handleInput(String input, GameEngine engine) {
         System.out.println("Welcome " + input + "!");
 
-        player = new SimCharacter(input, 20, "Non-binary");
+        // TODO: initialisation of starting npc and sims
+        // player = new SimCharacter(input, 20, "Non-binary");
 
-        npcCharacterList.add(new NPCCharacter("Bella Goth", 25, "Female"));
-        npcCharacterList.add(new NPCCharacter("Mortimer Goth", 30, "Male"));
+        // npcCharacterList.add(new NPCCharacter("Bella Goth", 25, "Female"));
+        // npcCharacterList.add(new NPCCharacter("Mortimer Goth", 30, "Male"));
 
         engine.setGameState(new MainState());
     }
