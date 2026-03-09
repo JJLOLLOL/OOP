@@ -21,16 +21,17 @@ public class Relationship {
       score = -100;
   }
 
-  public void applyInteraction(InteractionType type, String fromName, String toName) {
+  public String applyInteraction(InteractionType type, String fromName, String toName) {
+    String interaction = fromName + " " + type.getLabel() + " " + toName + "\n" + toName + type.getReaction() + "\nRelationship with " + toName + " ";
     int value = type.getValue();
     changeScore(value);
-    System.out.print(fromName + " " + type.getLabel() + " " + toName + ". Relationship ");
     if (value > 0)
-      System.out.println("improved to " + score);
+      interaction += " improved to " + score;
     else if (value < 0)
-      System.out.println("worsened to " + score);
+      interaction += " worsened to " + score;
     else
-      System.out.println("remain unchanged");
+      interaction += "remain unchanged";
+    return interaction;
   }
   
   public String getStatus() {
@@ -40,9 +41,7 @@ public class Relationship {
       return "Acquaintance";
     else if (score > -25)
       return "Stranger";
-    else if (score > -100)
-      return "Enemy";
     else
-      return "Nemesis";
+      return "Enemy";
   }
 }

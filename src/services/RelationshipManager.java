@@ -16,10 +16,10 @@ public class RelationshipManager {
     relationships.putIfAbsent(c, new HashMap<>());
   }
   
-  public void updateStatus(Character from, Character to, InteractionType type) {
+  public String updateStatus(Character from, Character to, InteractionType type) {
     register(from);
     register(to);
-    relationships
+    return relationships
         .computeIfAbsent(from, k -> new HashMap<>())
         .computeIfAbsent(to, k -> new Relationship(0))
         .applyInteraction(type, from.getName(), to.getName());
@@ -34,8 +34,8 @@ public class RelationshipManager {
         .changeScore(value);
   }
 
-  public void interact(Character from, Character to, InteractionType interaction) {
-    updateStatus(from, to, interaction.getValue());
+  public String interact(Character from, Character to, InteractionType interaction) {
+    return updateStatus(from, to, interaction);
   }
 
   public int getScore(Character from, Character to) {
