@@ -1,11 +1,11 @@
 package models;
 
-import models.needs.*;
 import java.util.HashMap;
 import java.util.Map;
+import models.needs.*;
 
 public class SimCharacter extends Character {
-    private Map<String, Need> needs = new HashMap<>();
+    private final Map<String, Need> needs = new HashMap<>();
     // private Map<String, Skill> skills;
     private double money;
     // private String career; // Placeholder for now
@@ -24,25 +24,17 @@ public class SimCharacter extends Character {
 
     }
 
-    // private void initializeSkills() {
-    // skills.put("Cooking", new Skill("Cooking"));
-    // skills.put("Logic", new Skill("Logic"));
-    // skills.put("Charisma", new Skill("Charisma"));
-    // }
-
     private void initializeNeeds() {
         // Core gameplay mechanics: Needs
-        needs.put("Hunger", new Hunger());
-        needs.put("Energy", new Energy());
-        needs.put("Hygiene", new Hygiene());
-        needs.put("Fun", new Fun());
-        needs.put("Social", new Social());
-        // needs.put("Hunger", new Need("Hunger", 5.0));
-        // needs.put("Energy", new Need("Energy", 3.0));
-        // needs.put("Hygiene", new Need("Hygiene", 4.0));
-        // needs.put("Fun", new Need("Fun", 6.0));
-        // needs.put("Bladder", new Need("Bladder", 8.0));
-        // needs.put("Social", new Need("Social", 4.0));
+        registerNeed(new Hunger());
+        registerNeed(new Energy());
+        registerNeed(new Hygiene());
+        registerNeed(new Fun());
+        registerNeed(new Social());
+    }
+
+    private void registerNeed(Need need) {
+        needs.put(need.getNeedName(), need);
     }
 
     public void performActivity(Activity activity) {

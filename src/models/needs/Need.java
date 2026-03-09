@@ -4,7 +4,7 @@ import models.SimCharacter;
 
 public abstract class Need {
 
-    private String needName;
+    private final String needName;
     private double value; // 0 to 100
     private double decayRate; // How much it decreases per tick
     private static final double CRITICAL_THRESHOLD = 20.0; // Below this, the need is critically low
@@ -13,6 +13,9 @@ public abstract class Need {
     public Need(String needName, double decayRate) {
         this.needName = needName;
         this.value = 80.0; // Starting value for the sim character
+        if (decayRate < 0) {
+            throw new IllegalArgumentException("Decay rate cannot be negative.");
+        }
         this.decayRate = decayRate;
     }
 
@@ -21,7 +24,7 @@ public abstract class Need {
         setValue(this.value - this.decayRate);
     }
 
-    // When an activity is performed, it can increase the need by a certain amount
+    // When an activity is performed, it can adjust the need by a certain amount
     public void adjustNeed(double amount) {
         setValue(this.value + amount);
     }
@@ -31,8 +34,7 @@ public abstract class Need {
         return this.value <= CRITICAL_THRESHOLD;
     }
 
-    // If the need drops below a critical threshold, it can trigger negative
-    // consequences or messages
+    // If the need drops below a critical threshold, it can trigger negative consequences or messages
     public abstract void onCriticallyLow(SimCharacter character);
 
     // Getters
@@ -54,7 +56,7 @@ public abstract class Need {
     }
 
     public void setDecayRate(double decayRate) {
-        this.decayRate = decayRate;
+
         if (decayRate < 0) {
             throw new IllegalArgumentException("Decay rate cannot be negative.");
         }
