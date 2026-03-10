@@ -4,14 +4,15 @@ import models.SimCharacter;
 
 public class Fun extends Need {
 
+    private static final double DEFAULT_DECAYRATE = 1.0;
+
     public Fun() {
-        super("Fun", 1.0); // Default decay rate for fun
+        super("Fun", DEFAULT_DECAYRATE);
     }
 
     @Override
     public void onCriticallyLow(SimCharacter character) {
         System.out.println(character.getName() + " is bored! Find something fun to do soon!");
-        // Additional consequences can be implemented here (e.g., mood decrease)
+        // TODO: Implement unique behaviours when fun is critically low
     }
-
 }
