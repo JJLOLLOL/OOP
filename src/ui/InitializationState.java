@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.TreeMap;
 
 public class InitializationState implements GameState {
     protected Scanner scanner;
@@ -82,6 +83,105 @@ public class InitializationState implements GameState {
         // relationshipManager.register(player);
         // relationshipManager.register(bella);
         // relationshipManager.register(mortimer);
+
+        // RELATIONSHIP STATUS LEVELS (Score-based):
+        // ─────────────────────────────────────────────────────────────────────────
+        // Score Range        | Status
+        // ─────────────────────────────────────────────────────────────────────────
+        // -100 to -50        | Enemy (major conflict, gossip, sabotage)
+        // -50 to -25         | Disliked (tension, avoidance)
+        // -25 to 25          | Acquaintance (neutral, basic interaction)
+        // 25 to 50           | Friendly (positive, cooperative)
+        // 50 to 70           | Friend (good relationship, sharing benefits)
+        // 70 to 100          | Best Friend (very close, major bonuses)
+        //
+        // MORTIMER GOTH - UNIQUE RELATIONSHIP BENEFITS:
+        // ─────────────────────────────────────────────────────────────────────────
+        // Special Case: Mortimer's relationships decay SLOWER and have a FLOOR at 0
+        // 1) Decay only happens every 3 months (not every month)
+        // 2) Score cannot go below 0 unless explicit negative action taken
+        // 3) Relationship status for Mortimer:
+        //    - Disliked (-50 to -25): Tense and distant
+        //    - Friendly (25+): Positive mentor
+        //    - Friend (50+): Career networking benefits
+        //    - Best Friend (70+): Inheritance/business opportunities
+        //
+        // Example GameEngine implementation (monthly update):
+        // ─────────────────────────────────────────────────────────────────────────
+        // relationshipManager.forEachRelationship((from, to, relation) -> {
+        //   // MORTIMER: Slow decay with floor at 0
+        //   if (to.getName().equals("Mortimer Goth") && currentMonth % 3 == 0) {
+        //     if (relation.getScore() > 0) {
+        //       relation.changeScore(-1);  // Decay every 3 months
+        //     }
+        //     // IMPORTANT: Score STOPS at 0, never goes negative (natural floor)
+        //   }
+        //
+        //   // MORTIMER CAREER BONUS (50+ Friend status)
+        //   if (from instanceof SimCharacter && to.getName().equals("Mortimer Goth")) {
+        //     SimCharacter sim = (SimCharacter) from;
+        //     if (relation.getScore() >= 50) {
+        //       sim.getSkills().addSkill("Business", 5);  // Career networking bonus
+        //     }
+        //   }
+        //
+        //   // MORTIMER BEST FRIEND INHERITANCE (70+ Best Friend status)
+        //   if (from instanceof SimCharacter && to.getName().equals("Mortimer Goth")) {
+        //     SimCharacter sim = (SimCharacter) from;
+        //     if (relation.getScore() >= 70) {
+        //       sim.setMoney(sim.getMoney() + 1000);  // Inheritance bonus
+        //     }
+        //   }
+        // });
+        //
+        // OTHER RELATIONSHIP EXAMPLES (Using Status Levels):
+        // ─────────────────────────────────────────────────────────────────────────
+        // 1) BELLA - Rich Stipend Bonus (50+ Friend status)
+        // relationshipManager.forEachRelationship((from, to, relation) -> {
+        //   if (from instanceof SimCharacter && to.getName().equals("Bella Goth")) {
+        //     SimCharacter sim = (SimCharacter) from;
+        //     // At Friend status (50+), get monthly allowance from wealthy Bella
+        //     if (relation.getStatus().equals("Friend") && sim.getMoney() < 2000) {
+        //       sim.setMoney(sim.getMoney() + 200);  // Monthly stipend
+        //     }
+        //   }
+        // });
+        //
+        // 2) ENEMY RELATIONSHIPS - Stress Penalty (-50+ Enemy status)
+        // relationshipManager.forEachRelationship((from, to, relation) -> {
+        //   if (from instanceof SimCharacter && relation.getStatus().equals("Enemy")) {
+        //     SimCharacter sim = (SimCharacter) from;
+        //     sim.setMoney(sim.getMoney() - 50);  // Stress affects finances
+        //   }
+        // });
+        //
+        // 3) FRIEND SKILL SHARING - (50+ Friend status with shared interests)
+        // relationshipManager.forEachRelationship((from, to, relation) -> {
+        //   if (from instanceof SimCharacter && to instanceof SimCharacter) {
+        //     if (relation.getStatus().equals("Friend")) {
+        //       // Share cooking skill if both interested in cooking
+        //       ((SimCharacter) from).getSkills().addSkill("Cooking", 2);
+        //     }
+        //   }
+        // });
+        //
+        // 4) LOW RELATIONSHIPS - Avoidance (Acquaintance/Disliked status)
+        // relationshipManager.forEachRelationship((from, to, relation) -> {
+        //   if (relation.getStatus().equals("Disliked") || relation.getStatus().equals("Acquaintance")) {
+        //     // Characters avoid each other, no group activities
+        //     from.setLocation(null);  // Skip shared activities
+        //   }
+        // });
+        //
+        // 5) BEST FRIEND SUPPORT - Emotional/Financial Help (70+ Best Friend)
+        // relationshipManager.forEachRelationship((from, to, relation) -> {
+        //   if (from instanceof SimCharacter && to instanceof SimCharacter) {
+        //     if (relation.getStatus().equals("Best Friend")) {
+        //       // Best friend provides mutual support
+        //       ((SimCharacter) from).setMoney(((SimCharacter) from).getMoney() + 300);
+        //     }
+        //   }
+        // });
 
         // engine.setGameState(new MainState(player, npcCharacterList,
         // relationshipManager));
