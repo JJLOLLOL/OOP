@@ -1,22 +1,43 @@
 package ui.screens;
 
-import core.GameEngine;
-import ui.panels.CharacterPanel;
-import ui.panels.InfoPanel;
-
 public class CreationScreen {
 
-  private CharacterPanel characterPanel;
-  private InfoPanel infoPanel;
+    public void render(Enum<?> step, String name, int age, String gender, String error) {
 
-  public CreationScreen(CharacterPanel characterPanel, InfoPanel infoPanel) {
-    this.characterPanel = characterPanel;
-    this.infoPanel = infoPanel;
-  }
+        System.out.println("Create Your Character");
+        System.out.println("---------------------");
 
-  public void render(GameEngine engine) {
-    characterPanel.render(engine);
-    infoPanel.render(engine);
-  }
-  
+        System.out.println("Name: " + name);
+        System.out.println("Age: " + (age == -1 ? "" : age));
+        System.out.println("Gender: " + gender);
+
+        System.out.println();
+
+        if (!error.isEmpty()) {
+            System.out.println("Error: " + error);
+            System.out.println();
+        }
+
+        switch (step.toString()) {
+
+            case "NAME":
+                System.out.print("Enter name: ");
+                break;
+
+            case "AGE":
+                System.out.print("Enter age: ");
+                break;
+
+            case "GENDER":
+                System.out.print("Enter gender (M/F): ");
+                break;
+
+            case "CONFIRM":
+                System.out.print("Confirm character? (Y/N): ");
+                break;
+
+        }
+
+    }
+
 }

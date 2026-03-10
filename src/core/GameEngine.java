@@ -1,41 +1,28 @@
 package core;
 
+import java.util.Scanner;
+import states.CreationState;
+
 public class GameEngine {
 
-    private GameState state;
-    private InputBuffer inputBuffer = new InputBuffer();
-    private InputManager inputManager = new InputManager(inputBuffer);
-    private RenderManager renderer = new RenderManager();
-    private boolean running = true;
+    private GameState currentState;
+
+    public GameEngine() {
+        currentState = new CreationState(this);
+    }
 
     public void start() {
-        setGameState(new ui.states.CreationState());
-        System.out.print("\033[2J");
-        while (running) {
-            String input = inputManager.pollInput();
-            if (input != null) state.handleInput(input, this);
-            state.update(this);
-            renderer.clear();
-            state.render(this);
-            drawInputLine();
-            renderer.flush();
-            sleep(50);
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            currentState.render();
+            String input = scanner.nextLine();
+            currentState.handleInput(input);
+            currentState.update();
         }
     }
 
-    private void drawInputLine() {
-        System.out.print("\033[20;40H");
-        System.out.print("> " + inputBuffer.getText());
+    public void changeState(GameState newState) {
+        currentState = newState;
     }
 
-    private void sleep(long ms) {
-        try { Thread.sleep(ms); }
-        catch (InterruptedException ignored) {}
-    }
-
-    public void setGameState(GameState state) {
-        this.state = state;
-        state.onEnter(this);
-    }
-  
 }
