@@ -2,6 +2,7 @@ package models;
 
 import java.util.HashMap;
 import java.util.Map;
+import models.furnitureactions.Activity;
 
 public class NPCCharacter extends Character {
     private Map<Integer, Activity> schedule;
