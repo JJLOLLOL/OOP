@@ -27,10 +27,6 @@ public class Location {
         return LocationName;
     }
 
-    public void setLocationName(String LocationName) {
-        this.LocationName = LocationName;
-    }
-
     public ArrayList<NPCCharacter> getNpcs() {
         return npcs;
     }
