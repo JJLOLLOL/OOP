@@ -1,4 +1,4 @@
-package models.Testing;
+package models.DoneTest;
 
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -17,18 +17,17 @@ public class LocationTest {
     ArrayList<Activity> activities = new ArrayList<>();
     ArrayList<NPCCharacter> npcs = new ArrayList<>();
 
-    Location location = new Location("Park", activities, npcs);
+    Location location = new Location("Park", activities);
     System.out.println(location.getLocationName());
     assertEquals("Park", location.getLocationName());
     assertEquals(activities, location.getActivities());
-    assertEquals(npcs, location.getNpcs());
   }
 
 
   @Test
   public void testSetActivities() {
 
-    Location location = new Location("Mall", new ArrayList<>(), new ArrayList<>());
+    Location location = new Location("Mall", new ArrayList<>());
 
     ArrayList<Activity> newActivities = new ArrayList<>();
     location.setActivities(newActivities);
@@ -39,7 +38,7 @@ public class LocationTest {
   @Test
   public void testSetNPCs() {
 
-    Location location = new Location("Gym", new ArrayList<>(), new ArrayList<>());
+    Location location = new Location("Gym", new ArrayList<>());
 
     ArrayList<NPCCharacter> npcList = new ArrayList<>();
     location.setNpcs(npcList);
@@ -51,7 +50,7 @@ public class LocationTest {
   public void testActivitiesListModification() {
 
     ArrayList<Activity> activities = new ArrayList<>();
-    Location location = new Location("Beach", activities, new ArrayList<>());
+    Location location = new Location("Beach", activities);
 
     activities.add(null); 
 

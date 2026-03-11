@@ -11,7 +11,7 @@ public class House extends Location {
     boolean isOwned;
 
 
-    public House(String LocationName, ArrayList<Activity> activities, ArrayList<NPCCharacter> npcs, double housePrice, double houseRate, int houseTier) {
+    public House(String LocationName, ArrayList<Activity> activities, double housePrice, double houseRate, int houseTier) {
         super(LocationName, activities);
         this.housePrice = housePrice;
         this.houseRate = houseRate;
@@ -19,7 +19,7 @@ public class House extends Location {
         this.isOwned = false;
     }//for upgraded houses
 
-    public House(String LocationName, ArrayList<Activity> activities, ArrayList<NPCCharacter> npcs) {
+    public House(String LocationName, ArrayList<Activity> activities) {
         super(LocationName, activities);;
         this.housePrice = 0;
         this.houseRate = 1;

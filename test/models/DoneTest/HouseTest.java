@@ -1,4 +1,4 @@
-package models.Testing;
+package models.DoneTest;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
@@ -18,7 +18,7 @@ public class HouseTest {
     ArrayList<Activity> activities = new ArrayList<>();
     ArrayList<NPCCharacter> npcs = new ArrayList<>();
 
-    House house = new House("Luxury Villa", activities, npcs, 500000, 2.5, 5);
+    House house = new House("Luxury Villa", activities, 500000, 2.5, 5);
 
     assertEquals("Luxury Villa", house.getLocationName());
     assertEquals(500000, house.getHousePrice(), 0.001);
@@ -54,7 +54,7 @@ public class HouseTest {
   @Test
   public void testHouseTierGetter() {
 
-    House house = new House("Penthouse", new ArrayList<>(), new ArrayList<>(), 1000000, 3.0, 6);
+    House house = new House("Penthouse", new ArrayList<>(), 1000000, 3.0, 6);
 
     assertEquals(6, house.getHouseTier());
   }
