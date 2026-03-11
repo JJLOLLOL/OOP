@@ -9,11 +9,10 @@ public class Location {
     public String LocationName;
     public ArrayList<NPCCharacter> npcs;
 
-    public Location(String LocationName, ArrayList<Furniture> furnitures, ArrayList<NPCCharacter> npcs) {
+    public Location(String LocationName, ArrayList<Furniture> furnitures) {
         this.LocationName = LocationName;
         // this.activities = activities;
         this.furnitures = furnitures;
-        this.npcs = npcs;
     }
    
     public void listFurnitures() {
