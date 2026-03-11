@@ -1,35 +1,32 @@
 package models;
 
 public abstract class Character {
-    protected String name;
-    protected int agegroup;
-    protected String gender;
-    protected String location;
-    //personality traits can be added later
-    //cash
-    //mood
-    //skills
-    //link it back to career
+    private String name;
+    private int age;
+    private String gender;
+    private Location location;
 
-    public Character(String name, int agegroup , String gender) {//playable character
+    public Character(String name, int age , String gender, Location defaultLocation) {
         this.name = name;
-        this.agegroup = agegroup;
+        this.age = age;
         this.gender = gender;
-        this.location = "Home"; // This is the default starting location ( This is also to locate the character )
+        this.location = defaultLocation;
     }
+
+    // getters & setters
     public String getName() {
         return name;
     }
-
-    public abstract void update(int minutesPassed);
-
-    public abstract void displayInfo();
-
-    public void setLocation(String location) {
-        this.location = location;
+    public int getAge() {
+        return age;
     }
-
-    public String getLocation() {
+    public String getGender() {
+        return gender;
+    }
+    public Location getLocation() {
         return location;
+    }
+    public void setLocation(Location location) {
+        this.location = location;
     }
 }

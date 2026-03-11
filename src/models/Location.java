@@ -18,6 +18,8 @@ public class Location {
         return activities;
     }
 
+
+    
     public void setActivities(ArrayList<Activity> activities) {
         this.activities = activities;
     }
