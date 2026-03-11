@@ -35,13 +35,17 @@ public class Relationship {
   }
   
   public String getStatus() {
-    if (score > 50)
-      return "Friend";
-    else if (score > 0)
-      return "Acquaintance";
-    else if (score > -25)
-      return "Stranger";
-    else
+    if (score <= -50)
       return "Enemy";
+    else if (score <= -25)
+      return "Disliked";
+    else if (score < 25)
+      return "Acquaintance";
+    else if (score < 50)
+      return "Friendly";
+    else if (score < 70)
+      return "Friend";
+    else
+      return "Best Friend";
   }
 }
