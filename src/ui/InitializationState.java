@@ -54,15 +54,15 @@ public class InitializationState implements GameState {
         // player = new SimCharacter(input, 20, "Non-binary");
 
         ArrayList<Location> bellaLocations = new ArrayList<>();
-        bellaLocations.add(new Location("Home", new ArrayList<>(), new ArrayList<>()));
-        bellaLocations.add(new Location("Work", new ArrayList<>(), new ArrayList<>()));
-        bellaLocations.add(new Location("Restaurant", new ArrayList<>(), new ArrayList<>()));
+        bellaLocations.add(new Location("Home", new ArrayList<>()));
+        bellaLocations.add(new Location("Work", new ArrayList<>()));
+        bellaLocations.add(new Location("Restaurant", new ArrayList<>()));
         NPCCharacter bella = new NPCCharacter("Bella Goth", 25, "Female", bellaLocations);
 
         ArrayList<Location> mortimerLocations = new ArrayList<>();
-        mortimerLocations.add(new Location("Home", new ArrayList<>(), new ArrayList<>()));
-        mortimerLocations.add(new Location("Work", new ArrayList<>(), new ArrayList<>()));
-        mortimerLocations.add(new Location("Restaurant", new ArrayList<>(), new ArrayList<>()));
+        mortimerLocations.add(new Location("Home", new ArrayList<>()));
+        mortimerLocations.add(new Location("Work", new ArrayList<>()));
+        mortimerLocations.add(new Location("Restaurant", new ArrayList<>()));
         NPCCharacter mortimer = new NPCCharacter("Mortimer Goth", 30, "Male", mortimerLocations);
         // NPCCharacter now supports two constructor patterns:
         // 1) Pass ArrayList<Location> and let NPC auto-generate a TreeMap schedule.
