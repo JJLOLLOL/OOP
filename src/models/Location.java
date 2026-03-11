@@ -7,13 +7,12 @@ public class Location {
     public ArrayList<Activity> activities;
     public String LocationName;
     public ArrayList<NPCCharacter> npcs;
-
-    public Location(String LocationName, ArrayList<Activity> activities, ArrayList<NPCCharacter> npcs) {
+    //location is first object to be created in game
+    public Location(String LocationName, ArrayList<Activity> activities) {// no npc in constructor, will set when npcs created
         this.LocationName = LocationName;
         this.activities = activities;
-        this.npcs = npcs;
+
     }
-   
 
     public ArrayList<Activity> getActivities() {
         return activities;
