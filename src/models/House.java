@@ -12,7 +12,7 @@ public class House extends Location {
     boolean isOwned;
 
     public House(String LocationName, ArrayList<Furniture> furnitures, ArrayList<NPCCharacter> npcs, double housePrice, double houseRate, int houseTier) {
-        super(LocationName, furnitures, npcs);
+        super(LocationName, furnitures);
         this.housePrice = housePrice;
         this.houseRate = houseRate;
         this.houseTier = houseTier;
@@ -20,8 +20,8 @@ public class House extends Location {
     }
     
     // for upgraded houses
-    public House(String LocationName, ArrayList<Furniture> furnitures, ArrayList<NPCCharacter> npcs) {
-        super(LocationName, furnitures, npcs);
+    public House(String LocationName, ArrayList<Furniture> furnitures) {
+        super(LocationName, furnitures);
         this.housePrice = 0;
         this.houseRate = 1;
         this.houseTier = 1;
