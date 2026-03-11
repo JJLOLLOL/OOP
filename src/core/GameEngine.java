@@ -12,9 +12,11 @@ public class GameEngine {
     private Location currentLocation;
     private boolean isRunning;
     private GameState activeState;
-    private Scanner scanner;
+    private final Scanner scanner;
 
-    public GameEngine() {}
+    public GameEngine() {
+        this.scanner = new Scanner(System.in);
+    }
 
     public static GameEngine getInstance() {
         if (instance == null) {
@@ -53,16 +55,9 @@ public class GameEngine {
     }
 
     private void run() {
-        if (!isRunning) {
-            setIsRunning(true);
-            while (isRunning) {
-                activeState.render(this);
-
-                String input = scanner.nextLine().trim();
-                activeState.handleInput(input, this);
-            }
-        } else {
-            System.out.println("Game engine failed to start!");
+        setIsRunning(true);
+        while (isRunning) {
+            activeState.render(this);
         }
     }
 
