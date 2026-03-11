@@ -1,7 +1,10 @@
 package ui;
 
 import core.GameEngine;
+import models.SimCharacter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class MainState implements GameState {
@@ -13,14 +16,17 @@ public class MainState implements GameState {
 
     @Override
     public void render(GameEngine engine) {
+        SimCharacter player = engine.getActivePlayer();
         System.out.println("Select an option: ");
-        String input = scanner.nextLine();
-        handleInput(input, engine);
+        String option = scanner.nextLine();
+        List<String> inputList = new ArrayList<>();
+        inputList.add(option);
+        handleInput(inputList, engine);
     }
 
     @Override
-    public void handleInput(String input, GameEngine engine) {
-        if (input.equals("3")) {
+    public void handleInput(List<String> inputList, GameEngine engine) {
+        if (inputList.getFirst().equals("3")) {
             System.out.println("Ending game!");
             engine.end();
         }

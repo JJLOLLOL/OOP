@@ -1,75 +1,84 @@
 package ui;
 
-import core.GameEngine;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Scanner;
 
 public class GameLayout {
-    private static final int LEFT = 30;
-    private static final int RIGHT = 46;
-    public Scanner scanner;
-    public GameLayout() {
-        this.scanner = new Scanner(System.in);
+
+    private static final int CELL_WIDTH   = 38;
+    private static final int CONTENT_ROWS = 16;
+
+    // ── Frame ─────────────────────────────────────────────────────────────
+
+    public static void drawFrame(String leftTitle, String rightTitle) {
+        clearScreen();
+        String lTitle = center(leftTitle, CELL_WIDTH);
+        String rTitle = center(rightTitle, CELL_WIDTH);
+
+        printDivider("┌", "┬", "┐");
+        System.out.println("│ " + lTitle + " │ " + rTitle + " │");
+        printDivider("├", "┼", "┤");
     }
 
-//    Need to store attributes in memory of game engine
-    List<String> left = Arrays.asList(
-        Colour.CYAN + "Location : " + Colour.RESET + "Home",
-        Colour.YELLOW + "Money    : " + Colour.RESET + "$0.00",
-        Colour.BLUE + "Mood     : " + Colour.RESET + "Good",
-        "",
-        stat("Hunger ", 100),
-        stat("Energy ", 100),
-        stat("Hygiene", 100),
-        stat("Bladder", 100),
-        stat("Social ", 100),
-        stat("Fun    ", 100)
-    );
+    // ── Cell updates ──────────────────────────────────────────────────────
 
-//    Options are static for now, eventually its based on activities at Home
-    public List<String> setOptions(ArrayList<String> options) {
-        List<String> optionsList = new ArrayList<>();
-        optionsList.add(Colour.GRAY + "OPTIONS" + Colour.RESET);
-        for (int i = 0; i < options.size(); i++) {
-            optionsList.add("[" + (i + 1) + "] " + options.get(i));
-        }
-        return optionsList;
-    }
-
-    public void render(GameEngine engine) {
-        ArrayList<String> options = new ArrayList<>();
-        options.add("Eat");
-        options.add("Sleep");
-        options.add("Quit Game");
-        List<String> right = this.setOptions(options);
+    /**
+     * Prints both cells side by side from their line lists.
+     * Call this instead of updateLeftCell/updateRightCell separately.
+     */
+    public static void drawCells(List<String> left, List<String> right) {
         int rows = Math.max(left.size(), right.size());
-        System.out.println("┌" + "─".repeat(LEFT) + "┬" + "─".repeat(RIGHT) + "┐");
-        System.out.println("├" + "─".repeat(LEFT) + "┴" + "─".repeat(RIGHT) + "┤");
+        rows     = Math.max(rows, CONTENT_ROWS);
+
         for (int i = 0; i < rows; i++) {
-            String l = i < left.size() ? left.get(i) : "";
-            String r = i < right.size() ? right.get(i) : "";
-            row(l, r);
+            String l = (i < left.size())  ? left.get(i)  : "";
+            String r = (i < right.size()) ? right.get(i) : "";
+            System.out.println("│ " + padOrTruncate(l, CELL_WIDTH) + " │ " + padOrTruncate(r, CELL_WIDTH) + " │");
         }
-        System.out.println("└" + "─".repeat(LEFT) + "┴" + "─".repeat(RIGHT) + "┘");
+
+        printDivider("└", "┴", "┘");
     }
 
-    private static void row(String left, String right) {
-        System.out.println("│ " + pad(left, LEFT - 1) + "│ " + pad(right, RIGHT - 1) + "│");
+    // ── Status bar ────────────────────────────────────────────────────────
+
+    public static void drawStatusBar(String message) {
+        int width = (CELL_WIDTH + 2) * 2 + 1;
+        printSingleDivider("┌", "┐", width);
+        System.out.println("│ " + padOrTruncate(message, width - 2) + " │");
+        printSingleDivider("└", "┘", width);
+        System.out.print(" ❯ ");
+        System.out.flush();
     }
 
-    private static String pad(String text, int width) {
-        int visible = text.replaceAll("\\u001B\\[[;\\d]*m", "").length();
-        int spaces = width - visible;
-        if (spaces < 0) {
-            spaces = 0;
-        }
-        return text + " ".repeat(spaces);
+    // ── Stat bar ──────────────────────────────────────────────────────────
+
+    public static String statBar(String label, double value, int barLen) {
+        int filled = Math.max(0, Math.min(barLen, (int) Math.round((value / 100.0) * barLen)));
+        String bar = "█".repeat(filled) + "░".repeat(barLen - filled);
+        return String.format("%-8s %s %3.0f%%", label, bar, value);
     }
 
-    public static String stat(String name, int value) {
-        return name + " [" + ProgressBar.bar(value) + "]";
+    // ── Helpers ───────────────────────────────────────────────────────────
+
+    private static void printDivider(String left, String mid, String right) {
+        System.out.println(left + "─".repeat(CELL_WIDTH + 2) + mid + "─".repeat(CELL_WIDTH + 2) + right);
+    }
+
+    private static void printSingleDivider(String left, String right, int width) {
+        System.out.println(left + "─".repeat(width) + right);
+    }
+
+    public static void clearScreen() {
+        System.out.print("\033[H\033[2J");
+        System.out.flush();
+    }
+
+    public static String center(String s, int width) {
+        int pad = Math.max(0, width - s.length());
+        return " ".repeat(pad / 2) + s + " ".repeat(pad - pad / 2);
+    }
+
+    public static String padOrTruncate(String s, int width) {
+        if (s.length() > width) return s.substring(0, width);
+        return s + " ".repeat(width - s.length());
     }
 }

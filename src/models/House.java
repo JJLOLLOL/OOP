@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import models.furnitureactions.Furniture;
 
 public class House extends Location {
+    //add 5 max furnitures only.
 
     int houseTier;
     double houseRate;
     double housePrice;
     boolean isOwned;
 
-    public House(String LocationName, ArrayList<Furniture> furnitures, ArrayList<NPCCharacter> npcs, double housePrice,
-            double houseRate, int houseTier) {
+    public House(String LocationName, ArrayList<Furniture> furnitures, ArrayList<NPCCharacter> npcs, double housePrice, double houseRate, int houseTier) {
         super(LocationName, furnitures, npcs);
         this.housePrice = housePrice;
         this.houseRate = houseRate;
