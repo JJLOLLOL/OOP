@@ -1,42 +1,24 @@
 package ui.screens;
 
-import core.GameEngine;
 import ui.ConsoleUI;
+import ui.panels.CreateSimPanel;
+import ui.panels.HeaderPanel;
 
 public class InitialisationScreen implements Screen {
 
+  private HeaderPanel header = new HeaderPanel();
+  private CreateSimPanel form = new CreateSimPanel();
+
   @Override
-  public void render(GameEngine engine) {
+  public void render(){
 
     ConsoleUI.resetCursor();
-    drawFrame();
-
-    ConsoleUI.moveCursor(7,7);
-    System.out.print("Enter your SIM name:");
-
-    ConsoleUI.moveCursor(9,9);
-    System.out.print("> ");
-
-    ConsoleUI.moveCursor(9,11);
+    header.render();
+    form.render();
   }
 
-private void drawFrame() {
-
-  ConsoleUI.moveCursor(1,1);
-  System.out.print("┌──────────────────────────────────────────────┐");
-
-  ConsoleUI.moveCursor(2,1);
-  System.out.print("│             CREATE YOUR SIM                  │");
-
-  ConsoleUI.moveCursor(3,1);
-  System.out.print("├──────────────────────────────────────────────┤");
-
-  for(int i = 4; i <= 12; i++){
-      ConsoleUI.moveCursor(i,1);
-      System.out.print("│                                              │");
+  public CreateSimPanel getForm(){
+    return form;
   }
 
-  ConsoleUI.moveCursor(13,1);
-  System.out.print("└──────────────────────────────────────────────┘");
-}
 }
