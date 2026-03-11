@@ -2,6 +2,7 @@ package models;
 
 import java.util.ArrayList;
 import java.util.Map;
+import models.furnitureactions.Activity;
 import java.util.TreeMap;
 
 public class NPCCharacter extends Character {

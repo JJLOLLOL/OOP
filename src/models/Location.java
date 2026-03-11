@@ -1,28 +1,35 @@
 package models;
+
 import java.util.ArrayList;
-import models.Activity;
-import models.NPCCharacter;
+import models.furnitureactions.Furniture;
 
 public class Location {
-    public ArrayList<Activity> activities;
+    // public ArrayList<Activity> activities;
+    public ArrayList<Furniture> furnitures;
     public String LocationName;
     public ArrayList<NPCCharacter> npcs;
-    //location is first object to be created in game
-    public Location(String LocationName, ArrayList<Activity> activities) {// no npc in constructor, will set when npcs created
+
+    public Location(String LocationName, ArrayList<Furniture> furnitures, ArrayList<NPCCharacter> npcs) {
         this.LocationName = LocationName;
-        this.activities = activities;
-
+        // this.activities = activities;
+        this.furnitures = furnitures;
+        this.npcs = npcs;
+    }
+   
+    public void listFurnitures() {
+        System.out.println("Furnitures in " + LocationName + ":");
+        for (Furniture furniture : furnitures) {
+            System.out.println("- " + furniture.getName());
+        }
     }
 
-    public ArrayList<Activity> getActivities() {
-        return activities;
-    }
+    // public ArrayList<Activity> getActivities() {
+    //     return activities;
+    // }
 
-
-    
-    public void setActivities(ArrayList<Activity> activities) {
-        this.activities = activities;
-    }
+    // public void setActivities(ArrayList<Activity> activities) {
+    //     this.activities = activities;
+    // }
 
     public String getLocationName() {
         return LocationName;
