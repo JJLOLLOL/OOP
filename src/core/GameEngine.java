@@ -2,7 +2,7 @@ package core;
 
 import models.Location;
 import models.SimCharacter;
-import ui.GameState;
+import ui.states.GameState;
 
 import java.util.Scanner;
 
@@ -11,7 +11,7 @@ public class GameEngine {
     private SimCharacter activePlayer;
     private Location currentLocation;
     private boolean isRunning;
-    private GameState activeState;
+    private GameState<?> activeState;
     private final Scanner scanner;
 
     public GameEngine() {
@@ -41,7 +41,7 @@ public class GameEngine {
         activePlayer = character;
     }
 
-    public void setGameState(GameState newState) {
+    public void setGameState(GameState<?> newState) {
         this.activeState = newState;
     }
 
@@ -49,7 +49,7 @@ public class GameEngine {
         this.isRunning = value;
     }
 
-    public void start(GameState initialState) {
+    public void start(GameState<?> initialState) {
         setGameState(initialState);
         run();
     }
