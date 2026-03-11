@@ -12,7 +12,7 @@ public class House extends Location {
 
 
     public House(String LocationName, ArrayList<Activity> activities, ArrayList<NPCCharacter> npcs, double housePrice, double houseRate, int houseTier) {
-        super(LocationName, activities, npcs);
+        super(LocationName, activities);
         this.housePrice = housePrice;
         this.houseRate = houseRate;
         this.houseTier = houseTier;
@@ -20,7 +20,7 @@ public class House extends Location {
     }//for upgraded houses
 
     public House(String LocationName, ArrayList<Activity> activities, ArrayList<NPCCharacter> npcs) {
-        super(LocationName, activities, npcs);
+        super(LocationName, activities);;
         this.housePrice = 0;
         this.houseRate = 1;
         this.houseTier = 1;
