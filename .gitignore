@@ -7,6 +7,7 @@
 
 # User-specific stuff
 .idea/**/workspace.xml
+.idea/**/vcs.xml
 .idea/**/tasks.xml
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
@@ -136,3 +137,5 @@ hs_err_pid*
 replay_pid*
 
 # End of https://www.toptal.com/developers/gitignore/api/java,intellij
+
+.DS_Store
