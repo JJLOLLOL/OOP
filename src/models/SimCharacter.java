@@ -9,13 +9,13 @@ public class SimCharacter extends Character {
     private double money;
     private House house;
     private Map<String, Need> needs = new HashMap<>();
-    private HashMap<String, Skills> skills = new HashMap<>();
+    private SkillsList skillsList = new SkillsList();
     private Career career;
 
-    public SimCharacter(String name, int age, String gender, Location defaultLocation, Career career) {
+    public SimCharacter(String name, int age, String gender, Location defaultLocation) {
         super(name, age, gender, defaultLocation);
         this.money = 1000.0;
-        this.career = career;
+        this.career = new Career(CareerList.JOBLESS);
         initialiseNeeds();
     }
 
@@ -27,19 +27,34 @@ public class SimCharacter extends Character {
         needs.put("Social", new Social());
     }
 
-    public void intialiseSkills() {
-        skills.put("Cooking", new Skills("Cooking"));
-        skills.put("Fitness", new Skills("Fitness"));
-        skills.put("Programming", new Skills("Programming"));
-        skills.put("Charisma", new Skills("Charisma"));
-        skills.put("Creativity", new Skills("Creativity"));
-        skills.put("Logic", new Skills("Logic"));
-        skills.put("Gardening", new Skills("Gardening"));
-        skills.put("Music", new Skills("Music"));
-        skills.put("Writing", new Skills("Writing"));
-        skills.put("Painting", new Skills("Painting"));
+    //career methods
+    public String updateCareer(double amount) {
+        if (career.getTitle().equals("Jobless")){
+            return "Cannot gain career XP while unemployed!";
+        }
+        return career.addProgress(amount);
     }
 
+    public String displayCareer() {
+        return career.toString();
+    }
+
+    public void joinCareer(CareerList newCareer) {
+        this.career = new Career(newCareer);
+    }
+
+    //skills methods
+    public String updateSkill(String skillName, double amount) {
+        Skills skill = skillsList.getSkill(skillName);
+        if (skill == null) {
+            return "Skill " + skillName + " not found!";
+        }
+        return skill.addProgress(amount);  // ✅ now returns String
+    }
+
+    public String displaySkills() {
+        return skillsList.displaySkills();
+    }
     // getters & setters
     public void setMoney(double amount) {
         money += amount;
