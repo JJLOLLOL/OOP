@@ -36,12 +36,20 @@ public class InitializationState implements GameState {
         System.out.println("Please setup your SIM!");
         System.out.println("Enter your SIM's name:");
         String name = scanner.nextLine();
-        handleInput(name, engine);
+        System.out.println("Enter your SIM's age:");
+        String age = scanner.nextLine();
+        System.out.println("Enter your SIM's gender:");
+        String gender = scanner.nextLine();
+        ArrayList<String> inputList = new ArrayList<>();
+        inputList.add(name);
+        inputList.add(age);
+        inputList.add(gender);
+        handleInput(inputList, engine);
     }
 
     @Override
-    public void handleInput(String input, GameEngine engine) {
-        System.out.println("Welcome " + input + "!");
+    public void handleInput(List<String> inputList, GameEngine engine) {
+//        System.out.println("Welcome " + input + "!");
 
         // player = new SimCharacter(input, 20, "Non-binary");
 
