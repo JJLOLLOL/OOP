@@ -30,7 +30,7 @@ public class HouseTest {
   @Test
   public void testNewHouseConstructorDefaults() {
 
-    House house = new House("Starter House", new ArrayList<>(), new ArrayList<>());
+    House house = new House("Starter House", new ArrayList<>());
 
     assertEquals("Starter House", house.getLocationName());
     assertEquals(0, house.getHousePrice(), 0.001);
@@ -42,7 +42,7 @@ public class HouseTest {
   @Test
   public void testSetIsOwned() {
 
-    House house = new House("Upgrade House", new ArrayList<>(), new ArrayList<>(), 200000, 1.5, 3);
+    House house = new House("Upgrade House", new ArrayList<>(), 200000, 1.5, 3);
 
     house.setIsOwned(true);
 
