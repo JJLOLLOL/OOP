@@ -1,7 +1,10 @@
 package models;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import models.furnitureactions.Furniture;
 import models.needs.*;
 
@@ -12,6 +15,7 @@ public class SimCharacter extends Character {
     private Map<String, Need> needs = new HashMap<>();
     private HashMap<String, Skills> skills = new HashMap<>();
     private Career career;
+    private Set<AchievementType> unlockedAchievements = new HashSet<>();
 
     public SimCharacter(String name, int age, String gender, Location defaultLocation, Career career) {
         super(name, age, gender, defaultLocation);
@@ -77,4 +81,17 @@ public class SimCharacter extends Character {
         }
         return furniture.performAction(actionName, this);
     }
+
+    public boolean unlockAchievement(AchievementType achievement) {
+        return unlockedAchievements.add(achievement);
+    }
+
+    public boolean hasAchievement(AchievementType achievement) {
+        return unlockedAchievements.contains(achievement);
+    }
+
+    public Set<AchievementType> getUnlockedAchievements() {
+        return Collections.unmodifiableSet(unlockedAchievements);
+    }
+
 }
