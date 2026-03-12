@@ -25,6 +25,10 @@ public class GameEngine {
         return instance;
     }
 
+    public Scanner getScanner() {
+        return scanner;
+    }
+
     public SimCharacter getActivePlayer(){
         return activePlayer;
     }
@@ -51,6 +55,7 @@ public class GameEngine {
 
     public void start(State<?> initialState) {
         setGameState(initialState);
+        WorldRegistry.getInstance();
         run();
     }
 
@@ -63,5 +68,6 @@ public class GameEngine {
 
     public void end(){
         setIsRunning(false);
+        scanner.close();
     }
 }
