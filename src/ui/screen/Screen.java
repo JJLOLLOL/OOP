@@ -1,4 +1,4 @@
-package ui.screens;
+package ui.screen;
 
 public interface Screen {
 

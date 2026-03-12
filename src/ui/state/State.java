@@ -1,4 +1,4 @@
-package ui.states;
+package ui.state;
 
 import core.GameEngine;
 
