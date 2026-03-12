@@ -1,27 +1,22 @@
 package ui;
 
 import core.GameEngine;
-import core.Main;
-import models.Location;
-import models.NPCCharacter;
-// import models.SimCharacter;
-import models.Location;
-import models.Career;
-import models.CareerList;
-import services.RelationshipManager;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.TreeMap;
 
+import models.Career;
+import models.CareerList;
+import models.Location;
+import models.NPCCharacter;
+import models.SimCharacter;
+import services.RelationshipManager;
+
 public class InitializationState implements GameState {
-    protected Scanner scanner;
-    // private SimCharacter player;
-    private List<NPCCharacter> npcCharacterList;
-    private RelationshipManager relationshipManager;
+    private final Scanner scanner;
+    private final List<NPCCharacter> npcCharacterList;
+    private final RelationshipManager relationshipManager;
 
     public InitializationState() {
         this.npcCharacterList = new ArrayList<>();
@@ -49,7 +44,7 @@ public class InitializationState implements GameState {
 
     @Override
     public void handleInput(List<String> inputList, GameEngine engine) {
-//        System.out.println("Welcome " + input + "!");
+        //        System.out.println("Welcome " + input + "!");
 
         // player = new SimCharacter(input, 20, "Non-binary");
 
@@ -69,28 +64,28 @@ public class InitializationState implements GameState {
         // 2) Pass TreeMap<Integer, Location> if the engine builds the schedule directly.
         //
         // Example 1: Engine passes locations only
-        // ArrayList<Location> customLocs = new ArrayList<>();
-        // customLocs.add(new Location("Home", new ArrayList<>(), new ArrayList<>()));
-        // customLocs.add(new Location("Park", new ArrayList<>(), new ArrayList<>()));
-        // customLocs.add(new Location("Library", new ArrayList<>(), new ArrayList<>()));
-        // NPCCharacter bookworm = new NPCCharacter("Bookworm", 22, "Male", customLocs);
-        // npcCharacterList.add(bookworm);
+        ArrayList<Location> customLocs = new ArrayList<>();
+        customLocs.add(new Location("Home", new ArrayList<>()));
+        customLocs.add(new Location("Park", new ArrayList<>()));
+        customLocs.add(new Location("Library", new ArrayList<>()));
+        NPCCharacter nerdy = new NPCCharacter("Mr Reader", 22, "Male", customLocs);
+        npcCharacterList.add(nerdy);
         //
         // Example 2: Engine passes a pre-built schedule
-        // TreeMap<Integer, Location> customSchedule = new TreeMap<>();
-        // customSchedule.put(8, new Location("Home", new ArrayList<>(), new ArrayList<>()));
-        // customSchedule.put(12, new Location("Work", new ArrayList<>(), new ArrayList<>()));
-        // customSchedule.put(18, new Location("Gym", new ArrayList<>(), new ArrayList<>()));
-        // NPCCharacter athlete = new NPCCharacter("Athlete", 25, "Male", customSchedule);
-        // npcCharacterList.add(athlete);
+        TreeMap<Integer, Location> customSchedule = new TreeMap<>();
+        customSchedule.put(8, new Location("Home", new ArrayList<>()));
+        customSchedule.put(12, new Location("Work", new ArrayList<>()));
+        customSchedule.put(18, new Location("Gym", new ArrayList<>()));
+        NPCCharacter runner = new NPCCharacter("Mr Fit", 25, "Male", customSchedule);
+        npcCharacterList.add(runner);
 
         npcCharacterList.add(bella);
         npcCharacterList.add(mortimer);
 
-        // Register characters with relationship manager
-        // relationshipManager.register(player);
-        // relationshipManager.register(bella);
-        // relationshipManager.register(mortimer);
+        relationshipManager.register(bella);
+        relationshipManager.register(mortimer);
+        relationshipManager.register(nerdy);
+        relationshipManager.register(runner);
 
         // RELATIONSHIP STATUS LEVELS (Score-based):
         // ─────────────────────────────────────────────────────────────────────────
