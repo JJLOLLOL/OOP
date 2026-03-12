@@ -1,10 +1,10 @@
 package core;
 
-import ui.states.InitialisationState;
+import ui.state.CreateSimState;
 
 public class Main {
     public static void main(String[] args) {
         GameEngine engine = new GameEngine();
-        engine.start(new InitialisationState());
+        engine.start(new CreateSimState());
     }
 }

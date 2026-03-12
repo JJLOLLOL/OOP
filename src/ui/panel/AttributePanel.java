@@ -1,6 +1,6 @@
-package ui.panels;
+package ui.panel;
 
-import ui.Colour;
+import ui.Color;
 
 public class AttributePanel {
   //     protected List<String> buildAttributeLines(GameEngine engine) {
@@ -36,11 +36,11 @@ public class AttributePanel {
         String bar = "█".repeat(filled) + "░".repeat(total - filled);
         String color;
         if (percent >= 70)
-            color = Colour.GREEN;
+            color = Color.GREEN;
         else if (percent >= 40)
-            color = Colour.YELLOW;
+            color = Color.YELLOW;
         else
-            color = Colour.RED;
-        return color + bar + Colour.RESET + " " + percent + "%";
+            color = Color.RED;
+        return color + bar + Color.RESET + " " + percent + "%";
     }
 }

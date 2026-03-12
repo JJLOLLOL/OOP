@@ -1,10 +1,9 @@
 package core;
 
+import java.util.Scanner;
 import models.Location;
 import models.SimCharacter;
-import ui.states.State;
-
-import java.util.Scanner;
+import ui.state.State;
 
 public class GameEngine {
     private static GameEngine instance;
