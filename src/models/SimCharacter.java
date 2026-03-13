@@ -94,4 +94,13 @@ public class SimCharacter extends Character {
         return Collections.unmodifiableSet(unlockedAchievements);
     }
 
+    public void updateNeed(double deltaTime) {
+        for (Need need : needs.values()) {
+            need.decay(deltaTime);
+            if (need.isCriticallyLow()) {
+                need.onCriticallyLow(this);
+            }
+        }
+    }
+
 }
