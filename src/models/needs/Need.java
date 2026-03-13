@@ -20,8 +20,8 @@ public abstract class Need {
     }
 
     // Each tick, the need decays by its decay rate
-    public void decay() {
-        setValue(this.value - this.decayRate);
+    public void decay(double deltaTime) {
+        setValue(this.value - (this.decayRate * deltaTime));
     }
 
     // When an activity is performed, it can adjust the need by a certain amount
