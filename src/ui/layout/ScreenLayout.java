@@ -18,6 +18,7 @@ public class ScreenLayout {
     private final Map<Region, Panel> panels = new HashMap<>();
     private int inputRow;
     private InputMode inputMode = InputMode.REQUEST;
+    private static final String ANSI_REGEX = "\u001B\\[[;\\d]*m";
     private String errorMessage = null;
 
     public ScreenLayout(FrameType frameType) {
@@ -51,14 +52,8 @@ public class ScreenLayout {
         ConsoleUI.moveCursor(inputRow, LEFT_COL + 2);
         System.out.print(pad("", FRAME_WIDTH - 2));
         ConsoleUI.moveCursor(inputRow, LEFT_COL + 2);
-        if (inputMode == InputMode.CONFIRM) {
-            System.out.println("> ");
-            ConsoleUI.moveCursor(inputRow, LEFT_COL + 4);
-        }
-        else {
-            System.out.print(label + ": ");
-            ConsoleUI.moveCursor(inputRow, LEFT_COL + 2 + label.length() + 2);
-        }
+        System.out.print(label + ": ");
+        ConsoleUI.moveCursor(inputRow, LEFT_COL + 2 + label.length() + 2);
         return scanner.nextLine();
     }
 
@@ -157,16 +152,24 @@ public class ScreenLayout {
         ConsoleUI.moveCursor(row, LEFT_COL);
         System.out.print(text);
     }
-
     private String center(String s, int width) {
-        int pad = Math.max(0, width - s.length());
+        int pad = Math.max(0, width - visibleLength(s));
         return " ".repeat(pad / 2) + s + " ".repeat(pad - pad / 2);
+    }
+    private String stripAnsi(String s) {
+        return s.replaceAll(ANSI_REGEX, "");
+    }
+
+    private int visibleLength(String s) {
+        return stripAnsi(s).length();
     }
 
     private String pad(String s, int width) {
-        if (s.length() > width) {
-            return s.substring(0, width);
+
+        int visible = visibleLength(s);
+        if (visible >= width) {
+            return s;
         }
-        return s + " ".repeat(width - s.length());
+        return s + " ".repeat(width - visible);
     }
 }
