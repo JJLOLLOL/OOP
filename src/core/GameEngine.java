@@ -1,14 +1,19 @@
 package core;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import models.Location;
 import models.SimCharacter;
+import services.RelationshipManager;
 import ui.state.State;
 
 public class GameEngine {
 
     private static GameEngine instance;
+    private ArrayList<SimCharacter> sims = new ArrayList<>();
     private SimCharacter activePlayer;
+    private RelationshipManager relationshipManager = new RelationshipManager();
     private Location currentLocation;
     private boolean isRunning;
     private State<?> activeState;
@@ -45,6 +50,18 @@ public class GameEngine {
         activePlayer = character;
     }
 
+    public RelationshipManager getRelationshipManager() {
+        return relationshipManager;
+    }
+
+    public List<SimCharacter> getSims() {
+        return sims;
+    }
+    
+    public void addSim(SimCharacter sim) {
+        sims.add(sim);
+    }
+
     public void setGameState(State<?> newState) {
         this.activeState = newState;
     }
@@ -63,8 +80,6 @@ public class GameEngine {
         setIsRunning(true);
         while (isRunning) {
             activeState.render(this);
-            String input = scanner.nextLine();
-            activeState.handleInput(input, this);
         }
     }
 
