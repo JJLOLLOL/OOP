@@ -51,9 +51,32 @@ public class ScreenLayout {
         ConsoleUI.moveCursor(inputRow, LEFT_COL + 2);
         System.out.print(pad("", FRAME_WIDTH - 2));
         ConsoleUI.moveCursor(inputRow, LEFT_COL + 2);
-        System.out.print(label + ": ");
-        ConsoleUI.moveCursor(inputRow, LEFT_COL + 2 + label.length() + 2);
+        if (inputMode == InputMode.CONFIRM) {
+            System.out.println("> ");
+            ConsoleUI.moveCursor(inputRow, LEFT_COL + 4);
+        }
+        else {
+            System.out.print(label + ": ");
+            ConsoleUI.moveCursor(inputRow, LEFT_COL + 2 + label.length() + 2);
+        }
         return scanner.nextLine();
+    }
+
+    public Boolean readConfirm(Scanner scanner) {
+        while (true) {
+            ConsoleUI.moveCursor(inputRow, LEFT_COL + 2);
+            System.out.println("> ");
+            ConsoleUI.moveCursor(inputRow, LEFT_COL + 4);
+            String input = scanner.nextLine().trim().toLowerCase();
+            switch (input) {
+                case "y", "yes", "1", "true" -> {
+                    return true;
+                }
+                case "n", "no", "0", "false" -> {
+                    return false;
+                }
+            }
+        }
     }
 
     private void drawFrame(String title) {

@@ -6,6 +6,7 @@ import models.SimCharacter;
 import ui.state.State;
 
 public class GameEngine {
+
     private static GameEngine instance;
     private SimCharacter activePlayer;
     private Location currentLocation;
@@ -28,7 +29,7 @@ public class GameEngine {
         return scanner;
     }
 
-    public SimCharacter getActivePlayer(){
+    public SimCharacter getActivePlayer() {
         return activePlayer;
     }
 
@@ -62,10 +63,12 @@ public class GameEngine {
         setIsRunning(true);
         while (isRunning) {
             activeState.render(this);
+            String input = scanner.nextLine();
+            activeState.handleInput(input, this);
         }
     }
 
-    public void end(){
+    public void end() {
         setIsRunning(false);
         scanner.close();
     }

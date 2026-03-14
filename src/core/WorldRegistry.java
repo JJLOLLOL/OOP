@@ -1,10 +1,9 @@
 package core;
 
-import models.Location;
-
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import models.Location;
 
 public class WorldRegistry {
     private static WorldRegistry instance;
