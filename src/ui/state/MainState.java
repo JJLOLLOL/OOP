@@ -1,6 +1,8 @@
 package ui.state;
 
 import core.GameEngine;
+import core.WorldBuilder;
+import core.WorldRegistry;
 import java.util.Scanner;
 import models.SimCharacter;
 import ui.layout.ScreenLayout;
@@ -30,7 +32,6 @@ public class MainState implements State<Void> {
         );
         panelTR.setNPCs(
                 player.getLocation(),
-                        
                 player,
 
             locationName, npcs, player, relationshipManager);

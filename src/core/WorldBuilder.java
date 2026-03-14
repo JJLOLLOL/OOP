@@ -13,8 +13,6 @@ import models.furnitureactions.FurnitureFactory;
 
 public class WorldBuilder {
 
-    private List<NPCCharacter> npcs = new ArrayList<>();
-
     protected Map<String, Location> buildWorld() {
         Map<String, Location> locationsMap = new HashMap<>();
 
@@ -81,6 +79,7 @@ public class WorldBuilder {
     }
 
     protected List<NPCCharacter> buildNPCs(Map<String, Location> locationsMap) {
+        
         List<NPCCharacter> npcs = new ArrayList<>();
 
         // Grab the locations needed for the schedules
@@ -115,4 +114,5 @@ public class WorldBuilder {
 
         return npcs;
     }
+
 }
