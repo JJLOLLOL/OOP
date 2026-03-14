@@ -52,8 +52,14 @@ public class ScreenLayout {
         ConsoleUI.moveCursor(inputRow, LEFT_COL + 2);
         System.out.print(pad("", FRAME_WIDTH - 2));
         ConsoleUI.moveCursor(inputRow, LEFT_COL + 2);
-        System.out.print(label + ": ");
-        ConsoleUI.moveCursor(inputRow, LEFT_COL + 2 + label.length() + 2);
+        if (inputMode == InputMode.CONFIRM) {
+            System.out.println("> ");
+            ConsoleUI.moveCursor(inputRow, LEFT_COL + 4);
+        }
+        else {
+            System.out.print(label + ": ");
+            ConsoleUI.moveCursor(inputRow, LEFT_COL + 2 + label.length() + 2);
+        }
         return scanner.nextLine();
     }
 
