@@ -1,7 +1,9 @@
 package ui.state;
 
 import core.GameEngine;
+import java.util.Scanner;
 import models.SimCharacter;
+import ui.layout.ScreenLayout;
 import ui.panel.AttributePanel;
 import ui.screen.MainScreen;
 
@@ -11,6 +13,10 @@ public class MainState implements State<Void> {
 
     @Override
     public void render(GameEngine engine) {
+
+        ScreenLayout layout = screen.getLayout();
+        Scanner scanner = engine.getScanner();
+
 
         SimCharacter player = engine.getActivePlayer();
         AttributePanel panel = screen.getPanelTL();
@@ -23,6 +29,8 @@ public class MainState implements State<Void> {
         );
 
         screen.render();
+        String name = layout.readField("", scanner);
+
     }
 
     @Override

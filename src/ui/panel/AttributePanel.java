@@ -13,7 +13,7 @@ public class AttributePanel implements Panel {
     private double money;
     private Map<String, Need> needs;
 
-    private static final int BAR_WIDTH = 18;
+    private static final int BAR_WIDTH = 10;
 
     public void setCharacter(String name, int age, double money, Map<String, Need> needs) {
         this.name = name;
