@@ -1,16 +1,15 @@
 package core;
 
-import models.Location;
-import models.House;
-import models.furnitureactions.Furniture;
-import models.furnitureactions.FurnitureFactory;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import models.House;
+import models.Location;
+import models.furnitureactions.Furniture;
+import models.furnitureactions.FurnitureFactory;
 
 public class WorldRegistry {
     private static WorldRegistry instance;
