@@ -21,7 +21,7 @@ public class SimCharacterTest {
 
     @Test
     public void testSimCharacterInitialization() {
-        Location defaultLocation = new Location("Home", new ArrayList<>());
+        Location defaultLocation = new Location("kitchen", new ArrayList<>());
         Career career = new Career(CareerList.JOBLESS);//change this part after world
         SimCharacter simCharacter = new SimCharacter("Alice",20,"F", defaultLocation, career);
 
