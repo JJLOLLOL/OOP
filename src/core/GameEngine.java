@@ -63,8 +63,6 @@ public class GameEngine {
         setIsRunning(true);
         while (isRunning) {
             activeState.render(this);
-            String input = scanner.nextLine();
-            activeState.handleInput(input, this);
         }
     }
 
