@@ -2,28 +2,27 @@ package ui.panel;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import models.Character;
 import models.NPCCharacter;
 import services.RelationshipManager;
 
-public class NPCPanel implements panel {
+public class NPCPanel implements Panel {
 
   private String locationName;
   private List<NPCCharacter> npcs;
   private Character player;
   private RelationshipManager relationshipManager;
+  
+  public void setNPCs(String locationName,
+            List<NPCCharacter> npcs,
+            Character player,
+            RelationshipManager relationshipManager) {
 
-  public NPCPanel(String locationName,
-                  List<NPCCharacter> npcs,
-                  Character player,
-                  RelationshipManager relationshipManager) {
-
-    this.locationName = locationName;
-    this.npcs = npcs;
-    this.player = player;
-    this.relationshipManager = relationshipManager;
-  }
+        this.locationName = locationName;
+        this.npcs = npcs;
+        this.player = player;
+        this.relationshipManager = relationshipManager;
+    }
 
   @Override
   public List<String> render() {

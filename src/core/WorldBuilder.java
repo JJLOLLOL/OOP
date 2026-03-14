@@ -1,25 +1,23 @@
 package core;
 
-import models.House;
-import models.Location;
-import models.furnitureactions.Furniture;
-import models.furnitureactions.FurnitureFactory;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import models.NPCCharacter;
 import java.util.TreeMap;
+import models.House;
+import models.Location;
+import models.NPCCharacter;
+import models.furnitureactions.Furniture;
+import models.furnitureactions.FurnitureFactory;
 
 public class WorldBuilder {
 
     private List<NPCCharacter> npcs = new ArrayList<>();
 
     protected Map<String, Location> buildWorld() {
-         Map<String, Location> locationsMap = new HashMap<>();
-        
+        Map<String, Location> locationsMap = new HashMap<>();
+
         Furniture cheapMattress = FurnitureFactory.createCheapMattress();
         Furniture singleBed = FurnitureFactory.createSingleBed();
         Furniture doubleBed = FurnitureFactory.createDoubleBed();
@@ -52,7 +50,6 @@ public class WorldBuilder {
         Furniture bar = FurnitureFactory.createBar();
         Furniture danceFloor = FurnitureFactory.createDanceFloor();
 
-
         House home = new House("Home", new ArrayList<>(List.of(cheapMattress, oldStove, oldShower, toilet, oldCRTTV)));
         locationsMap.put(home.getLocationName(), home);
 
@@ -62,7 +59,8 @@ public class WorldBuilder {
         Location gym = new Location("Gym", new ArrayList<>(List.of(treadmill, dumbbells, vendingMachine)));
         locationsMap.put(gym.getLocationName(), gym);
 
-        Location park = new Location("Park", new ArrayList<>(List.of(parkPath, parkLake, bicycle, toilet, picnicTable)));
+        Location park = new Location("Park",
+                new ArrayList<>(List.of(parkPath, parkLake, bicycle, toilet, picnicTable)));
         locationsMap.put(park.getLocationName(), park);
 
         Location cafe = new Location("Cafe", new ArrayList<>(List.of(cafeTable, espressoMachine, jukeBox, toilet)));

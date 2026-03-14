@@ -47,10 +47,11 @@ public class CreateSimState implements State<List<String>> {
         String name = input.get(0);
         int age = Integer.parseInt(input.get(1));
         String gender = input.get(2);
-        Location DefaultLocation = WorldRegistry.getInstance().getLocation("Home");
+        Location defaultLocation = WorldRegistry.getInstance().getLocation("Home");
         Career startingCareer = new Career(CareerList.JOBLESS);
 
-        SimCharacter player = new SimCharacter(name, age, gender, DefaultLocation, startingCareer);
+        SimCharacter player = new SimCharacter(name, age, gender, defaultLocation, startingCareer);
+        engine.getRelationshipManager().registerNewSim(player, sims, npcs);
         engine.setActivePlayer(player);
         
         engine.setGameState(new MainState());

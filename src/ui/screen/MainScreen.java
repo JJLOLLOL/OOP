@@ -4,6 +4,7 @@ import ui.layout.FrameType;
 import ui.layout.Region;
 import ui.layout.ScreenLayout;
 import ui.panel.AttributePanel;
+import ui.panel.NPCPanel;
 import ui.panel.TemporaryPanel;
 
 public class MainScreen implements Screen {
@@ -12,7 +13,7 @@ public class MainScreen implements Screen {
     private final ScreenLayout layout = new ScreenLayout(FrameType.QUAD);
     private final AttributePanel panelTL = new AttributePanel();
     private final TemporaryPanel panelBL = new TemporaryPanel();
-    private final TemporaryPanel panelTR = new TemporaryPanel();
+    private final NPCPanel panelTR = new NPCPanel();
     private final TemporaryPanel panelBR = new TemporaryPanel();
 
     public MainScreen() {
@@ -37,7 +38,7 @@ public class MainScreen implements Screen {
     public AttributePanel getPanelTL() {
         return panelTL;
     }
-    public TemporaryPanel getPanelTR() {
+    public NPCPanel getPanelTR() {
         return panelTR;
     }
     public TemporaryPanel getPanelBR() {
