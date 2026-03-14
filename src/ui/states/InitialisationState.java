@@ -37,4 +37,7 @@ public class InitialisationState implements State<List<String>> {
 
         // engine.setGameState(new MainState());
     }
+
+    @Override
+    public void update(GameEngine engine, double deltaTime){}
 }
