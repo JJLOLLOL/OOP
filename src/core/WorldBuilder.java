@@ -57,8 +57,7 @@ public class WorldBuilder {
         Location gym = new Location("Gym", new ArrayList<>(List.of(treadmill, dumbbells, vendingMachine)));
         locationsMap.put(gym.getLocationName(), gym);
 
-        Location park = new Location("Park",
-                new ArrayList<>(List.of(parkPath, parkLake, bicycle, toilet, picnicTable)));
+        Location park = new Location("Park", new ArrayList<>(List.of(parkPath, parkLake, bicycle, toilet, picnicTable)));
         locationsMap.put(park.getLocationName(), park);
 
         Location cafe = new Location("Cafe", new ArrayList<>(List.of(cafeTable, espressoMachine, jukeBox, toilet)));
