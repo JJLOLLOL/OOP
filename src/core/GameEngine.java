@@ -78,7 +78,12 @@ public class GameEngine {
 
     private void run() {
         setIsRunning(true);
+        long lastTime = System.nanoTime();
         while (isRunning) {
+            long now = System.nanoTime();
+            double deltaTime = (now - lastTime) / 1000000000.0;
+            lastTime = now;
+            activeState.update(this, deltaTime);
             activeState.render(this);
         }
     }
