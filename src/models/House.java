@@ -1,13 +1,14 @@
 package models;
 
 import java.util.ArrayList;
+import models.furnitureactions.Furniture;
 
 public class House extends Location {
     //add 5 max furnitures only.
 
     int houseTier;
-    double houseRate; 
-    double housePrice; 
+    double houseRate;
+    double housePrice;
     boolean isOwned;
 
 
@@ -17,23 +18,23 @@ public class House extends Location {
         this.houseRate = houseRate;
         this.houseTier = houseTier;
         this.isOwned = false;
-    }//for upgraded houses
-
-    public House(String LocationName, ArrayList<Activity> activities) {
-        super(LocationName, activities);;
+    }
+    
+    // for upgraded houses
+    public House(String LocationName, ArrayList<Furniture> furnitures) {
+        super(LocationName, furnitures);
         this.housePrice = 0;
         this.houseRate = 1;
         this.houseTier = 1;
         this.isOwned = true;
 
-        //implement constructor in a constructor
+        // implement constructor in a constructor
     }// only for new house
-
-
 
     public int getHouseTier() {
         return houseTier;
     }
+
     public double getHouseRate() {
         return houseRate;
     }
@@ -51,5 +52,4 @@ public class House extends Location {
     }
     // IS OWNED can only be set to True
 
- 
 }
