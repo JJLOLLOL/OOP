@@ -17,6 +17,8 @@ public class ScreenLayout {
     private final FrameType frameType;
     private final Map<Region, Panel> panels = new HashMap<>();
     private int inputRow;
+    private InputMode inputMode = InputMode.REQUEST;
+    private String errorMessage = null;
 
     public ScreenLayout(FrameType frameType) {
         this.frameType = frameType;
@@ -28,25 +30,21 @@ public class ScreenLayout {
         }
         panels.put(region, panel);
     }
+    public enum InputMode {
+        REQUEST,
+        CONFIRM,
+    }
 
     public void render(String title) {
         ConsoleUI.clear();
         drawFrame(title);
         switch (frameType) {
-            case SINGLE:
-                drawSingle(panels.get(Region.MAIN).render());
-                break;
-            case DOUBLE_VERTICAL:
-                drawDoubleVertical(panels.get(Region.TOP).render(), panels.get(Region.BOTTOM).render());
-                break;
-            case DOUBLE_HORIZONTAL:
-                drawDoubleHorizontal(panels.get(Region.LEFT).render(), panels.get(Region.RIGHT).render());
-                break;
-            case QUAD:
-                drawQuad(panels.get(Region.TOP_LEFT).render(), panels.get(Region.TOP_RIGHT).render(), panels.get(Region.BOTTOM_LEFT).render(), panels.get(Region.BOTTOM_RIGHT).render());
-                break;
+            case SINGLE -> drawSingle(panels.get(Region.MAIN).render());
+            case DOUBLE_VERTICAL -> drawDoubleVertical(panels.get(Region.TOP).render(), panels.get(Region.BOTTOM).render());
+            case DOUBLE_HORIZONTAL -> drawDoubleHorizontal(panels.get(Region.LEFT).render(), panels.get(Region.RIGHT).render());
+            case QUAD -> drawQuad(panels.get(Region.TOP_LEFT).render(), panels.get(Region.TOP_RIGHT).render(), panels.get(Region.BOTTOM_LEFT).render(), panels.get(Region.BOTTOM_RIGHT).render());
         }
-        drawInput();
+        drawInputPrompt(inputMode, errorMessage);
     }
 
     public String readField(String label, Scanner scanner) {
@@ -107,13 +105,29 @@ public class ScreenLayout {
         }
     }
 
-    private void drawInput() {
+    private void drawInputPrompt(InputMode mode, String error) {
         int footerTop = TOP_ROW + 3 + CONTENT_ROWS;
         put(footerTop, "├" + "─".repeat(FRAME_WIDTH) + "┤");
-        put(footerTop + 1, "│ " + pad("Input the following field", FRAME_WIDTH - 2) + " │");
+        String text;
+        if (error != null)
+            text = "Error: " + error;
+        else if (mode == InputMode.CONFIRM)
+            text = "Confirm? (y/n)";
+        else
+            text = "Input the following field";
+        put(footerTop + 1, "│ " + pad(text, FRAME_WIDTH - 2) + " │");
         put(footerTop + 2, "│ " + pad("", FRAME_WIDTH - 2) + " │");
         put(footerTop + 3, "└" + "─".repeat(FRAME_WIDTH) + "┘");
         inputRow = footerTop + 2;
+    }
+
+
+    public void setInputMode(InputMode mode) {
+        this.inputMode = mode;
+    }
+
+    public void setErrorMessage(String error) {
+        this.errorMessage = error;
     }
 
     private void put(int row, String text) {
