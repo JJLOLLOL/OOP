@@ -43,6 +43,17 @@ public class SimCharacter extends Character {
         this.career = new Career(newCareer);
     }
 
+
+    //NOT FINALISED WORK METHOD, just added to test if the addProgress and updateSkills are working
+    //please remove if needed during merge
+    public String work() {
+        String careerResult = career.addProgress(10.0);
+        for (String skill : career.getCurrentCareer().getRelatedSkills()) {
+            updateSkill(skill, 5.0);
+        }
+        return careerResult;
+    }
+
     //skills methods
     public String updateSkill(String skillName, double amount) {
         Skills skill = skillsList.getSkill(skillName);

@@ -33,10 +33,16 @@ public class Career implements ProgressBar {
         return requiredXP;
     }
 
+    public CareerList getCurrentCareer() {
+        return currentCareer;
+    }
+
     //increase required XP needed per level
     private void updateRequiredXP() {
         requiredXP = 100.0 * Math.pow(1.5, currentRank - 1);
     }
+
+    //work method when
     //abstract methods from ProgressBar
     @Override
     public double getProgress() {

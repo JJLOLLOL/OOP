@@ -15,7 +15,6 @@ public class SkillsList {
         skills.put("Charisma", new Skills("Charisma"));
         skills.put("Creativity", new Skills("Creativity"));
         skills.put("Logic", new Skills("Logic"));
-        skills.put("Gardening", new Skills("Gardening"));
         skills.put("Music", new Skills("Music"));
         skills.put("Writing", new Skills("Writing"));
         skills.put("Painting", new Skills("Painting"));
