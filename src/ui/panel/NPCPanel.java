@@ -29,7 +29,7 @@ public class NPCPanel implements Panel {
 
     List<String> lines = new ArrayList<>();
 
-    lines.add("You arrived at: " + locationName);
+    lines.add("You are at " + locationName);
     lines.add("");
 
     if (npcs == null || npcs.isEmpty()) {
@@ -45,10 +45,10 @@ public class NPCPanel implements Panel {
       lines.add("You see " + npc.getName());
 
       if (npc.getDescription() != null) {
-        lines.add("  Description : " + npc.getDescription());
+        lines.add("  " + npc.getDescription());
       }
 
-      lines.add("  Relationship: " + status + " (" + score + ")");
+      lines.add("  " + status + " (" + score + ")");
       lines.add("");
     }
 

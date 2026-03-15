@@ -9,4 +9,5 @@ public interface State<T> {
     void handleInput(T input, GameEngine engine);
     
     void update(GameEngine engine, double deltaTime);
+    
 }
