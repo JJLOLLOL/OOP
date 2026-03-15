@@ -73,7 +73,7 @@ public class CreateSimState implements State<List<String>> {
                         return;
 
                     case "2":
-                        editCharacter(layout, scanner, sims);
+                        editCharacter(layout, scanner, sims, panel);
                         break;
 
                     case "3":
@@ -119,7 +119,8 @@ public class CreateSimState implements State<List<String>> {
     private void editCharacter(
             ScreenLayout layout,
             Scanner scanner,
-            List<SimCharacter> sims) {
+            List<SimCharacter> sims,
+            CreateSimPanel panel) {
 
         System.out.print("Which character to edit (1-" + sims.size() + "): ");
 
@@ -147,5 +148,9 @@ public class CreateSimState implements State<List<String>> {
 
         sims.set(index,
                 new SimCharacter(name, age, gender, defaultLocation, startingCareer));
+
+        panel.updateSim(index, name, ageStr, gender);
+
+        screen.render();
     }
 }

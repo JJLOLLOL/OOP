@@ -53,6 +53,10 @@ public class CreateSimPanel implements Panel {
         return sims;
     }
 
+    public void updateSim(int index, String name, String age, String gender) {
+        sims.set(index, new String[] { name, age, gender });
+    }
+
     @Override
     public List<String> render() {
 
