@@ -73,6 +73,11 @@ public class GameEngine {
     public void start(State<?> initialState) {
         setGameState(initialState);
         WorldRegistry.getInstance();
+        // Spin up input thread so scanner.nextLine() never blocks the game loop
+        InputThread inputThread = new InputThread(getScanner());
+        Thread t = new Thread(inputThread, "input-thread");
+        t.setDaemon(true);
+        t.start();
         run();
     }
 
@@ -85,6 +90,11 @@ public class GameEngine {
             lastTime = now;
             activeState.update(this, deltaTime);
             activeState.render(this);
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
     }
 

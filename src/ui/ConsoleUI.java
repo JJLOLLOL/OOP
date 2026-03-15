@@ -2,35 +2,32 @@ package ui;
 
 public class ConsoleUI {
 
-    private static int cursorRow = 1;
-
-    public static void resetCursor() {
-        System.out.print("\033[H");
-        cursorRow = 1;
-    }
+    private static final StringBuilder buf = new StringBuilder();
 
     public static void clear() {
-        System.out.print("\033[2J");
-        System.out.print("\033[H");
-        System.out.flush();
-        cursorRow = 1;
+        buf.append("\033[2J\033[3J\033[H");
     }
 
     public static void moveCursor(int row, int col) {
-        System.out.printf("\033[%d;%dH", row, col);
-        cursorRow = row;
-    }
-
-    public static void println(String text) {
-        System.out.println(text);
-        cursorRow++;
+        buf.append(String.format("\033[%d;%dH", row, col));
     }
 
     public static void print(String text) {
-        System.out.print(text);
+        buf.append(text);
     }
 
-    public static int getCursorRow() {
-        return cursorRow;
+    public static void println(String text) {
+        buf.append(text).append("\n");
+    }
+
+    /**
+     * Call once at the end of a full frame to push everything to the terminal
+     */
+    public static void flush() {
+        if (buf.length() == 0)
+            return;
+        System.out.print(buf);
+        System.out.flush();
+        buf.setLength(0);
     }
 }

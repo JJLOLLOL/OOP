@@ -1,9 +1,9 @@
 package ui.state;
 
 import core.GameEngine;
+import core.InputQueue;
 import core.WorldRegistry;
 import java.util.List;
-import java.util.Scanner;
 import models.Career;
 import models.CareerList;
 import models.Location;
@@ -11,35 +11,73 @@ import models.SimCharacter;
 import ui.layout.ScreenLayout;
 import ui.panel.CreateSimPanel;
 import ui.screen.CreateSimScreen;
+import ui.screen.Screen;
 
-public class CreateSimState implements State<List<String>> {
+public class CreateSimState extends BaseState<List<String>> {
 
     private final CreateSimScreen screen = new CreateSimScreen();
 
-    @Override
-    public void render(GameEngine engine) {
-
-        Scanner scanner = engine.getScanner();
-        ScreenLayout layout = screen.getLayout();
-        CreateSimPanel panel = screen.getPanel();
-
-        layout.setInputMode(ScreenLayout.InputMode.REQUEST);
-        screen.render();
-        String name = layout.readField("Name", scanner);
-        panel.setName(name);
-        screen.render();
-        String age = layout.readField("Age", scanner);
-        panel.setAge(age);
-        screen.render();
-        String gender = layout.readField("Gender", scanner);
-        panel.setGender(gender);
-
-        layout.setInputMode(ScreenLayout.InputMode.CONFIRM);
-        screen.render();
-        Boolean confirmed = layout.readConfirm(scanner);
-        if (confirmed) handleInput(List.of(name, age, gender), engine);
-
+   private enum Step {
+        NAME,
+        AGE,
+        GENDER,
+        CONFIRM
     }
+    private Step currentStep = Step.NAME;
+    private String name = "", age = "", gender = "";
+
+    @Override
+    protected Screen getScreen() {
+        return screen;
+    }
+    
+    @Override
+    public void update(GameEngine engine, double deltaTime) {
+
+        String input = InputQueue.poll();
+        if (input == null)
+            return;
+        dirty = true;
+        CreateSimPanel panel = screen.getPanel();
+        ScreenLayout layout = screen.getLayout();
+
+        switch (currentStep) {
+            case NAME -> {
+                name = input;
+                panel.setName(name);
+                currentStep = Step.AGE;
+                layout.setInputMode(ScreenLayout.InputMode.REQUEST);
+            }
+            case AGE -> {
+                age = input;
+                panel.setAge(age);
+                currentStep = Step.GENDER;
+                layout.setInputMode(ScreenLayout.InputMode.REQUEST);
+            }
+            case GENDER -> {
+                gender = input;
+                panel.setGender(gender);
+                currentStep = Step.CONFIRM;
+                layout.setInputMode(ScreenLayout.InputMode.CONFIRM);
+            }
+            case CONFIRM -> {
+                if (input.equalsIgnoreCase("y")) {
+                    handleInput(List.of(name, age, gender), engine);
+                } else {
+                    // Reset
+                    currentStep = Step.NAME;
+                    name = "";
+                    age = "";
+                    gender = "";
+                    panel.setName("");
+                    panel.setAge("");
+                    panel.setGender("");
+                    layout.setInputMode(ScreenLayout.InputMode.REQUEST);
+                }
+            }
+        }
+    }
+
 
     @Override
     public void handleInput(List<String> input, GameEngine engine) {
@@ -51,9 +89,9 @@ public class CreateSimState implements State<List<String>> {
         Career startingCareer = new Career(CareerList.JOBLESS);
 
         SimCharacter player = new SimCharacter(name, age, gender, defaultLocation, startingCareer);
-        engine.getRelationshipManager().registerNewSim(player, sims, npcs);
+        engine.getRelationshipManager().registerNewSim(player, engine.getSims(), WorldRegistry.getInstance().getAllNPCs());
         engine.setActivePlayer(player);
-        
+
         engine.setGameState(new MainState());
     }
 }

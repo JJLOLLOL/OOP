@@ -27,4 +27,9 @@ public class CreateSimScreen implements Screen {
     public CreateSimPanel getPanel() {
         return panel;
     }
+
+    @Override
+    public void parkCursor() {
+        layout.parkCursor();
+    }
 }

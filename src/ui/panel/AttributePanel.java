@@ -26,7 +26,10 @@ public class AttributePanel implements Panel {
     public List<String> render() {
 
         List<String> lines = new ArrayList<>();
-
+        if (needs == null) {
+            lines.add("Loading...");
+            return lines;
+        }
         lines.add(Color.CYAN + name + " | Age " + age + Color.RESET);
         lines.add("─".repeat(40));
         lines.add("");
