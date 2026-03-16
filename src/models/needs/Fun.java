@@ -10,8 +10,7 @@ public class Fun extends Need {
 
     @Override
     public void onCriticallyLow(SimCharacter character) {
-        System.out.println(character.getName() + " is bored! Find something fun to do soon!");
-        // Additional consequences can be implemented here (e.g., mood decrease)
+        character.addNotification(character.getName() + " is bored! Find something fun to do soon!");
     }
 
 }

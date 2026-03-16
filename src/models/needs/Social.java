@@ -10,8 +10,7 @@ public class Social extends Need {
 
     @Override
     public void onCriticallyLow(SimCharacter character) {
-        System.out.println(character.getName() + " is feeling lonely! Try socializing with others soon!");
-        // Additional consequences can be implemented here (e.g., mood decrease)
+        character.addNotification(character.getName() + " is feeling lonely! Try socializing with others soon!");
     }
 
 }
