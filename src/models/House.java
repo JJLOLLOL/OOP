@@ -6,29 +6,33 @@ import models.furnitureactions.Furniture;
 public class House extends Location {
     //add 3 max furnitures only.
 
-    int houseTier;
-    double houseRate;
-    double housePrice;
-    boolean isOwned;
+    private int houseTier;
+    private double houseRate;
+    private double housePrice;
+    private boolean isOwned;
 
-    public House(String LocationName, ArrayList<Furniture> furnitures, ArrayList<NPCCharacter> npcs, double housePrice, double houseRate, int houseTier) {
-        super(LocationName, furnitures);
+    // Constructor for purchasable / higher tier houses
+    public House(String locationName, ArrayList<Furniture> furnitures,
+                 double housePrice, double houseRate, int houseTier) {
+
+        super(locationName, furnitures);
+
         this.housePrice = housePrice;
         this.houseRate = houseRate;
         this.houseTier = houseTier;
         this.isOwned = false;
     }
-    
-    // for upgraded houses
-    public House(String LocationName, ArrayList<Furniture> furnitures) {
-        super(LocationName, furnitures);
+
+    // Constructor for default Tier 1 house (owned)
+    public House(String locationName, ArrayList<Furniture> furnitures) {
+
+        super(locationName, furnitures);
+
         this.housePrice = 0;
         this.houseRate = 1;
         this.houseTier = 1;
         this.isOwned = true;
-
-        // implement constructor in a constructor
-    }// only for new house
+    }
 
     public int getHouseTier() {
         return houseTier;
@@ -42,13 +46,33 @@ public class House extends Location {
         return housePrice;
     }
 
-    public boolean isIsOwned() {
+    public boolean isOwned() {
         return isOwned;
     }
 
-    public void setIsOwned(boolean isOwned) {
-        this.isOwned = isOwned;
-    }
-    // IS OWNED can only be set to True
+    // Upgrade current house to the next tier
+    public void upgradeHouse(House nextTierHouse) {
 
+
+        if (nextTierHouse == null) {
+            throw new IllegalArgumentException("Next tier house cannot be null.");
+        }
+
+        if (nextTierHouse.houseTier != this.houseTier + 1) {
+            throw new IllegalArgumentException("Upgrade must be to the next house tier.");
+        }
+
+
+        // Transfer ownership
+        this.isOwned = false;
+        nextTierHouse.isOwned = true;
+    }
+
+    // Validation for furniture limit
+    public void validateFurnitureLimit() {
+
+        if (getFurnitures().size() > 3) {
+            throw new IllegalStateException("A house can contain at most 3 furniture items.");
+        }
+    }
 }

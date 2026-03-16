@@ -5,43 +5,33 @@ import java.util.List;
 import models.furnitureactions.Furniture;
 
 public class Location {
-    // public ArrayList<Activity> activities;
-    public ArrayList<Furniture> furnitures;
-    public String LocationName;
-    public ArrayList<NPCCharacter> npcs;
 
-    public Location(String LocationName, ArrayList<Furniture> furnitures) {
-        this.LocationName = LocationName;
-        // this.activities = activities;
-        this.furnitures = furnitures;
-    }
+    private String locationName;
+    private ArrayList<Furniture> furnitures;
+    private ArrayList<NPCCharacter> npcs;
 
-    public void listFurnitures() {
-        System.out.println("Furnitures in " + LocationName + ":");
-        for (Furniture furniture : furnitures) {
-            System.out.println("- " + furniture.getName());
+    public Location(String locationName, ArrayList<Furniture> furnitures) {
+
+        this.locationName = locationName;
+
+        if (furnitures == null) {
+            this.furnitures = new ArrayList<>();
+        } else {
+            this.furnitures = furnitures;
         }
+
+        this.npcs = new ArrayList<>();
     }
 
-    // public ArrayList<Activity> getActivities() {
-    //     return activities;
-    // }
+    public String getLocationName() {
+        return locationName;
+    }
 
-    // public void setActivities(ArrayList<Activity> activities) {
-    //     this.activities = activities;
-    // }
-    public List<Furniture> getFurniture() {
+    public List<Furniture> getFurnitures() {
         return furnitures;
     }
-    public String getLocationName() {
-        return LocationName;
-    }
 
-    public void setLocationName(String LocationName) {
-        this.LocationName = LocationName;
-    }
-
-    public ArrayList<NPCCharacter> getNpcs() {
+    public List<NPCCharacter> getNpcs() {
         return npcs;
     }
 
@@ -49,14 +39,24 @@ public class Location {
         this.npcs = npcs;
     }
 
-    public ArrayList<NPCCharacter> addNpcCharacters(ArrayList<NPCCharacter> npcs, NPCCharacter npc) {
+    public void addNpcCharacter(NPCCharacter npc) {
         npcs.add(npc);
-        return npcs;
     }
 
-    public ArrayList<NPCCharacter> removeNpcCharacters(ArrayList<NPCCharacter> npcs, NPCCharacter npc) {
+    public void removeNpcCharacter(NPCCharacter npc) {
         npcs.remove(npc);
-        return npcs;
     }
 
+    public void listFurnitures() {
+        System.out.println("Furnitures in " + locationName + ":");
+
+        if (furnitures.isEmpty()) {
+            System.out.println("No furniture available.");
+            return;
+        }
+
+        for (Furniture furniture : furnitures) {
+            System.out.println("- " + furniture.getName());
+        }
+    }
 }
