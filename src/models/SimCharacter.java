@@ -15,15 +15,15 @@ public class SimCharacter extends Character {
     private double money;
     private House house;
     private Map<String, Need> needs = new HashMap<>();
-    private HashMap<String, Skills> skills = new HashMap<>();
+    private SkillsList skillsList = new SkillsList();
     private Career career;
     private Set<AchievementType> unlockedAchievements = new HashSet<>();
     private List<String> notifications = new ArrayList<>();
 
-    public SimCharacter(String name, int age, String gender, Location defaultLocation, Career career) {
+    public SimCharacter(String name, int age, String gender, Location defaultLocation) {
         super(name, age, gender, defaultLocation);
         this.money = 1000.0;
-        this.career = career;
+        this.career = new Career(CareerList.JOBLESS);
         initialiseNeeds();
         initialiseSkills();
     }
@@ -36,19 +36,45 @@ public class SimCharacter extends Character {
         needs.put("Social", new Social());
     }
 
-    private void initialiseSkills() {
-        skills.put("Cooking", new Skills("Cooking"));
-        skills.put("Fitness", new Skills("Fitness"));
-        skills.put("Programming", new Skills("Programming"));
-        skills.put("Charisma", new Skills("Charisma"));
-        skills.put("Creativity", new Skills("Creativity"));
-        skills.put("Logic", new Skills("Logic"));
-        skills.put("Gardening", new Skills("Gardening"));
-        skills.put("Music", new Skills("Music"));
-        skills.put("Writing", new Skills("Writing"));
-        skills.put("Painting", new Skills("Painting"));
+    //career methods
+    public String updateCareer(double amount) {
+        if (career.getTitle().equals("Jobless")){
+            return "Cannot gain career XP while unemployed!";
+        }
+        return career.addProgress(amount);
     }
 
+    public String displayCareer() {
+        return career.toString();
+    }
+
+    public void joinCareer(CareerList newCareer) {
+        this.career = new Career(newCareer);
+    }
+
+
+    //NOT FINALISED WORK METHOD, just added to test if the addProgress and updateSkills are working
+    //please remove if needed during merge
+    public String work() {
+        String careerResult = career.addProgress(10.0);
+        for (String skill : career.getCurrentCareer().getRelatedSkills()) {
+            updateSkill(skill, 5.0);
+        }
+        return careerResult;
+    }
+
+    //skills methods
+    public String updateSkill(String skillName, double amount) {
+        Skills skill = skillsList.getSkill(skillName);
+        if (skill == null) {
+            return "Skill " + skillName + " not found!";
+        }
+        return skill.addProgress(amount);
+    }
+
+    public String displaySkills() {
+        return skillsList.displaySkills();
+    }
     // getters & setters
     public void setMoney(double amount) {
         money += amount;
