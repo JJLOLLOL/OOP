@@ -29,6 +29,9 @@ public class Furniture {
     public FurnitureAction getAction(String actionName) {
         return availableActionsMap.get(actionName);
     }
+    public List<FurnitureAction> getActions() {
+        return new ArrayList<>(availableActionsMap.values());
+    }
 
     // Performs the specified action on the given character. Returns true if the action was successfully performed, false otherwise.
     public boolean performAction(String actionName, models.SimCharacter character) {
