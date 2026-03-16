@@ -3,6 +3,7 @@ package models.furnitureactions;
 import java.util.HashMap;
 import java.util.Map;
 import models.SimCharacter;
+import models.needs.Need;
 
 public class FurnitureAction implements ActivityInterface { // Represents an action that can be performed on a piece of furniture
     private final String name;
@@ -53,6 +54,24 @@ public class FurnitureAction implements ActivityInterface { // Represents an act
             return false;
         }
 
+        // Block the action if any need cost would reduce the current value below zero.
+        for (Map.Entry<String, Double> effect : affectedNeedsMap.entrySet()) {
+            double amount = effect.getValue();
+            if (amount >= 0) {
+                continue;
+            }
+
+            Need need = character.getNeeds().get(effect.getKey());
+            if (need == null) {
+                continue;
+            }
+
+            double required = Math.abs(amount);
+            if (need.getValue() < required) {
+                return false;
+            }
+        }
+
         character.setMoney(-activityCost);
 
         // Apply effects on needs after action is performed
@@ -64,9 +83,6 @@ public class FurnitureAction implements ActivityInterface { // Represents an act
         for (Map.Entry<String, Double> effect : affectedSkillsMap.entrySet()) {
             character.addSkillProgress(effect.getKey(), effect.getValue());
         }
-
-        // Placeholder for time simulation hook.
-        double ignored = timeRequired;
 
         return true;
     }
