@@ -277,6 +277,7 @@ public class CreateSimState extends BaseState<List<String[]>> {
             engine.getRelationshipManager().registerNewSim(
                     sim, engine.getSims(), WorldRegistry.getInstance().getAllNPCs());
 
+            engine.getSims().add(sim);  // make sim visible to MainState
             createdSims.add(sim);
         }
 
