@@ -1,7 +1,6 @@
 package ui.state;
 
 import core.GameEngine;
-import core.InputQueue;
 import core.WorldRegistry;
 import java.util.List;
 import models.Career;
@@ -34,7 +33,7 @@ public class CreateSimState extends BaseState<List<String>> {
     @Override
     public void update(GameEngine engine, double deltaTime) {
 
-        String input = InputQueue.poll();
+        String input = engine.pollInput();
         if (input == null)
             return;
         dirty = true;

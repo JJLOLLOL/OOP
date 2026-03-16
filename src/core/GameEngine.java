@@ -10,40 +10,26 @@ import ui.state.State;
 
 public class GameEngine {
 
-    private static GameEngine instance;
-    private ArrayList<SimCharacter> sims = new ArrayList<>();
+    private final ArrayList<SimCharacter> sims = new ArrayList<>();
     private SimCharacter activePlayer;
-    private RelationshipManager relationshipManager = new RelationshipManager();
-    private Location currentLocation;
+    private final RelationshipManager relationshipManager = new RelationshipManager();
     private boolean isRunning;
     private State<?> activeState;
-    private final Scanner scanner;
+
+    // The engine now owns its input pipeline
+    private final InputQueue inputQueue;
+    private final InputThread inputThread;
+    private final Thread inputThreadHandle;
 
     public GameEngine() {
-        this.scanner = new Scanner(System.in);
-    }
-
-    public static GameEngine getInstance() {
-        if (instance == null) {
-            instance = new GameEngine();
-        }
-        return instance;
-    }
-
-    public Scanner getScanner() {
-        return scanner;
+        this.inputQueue = new InputQueue();
+        this.inputThread = new InputThread(new Scanner(System.in), this.inputQueue);
+        this.inputThreadHandle = new Thread(this.inputThread, "Input-Thread");
+        this.inputThreadHandle.setDaemon(true); // The JVM can exit even if this thread is running
     }
 
     public SimCharacter getActivePlayer() {
         return activePlayer;
-    }
-
-    public Location getCurrentLocation() {
-        return currentLocation;
-    }
-
-    public void setCurrentLocation(Location newLocation) {
-        currentLocation = newLocation;
     }
 
     public void setActivePlayer(SimCharacter character) {
@@ -66,40 +52,62 @@ public class GameEngine {
         this.activeState = newState;
     }
 
-    public void setIsRunning(boolean value) {
-        this.isRunning = value;
+    /**
+     * Allows states to poll for user input in a decoupled way.
+     */
+    public String pollInput() {
+        return inputQueue.poll();
     }
 
     public void start(State<?> initialState) {
         setGameState(initialState);
-        WorldRegistry.getInstance();
-        // Spin up input thread so scanner.nextLine() never blocks the game loop
-        InputThread inputThread = new InputThread(getScanner());
-        Thread t = new Thread(inputThread, "input-thread");
-        t.setDaemon(true);
-        t.start();
+        WorldRegistry.getInstance(); // Initialize the world data
+        inputThreadHandle.start();
         run();
     }
 
     private void run() {
-        setIsRunning(true);
+        isRunning = true;
+
+        final double NANO_SECONDS_PER_SECOND = 1_000_000_000.0;
+        final double UPDATES_PER_SECOND = 20.0; // Target updates per second for game logic
+        final double NANO_SECONDS_PER_UPDATE = NANO_SECONDS_PER_SECOND / UPDATES_PER_SECOND;
+
         long lastTime = System.nanoTime();
+        double unprocessedTime = 0;
+
         while (isRunning) {
             long now = System.nanoTime();
-            double deltaTime = (now - lastTime) / 1000000000.0;
+            unprocessedTime += (now - lastTime);
             lastTime = now;
-            activeState.update(this, deltaTime);
+
+            // Process updates in a fixed timestep to ensure deterministic game logic
+            while (unprocessedTime >= NANO_SECONDS_PER_UPDATE) {
+                unprocessedTime -= NANO_SECONDS_PER_UPDATE;
+                activeState.update(this, 1.0 / UPDATES_PER_SECOND);
+            }
+
+            // Render as fast as possible (or with a frame cap)
             activeState.render(this);
+
+            // Yield to other threads to avoid busy-waiting and save CPU
             try {
-                Thread.sleep(500);
+                Thread.sleep(1);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
+                end(); // Exit gracefully if the main thread is interrupted
             }
         }
+        shutdown();
     }
 
     public void end() {
-        setIsRunning(false);
-        scanner.close();
+        isRunning = false;
+    }
+
+    private void shutdown() {
+        System.out.println("Shutting down...");
+        inputThread.stop();
+        // No need to close System.in scanner, let the JVM handle it.
     }
 }
