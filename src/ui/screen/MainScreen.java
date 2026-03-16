@@ -5,7 +5,7 @@ import ui.layout.Region;
 import ui.layout.ScreenLayout;
 import ui.panel.ActionPanel;
 import ui.panel.AttributePanel;
-import ui.panel.NPCPanel;
+import ui.panel.NearbyPanel;
 import ui.panel.Panel;
 import ui.panel.TemporaryPanel;
 
@@ -15,14 +15,14 @@ public class MainScreen implements Screen {
     private final ScreenLayout layout = new ScreenLayout(FrameType.QUAD);
     private final AttributePanel attributePanel = new AttributePanel();
     private final TemporaryPanel panelBL = new TemporaryPanel();
-    private final NPCPanel npcPanel = new NPCPanel();
+    private final NearbyPanel nearbyPanel = new NearbyPanel();
     private final ActionPanel actionPanel = new ActionPanel();
 
     public MainScreen() {
         layout.setPanel(Region.TOP_LEFT, attributePanel);
         layout.setPanel(Region.BOTTOM_LEFT, panelBL);
-        layout.setPanel(Region.TOP_RIGHT, npcPanel);
-        layout.setPanel(Region.BOTTOM_RIGHT, new ActionPanel());
+        layout.setPanel(Region.TOP_RIGHT, nearbyPanel);
+        layout.setPanel(Region.BOTTOM_RIGHT, actionPanel);
     }
 
     @Override
@@ -37,11 +37,13 @@ public class MainScreen implements Screen {
     public TemporaryPanel getPanelBL() {
         return panelBL;
     }
+
     public AttributePanel getAttributePanel() {
         return attributePanel;
     }
-    public NPCPanel getNpcPanel() {
-        return npcPanel;
+
+    public NearbyPanel getNearbyPanel() {
+        return nearbyPanel;
     }
 
     public ActionPanel getPanelBR() {

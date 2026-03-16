@@ -19,32 +19,28 @@ public class CreateSimState extends BaseState<List<String[]>> {
     private final CreateSimScreen screen = new CreateSimScreen();
 
     private enum Step {
-        COUNT, // ask how many sims to create
-        NAME, // enter name for current sim slot
-        AGE, // enter age for current sim slot
-        GENDER, // enter gender for current sim slot
-        OPTIONS, // keep(1) / delete(2) for the just-entered sim
-        SELECT, // all slots filled — type a sim number to manage, or C to confirm
-        SELECT_ACTION, // chosen sim — edit(1) / delete(2)
-        EDIT_NAME, // re-enter name for selected sim
-        EDIT_AGE, // re-enter age for selected sim
-        EDIT_GENDER, // re-enter gender for selected sim
-        PICK_PLAYER     // choose which sim becomes the active player
+        COUNT,
+        NAME, AGE, GENDER, // create flow
+        OPTIONS, // keep / delete just-entered sim
+        SELECT, // all slots filled — pick a sim number or C to confirm
+        SELECT_ACTION, // edit / delete chosen sim
+        EDIT_NAME, EDIT_AGE, EDIT_GENDER, // edit flow (same fields, different next-step)
+        PICK_PLAYER
     }
 
     private Step currentStep = Step.COUNT;
 
     private int totalSims = 0;
-    private int currentSimIndex = 0;   // slot being filled during CREATE flow
-    private int selectedSim = -1;  // slot chosen during SELECT
+    private int currentSimIndex = 0;  // slot being filled during create/edit flow
+    private int selectedSim = -1; // 0-based index of sim chosen in SELECT
 
-    // in-flight fields for the sim currently being entered / edited
+    // in-flight fields — shared by both create and edit flows
     private String name = "", age = "", gender = "";
 
-    // committed sim data — kept in sync with listPanel
+    // committed sim data — source of truth, pushed to listPanel on every change
     private final List<String[]> committedSims = new ArrayList<>();
 
-    // finalised SimCharacter objects, built in handleInput()
+    // built in handleInput() once all sims are confirmed
     private final List<SimCharacter> createdSims = new ArrayList<>();
 
     @Override
@@ -52,21 +48,30 @@ public class CreateSimState extends BaseState<List<String[]>> {
         return screen;
     }
 
+    // ── Convenience accessors ─────────────────────────────────────────────────
+    private CreateSimListPanel listPanel() {
+        return screen.getListPanel();
+    }
+
+    private CreateSimActionPanel actionPanel() {
+        return screen.getActionPanel();
+    }
+
+    private ScreenLayout layout() {
+        return screen.getLayout();
+    }
+
+    // ── Update ────────────────────────────────────────────────────────────────
     @Override
     public void update(GameEngine engine, double deltaTime) {
         String input = engine.pollInput();
         if (input == null) {
             return;
         }
-
         dirty = true;
-        CreateSimListPanel listPanel = screen.getListPanel();
-        CreateSimActionPanel actionPanel = screen.getActionPanel();
-        ScreenLayout layout = screen.getLayout();
 
         switch (currentStep) {
 
-            // ── COUNT ─────────────────────────────────────────────────────────
             case COUNT -> {
                 try {
                     int count = Integer.parseInt(input.trim());
@@ -75,84 +80,81 @@ public class CreateSimState extends BaseState<List<String[]>> {
                     }
                     totalSims = count;
                     currentSimIndex = 0;
-                    layout.setErrorMessage(null);
-                    // show first sim entry on the right
-                    actionPanel.setMode(CreateSimActionPanel.Mode.ENTERING);
-                    actionPanel.setSimNumber(1);
-                    currentStep = Step.NAME;
-                    layout.setInputMode(ScreenLayout.InputMode.REQUEST);
+                    layout().setErrorMessage(null);
+                    startEntering(1);
                 } catch (NumberFormatException e) {
-                    layout.setErrorMessage("Enter a valid number greater than 0.");
-                    layout.setInputMode(ScreenLayout.InputMode.CREATESIM);
+                    layout().setErrorMessage("Enter a valid number greater than 0.");
+                    layout().setInputMode(ScreenLayout.InputMode.CREATESIM);
                 }
             }
 
-            // ── CREATE FLOW ───────────────────────────────────────────────────
-            case NAME -> {
+            // ── NAME / AGE / GENDER (shared by create and edit) ───────────────
+            case NAME, EDIT_NAME -> {
                 name = input.trim();
-                actionPanel.setName(name);
-                layout.setErrorMessage(null);
-                currentStep = Step.AGE;
+                actionPanel().setName(name);
+                layout().setErrorMessage(null);
+                currentStep = (currentStep == Step.NAME) ? Step.AGE : Step.EDIT_AGE;
             }
 
-            case AGE -> {
+            case AGE, EDIT_AGE -> {
                 try {
                     Integer.parseInt(input.trim());
                     age = input.trim();
-                    actionPanel.setAge(age);
-                    layout.setErrorMessage(null);
-                    currentStep = Step.GENDER;
+                    actionPanel().setAge(age);
+                    layout().setErrorMessage(null);
+                    currentStep = (currentStep == Step.AGE) ? Step.GENDER : Step.EDIT_GENDER;
                 } catch (NumberFormatException e) {
-                    layout.setErrorMessage("Age must be a number.");
+                    layout().setErrorMessage("Age must be a number.");
                 }
             }
 
-            case GENDER -> {
+            case GENDER, EDIT_GENDER -> {
                 gender = input.trim();
-                actionPanel.setGender(gender);
-                actionPanel.setMode(CreateSimActionPanel.Mode.OPTIONS);
-                layout.setErrorMessage(null);
-                currentStep = Step.OPTIONS;
-                layout.setInputMode(ScreenLayout.InputMode.ACTION);
+                actionPanel().setGender(gender);
+                layout().setErrorMessage(null);
+
+                if (currentStep == Step.GENDER) {
+                    actionPanel().setMode(CreateSimActionPanel.Mode.OPTIONS);
+                    currentStep = Step.OPTIONS;
+                    layout().setInputMode(ScreenLayout.InputMode.ACTION);
+                } else {
+                    // edit complete — re-insert at same slot and return to SELECT
+                    committedSims.add(selectedSim, new String[]{name, age, gender});
+                    syncListPanel();
+                    clearInFlight();
+                    enterSelect();
+                }
             }
 
             case OPTIONS -> {
                 switch (input.trim()) {
                     case "1" -> {
-                        // Keep — commit to list
                         committedSims.add(new String[]{name, age, gender});
-                        listPanel.setSims(committedSims);
-                        layout.setErrorMessage(null);
+                        syncListPanel();
+                        clearInFlight();
                         currentSimIndex++;
-                        clearInFlight(actionPanel);
+                        layout().setErrorMessage(null);
 
                         if (currentSimIndex < totalSims) {
-                            actionPanel.setMode(CreateSimActionPanel.Mode.ENTERING);
-                            actionPanel.setSimNumber(currentSimIndex + 1);
-                            currentStep = Step.NAME;
-                            layout.setInputMode(ScreenLayout.InputMode.REQUEST);
+                            startEntering(currentSimIndex + 1);
                         } else {
-                            enterSelect(listPanel, actionPanel, layout);
+                            enterSelect();
                         }
                     }
                     case "2" -> {
-                        // Delete — discard in-flight, redo this slot
-                        clearInFlight(actionPanel);
-                        actionPanel.setMode(CreateSimActionPanel.Mode.ENTERING);
-                        actionPanel.setSimNumber(currentSimIndex + 1);
-                        layout.setErrorMessage(null);
-                        currentStep = Step.NAME;
-                        layout.setInputMode(ScreenLayout.InputMode.REQUEST);
+                        // discard in-flight, redo this slot
+                        clearInFlight();
+                        layout().setErrorMessage(null);
+                        startEntering(currentSimIndex + 1);
                     }
                     default ->
-                        layout.setErrorMessage("Enter 1 to keep or 2 to delete.");
+                        layout().setErrorMessage("Enter 1 to keep or 2 to delete.");
                 }
             }
 
-            // ── SELECT ────────────────────────────────────────────────────────
             case SELECT -> {
                 if (input.trim().equalsIgnoreCase("c")) {
-                    layout.setErrorMessage(null);
+                    layout().setErrorMessage(null);
                     handleInput(committedSims, engine);
                 } else {
                     try {
@@ -161,16 +163,15 @@ public class CreateSimState extends BaseState<List<String[]>> {
                             throw new NumberFormatException();
                         }
                         selectedSim = pick - 1;
-                        listPanel.setSelectedSim(selectedSim);
-                        actionPanel.setMode(CreateSimActionPanel.Mode.SELECT_ACTION);
-                        actionPanel.setSelectedSim(selectedSim);
-                        layout.setErrorMessage(null);
+                        listPanel().setSelectedSim(selectedSim);
+                        actionPanel().setMode(CreateSimActionPanel.Mode.SELECT_ACTION);
+                        actionPanel().setSelectedSim(selectedSim);
+                        layout().setErrorMessage(null);
                         currentStep = Step.SELECT_ACTION;
-                        layout.setInputMode(ScreenLayout.InputMode.ACTION);
+                        layout().setInputMode(ScreenLayout.InputMode.ACTION);
                     } catch (NumberFormatException e) {
-                        layout.setErrorMessage(
-                                "Enter a sim number (1-" + committedSims.size()
-                                + ") to manage, or C to confirm.");
+                        layout().setErrorMessage(
+                                "Enter a sim number (1-" + committedSims.size() + ") to manage, or C to confirm.");
                     }
                 }
             }
@@ -178,105 +179,67 @@ public class CreateSimState extends BaseState<List<String[]>> {
             case SELECT_ACTION -> {
                 switch (input.trim()) {
                     case "1" -> {
-                        // Edit — load existing data, remove from committed list
-                        String[] sim = committedSims.get(selectedSim);
+                        // load existing data and remove slot for re-entry
+                        String[] sim = committedSims.remove(selectedSim);
                         name = sim[0];
                         age = sim[1];
                         gender = sim[2];
-                        committedSims.remove(selectedSim);
-                        listPanel.setSims(committedSims);
-                        listPanel.setSelectedSim(-1);
-                        actionPanel.setMode(CreateSimActionPanel.Mode.ENTERING);
-                        actionPanel.setSimNumber(selectedSim + 1);
-                        actionPanel.setName(name);
-                        actionPanel.setAge(age);
-                        actionPanel.setGender(gender);
-                        layout.setErrorMessage(null);
+                        syncListPanel();
+                        listPanel().setSelectedSim(-1);
+                        actionPanel().setName(name);
+                        actionPanel().setAge(age);
+                        actionPanel().setGender(gender);
+                        actionPanel().setMode(CreateSimActionPanel.Mode.ENTERING);
+                        actionPanel().setSimNumber(selectedSim + 1);
+                        layout().setErrorMessage(null);
                         currentStep = Step.EDIT_NAME;
-                        layout.setInputMode(ScreenLayout.InputMode.REQUEST);
+                        layout().setInputMode(ScreenLayout.InputMode.REQUEST);
                     }
                     case "2" -> {
-                        // Delete
                         committedSims.remove(selectedSim);
-                        listPanel.setSims(committedSims);
-                        listPanel.setSelectedSim(-1);
+                        syncListPanel();
+                        listPanel().setSelectedSim(-1);
                         totalSims--;
-                        layout.setErrorMessage(null);
+                        layout().setErrorMessage(null);
 
                         if (totalSims == 0) {
-                            fullReset(listPanel, actionPanel, layout);
-                        } else {
-                            enterSelect(listPanel, actionPanel, layout);
+                            fullReset(); 
+                        }else {
+                            enterSelect();
                         }
                     }
                     default ->
-                        layout.setErrorMessage("Enter 1 to edit or 2 to delete.");
+                        layout().setErrorMessage("Enter 1 to edit or 2 to delete.");
                 }
             }
 
-            // ── EDIT FLOW ─────────────────────────────────────────────────────
-            case EDIT_NAME -> {
-                name = input.trim();
-                actionPanel.setName(name);
-                layout.setErrorMessage(null);
-                currentStep = Step.EDIT_AGE;
-            }
-
-            case EDIT_AGE -> {
-                try {
-                    Integer.parseInt(input.trim());
-                    age = input.trim();
-                    actionPanel.setAge(age);
-                    layout.setErrorMessage(null);
-                    currentStep = Step.EDIT_GENDER;
-                } catch (NumberFormatException e) {
-                    layout.setErrorMessage("Age must be a number.");
-                }
-            }
-
-            case EDIT_GENDER -> {
-                gender = input.trim();
-                actionPanel.setGender(gender);
-                // Re-insert edited sim at same slot
-                committedSims.add(selectedSim, new String[]{name, age, gender});
-                listPanel.setSims(committedSims);
-                clearInFlight(actionPanel);
-                layout.setErrorMessage(null);
-                enterSelect(listPanel, actionPanel, layout);
-            }
-
-            // ── PICK PLAYER ───────────────────────────────────────────────────
             case PICK_PLAYER -> {
                 try {
                     int choice = Integer.parseInt(input.trim());
                     if (choice < 1 || choice > createdSims.size()) {
                         throw new NumberFormatException();
                     }
-                    layout.setErrorMessage(null);
+                    layout().setErrorMessage(null);
                     engine.setActivePlayer(createdSims.get(choice - 1));
                     engine.setGameState(new MainState());
                 } catch (NumberFormatException e) {
-                    layout.setErrorMessage(
-                            "Enter a number between 1 and " + createdSims.size() + ".");
+                    layout().setErrorMessage("Enter a number between 1 and " + createdSims.size() + ".");
                 }
             }
         }
     }
 
+    // ── handleInput ───────────────────────────────────────────────────────────
     @Override
     public void handleInput(List<String[]> sims, GameEngine engine) {
+        Location home = WorldRegistry.getInstance().getLocation("Home");
+        Career jobless = new Career(CareerList.JOBLESS);
+
         for (String[] data : sims) {
-            String n = data[0];
-            int a = Integer.parseInt(data[1]);
-            String g = data[2];
-
-            Location defaultLocation = WorldRegistry.getInstance().getLocation("Home");
-            Career startingCareer = new Career(CareerList.JOBLESS);
-            SimCharacter sim = new SimCharacter(n, a, g, defaultLocation, startingCareer);
-
+            SimCharacter sim = new SimCharacter(data[0], Integer.parseInt(data[1]), data[2], home, jobless);
             engine.getRelationshipManager().registerNewSim(
                     sim, engine.getSims(), WorldRegistry.getInstance().getAllNPCs());
-
+            engine.getSims().add(sim);
             createdSims.add(sim);
         }
 
@@ -284,54 +247,66 @@ public class CreateSimState extends BaseState<List<String[]>> {
             engine.setActivePlayer(createdSims.get(0));
             engine.setGameState(new MainState());
         } else {
-            screen.getActionPanel().setMode(CreateSimActionPanel.Mode.PICK_PLAYER);
-            screen.getActionPanel().setPickList(createdSims);
+            actionPanel().setMode(CreateSimActionPanel.Mode.PICK_PLAYER);
+            actionPanel().setPickList(createdSims);
             currentStep = Step.PICK_PLAYER;
-            screen.getLayout().setInputMode(ScreenLayout.InputMode.REQUEST);
+            layout().setInputMode(ScreenLayout.InputMode.REQUEST);
         }
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
-    private void enterSelect(CreateSimListPanel listPanel,
-            CreateSimActionPanel actionPanel,
-            ScreenLayout layout) {
-        listPanel.setSelectedSim(-1);
-        if (totalSims == 1) {
-            // Only one sim — skip SELECT, go straight to SELECT_ACTION
-            selectedSim = 0;
-            listPanel.setSelectedSim(0);
-            actionPanel.setMode(CreateSimActionPanel.Mode.SELECT_ACTION);
-            actionPanel.setSelectedSim(0);
-            currentStep = Step.SELECT_ACTION;
-            layout.setInputMode(ScreenLayout.InputMode.ACTION);
-        } else {
-            actionPanel.setMode(CreateSimActionPanel.Mode.EMPTY);
-            currentStep = Step.SELECT;
-            layout.setInputMode(ScreenLayout.InputMode.SELECT);
-        }
+    /**
+     * Sets up the action panel and step for entering a new sim at slot n.
+     */
+    private void startEntering(int simNumber) {
+        actionPanel().setMode(CreateSimActionPanel.Mode.ENTERING);
+        actionPanel().setSimNumber(simNumber);
+        currentStep = Step.NAME;
+        layout().setInputMode(ScreenLayout.InputMode.REQUEST);
     }
 
-    private void clearInFlight(CreateSimActionPanel actionPanel) {
+    /**
+     * Transitions to SELECT — always allows C to confirm or a number to manage.
+     */
+    private void enterSelect() {
+        actionPanel().setMode(CreateSimActionPanel.Mode.EMPTY);
+        listPanel().setSelectedSim(-1);
+        currentStep = Step.SELECT;
+        layout().setInputMode(ScreenLayout.InputMode.SELECT);
+    }
+
+    /**
+     * Pushes current committedSims list to the list panel.
+     */
+    private void syncListPanel() {
+        listPanel().setSims(committedSims);
+    }
+
+    /**
+     * Clears all in-flight fields in state and action panel.
+     */
+    private void clearInFlight() {
         name = "";
         age = "";
         gender = "";
-        actionPanel.setName("");
-        actionPanel.setAge("");
-        actionPanel.setGender("");
+        actionPanel().setName("");
+        actionPanel().setAge("");
+        actionPanel().setGender("");
     }
 
-    private void fullReset(CreateSimListPanel listPanel,
-            CreateSimActionPanel actionPanel,
-            ScreenLayout layout) {
+    /**
+     * Full reset back to COUNT — used when all sims are deleted.
+     */
+    private void fullReset() {
         totalSims = 0;
         currentSimIndex = 0;
         selectedSim = -1;
         committedSims.clear();
         createdSims.clear();
-        listPanel.reset();
-        actionPanel.reset();
+        listPanel().reset();
+        actionPanel().reset();
         currentStep = Step.COUNT;
-        layout.setInputMode(ScreenLayout.InputMode.CREATESIM);
-        layout.setErrorMessage(null);
+        layout().setInputMode(ScreenLayout.InputMode.CREATESIM);
+        layout().setErrorMessage(null);
     }
 }

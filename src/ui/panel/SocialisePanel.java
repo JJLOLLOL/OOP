@@ -11,8 +11,10 @@ public class SocialisePanel implements Panel {
     private NPCCharacter selectedNPC = null;
 
     public void setNPCs(List<NPCCharacter> npcs) {
-        this.npcs = npcs;
-        this.selectedNPC = null;
+        if (!npcs.equals(this.npcs)) {
+            this.npcs = npcs;
+            this.selectedNPC = null; // only reset when NPC list changes
+        }
     }
 
     public void selectNPC(NPCCharacter npc) {

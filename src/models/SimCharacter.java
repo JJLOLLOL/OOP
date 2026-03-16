@@ -1,8 +1,10 @@
 package models;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import models.furnitureactions.Furniture;
@@ -16,6 +18,7 @@ public class SimCharacter extends Character {
     private HashMap<String, Skills> skills = new HashMap<>();
     private Career career;
     private Set<AchievementType> unlockedAchievements = new HashSet<>();
+    private List<String> notifications = new ArrayList<>();
 
     public SimCharacter(String name, int age, String gender, Location defaultLocation, Career career) {
         super(name, age, gender, defaultLocation);
@@ -94,11 +97,27 @@ public class SimCharacter extends Character {
         return Collections.unmodifiableSet(unlockedAchievements);
     }
 
+    public void addNotification(String message) {
+        notifications.add(message);
+        if (notifications.size() > 3) {
+            notifications.remove(0); // keep only last 3 to avoid panel UI overflow
+        }
+    }
+
+    public List<String> getNotifications() {
+        return notifications;
+    }
+
     public void updateNeed(double deltaTime) {
         for (Need need : needs.values()) {
             need.decay(deltaTime);
             if (need.isCriticallyLow()) {
-                need.onCriticallyLow(this);
+                if (!need.isCriticallyLowNotified()) {
+                    need.onCriticallyLow(this);
+                    need.setCriticallyLowNotified(true);
+                }
+            } else {
+                need.setCriticallyLowNotified(false);
             }
         }
     }

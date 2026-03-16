@@ -10,8 +10,10 @@ public class InteractablesPanel implements Panel {
     private Furniture selectedFurniture = null;
 
     public void setFurniture(List<Furniture> furniture) {
-        this.furniture = furniture;
-        this.selectedFurniture = null; // reset selection on location change
+        if (!furniture.equals(this.furniture)) {
+            this.furniture = furniture;
+            this.selectedFurniture = null; // only reset on location change
+        }
     }
 
     public void selectFurniture(Furniture f) {

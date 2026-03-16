@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import models.furnitureactions.Furniture;
 
 public class House extends Location {
+    //add 3 max furnitures only.
 
     private int houseTier;
     private double houseRate;

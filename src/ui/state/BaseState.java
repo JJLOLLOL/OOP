@@ -11,9 +11,7 @@ public abstract class BaseState<T> implements State<T> {
 
     @Override
     public void render(GameEngine engine) {
-        if (!dirty) {
-            return;
-        }
+        if (!dirty) return;
         getScreen().render();
         getScreen().parkCursor();
         dirty = false;

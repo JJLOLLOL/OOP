@@ -22,11 +22,11 @@ public class ScreenLayout {
     private String errorMessage = null;
 
     public enum InputMode {
-        CREATESIM, // asking how many sims to create
-        REQUEST, // asking for a field value
-        CONFIRM, // y/n confirmation
-        SELECT, // all sims filled — type a number or C to confirm
-        ACTION      // choose an action from a numbered list
+        CREATESIM,
+        REQUEST,
+        CONFIRM,
+        SELECT,
+        ACTION
     }
 
     public ScreenLayout(FrameType frameType) {
@@ -35,8 +35,7 @@ public class ScreenLayout {
 
     public void setPanel(Region region, Panel panel) {
         if (!frameType.supports(region)) {
-            throw new IllegalArgumentException(
-                    "Region " + region + " not supported by " + frameType);
+            throw new IllegalArgumentException("Region " + region + " not supported by " + frameType);
         }
         panels.put(region, panel);
     }

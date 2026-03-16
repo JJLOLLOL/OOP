@@ -46,20 +46,8 @@ public class MainState extends BaseState<String> {
     @Override
     public void update(GameEngine engine, double deltaTime) {
 
-        SimCharacter player = engine.getActivePlayer();
-        Location loc = player.getLocation();
-        List<NPCCharacter> npcsHere = WorldRegistry.getInstance().getAllNPCs().stream()
-                .filter(npc -> npc.getLocation().equals(loc))
-                .collect(Collectors.toList());
-
-        screen.getAttributePanel().setCharacter(
-                player.getName(), player.getAge(),
-                player.getMoney(), player.getNeeds());
-        screen.getNpcPanel().setNPCs(
-                loc.getLocationName(), npcsHere,
-                player, engine.getRelationshipManager());
-        interactPanel.setFurniture(loc.getFurniture());
-        socialisePanel.setNPCs(npcsHere);
+        // Always refresh panel data first so the first render is never stale
+        refreshPanels(engine);
 
         if (!initialized) {
             transition(currentStep);
@@ -68,14 +56,43 @@ public class MainState extends BaseState<String> {
         }
 
         String input = engine.pollInput();
-        if (input == null) {
-            return;
+        if (input != null) {
+            dirty = true;
+            handleInput(input.trim(), engine);
+            // Refresh again after input so location changes show immediately
+            refreshPanels(engine);
         }
-
-        dirty = true;
-        handleInput(input.trim(), engine);
     }
+
+    private void refreshPanels(GameEngine engine) {
+        SimCharacter player = engine.getActivePlayer();
+        Location loc = player.getLocation();
+
+        List<NPCCharacter> npcsHere = WorldRegistry.getInstance().getAllNPCs().stream()
+                .filter(npc -> npc.getLocation().equals(loc))
+                .collect(Collectors.toList());
+
+        List<SimCharacter> simsHere = engine.getSims().stream()
+                .filter(s -> !s.equals(player) && s.getLocation().equals(loc))
+                .collect(Collectors.toList());
+
+        screen.getAttributePanel().setCharacter(
+                player.getName(), player.getAge(),
+                player.getMoney(), player.getNeeds(),
+                engine.getGameClock().getTimeString());
+
+        screen.getNearbyPanel().setNearby(
+                loc.getLocationName(), simsHere, npcsHere,
+                player, engine.getRelationshipManager());
+                
+        screen.getPanelBL().setNotifications(player.getNotifications());
+
+        interactPanel.setFurniture(loc.getFurniture());
+        socialisePanel.setNPCs(npcsHere);
+    }
+
     private void transition(Step next) {
+        dirty = true;
         currentStep = next;
         screen.setActionPanel(switch (next) {
             case MAIN ->
@@ -93,6 +110,7 @@ public class MainState extends BaseState<String> {
     public void handleInput(String input, GameEngine engine) {
         SimCharacter player = engine.getActivePlayer();
         Location loc = player.getLocation();
+
         List<NPCCharacter> npcsHere = WorldRegistry.getInstance().getAllNPCs().stream()
                 .filter(npc -> npc.getLocation().equals(loc))
                 .toList();
@@ -120,7 +138,7 @@ public class MainState extends BaseState<String> {
                         if (idx >= 0 && idx < furniture.size()) {
                             selectedFurniture = furniture.get(idx);
                             interactPanel.selectFurniture(selectedFurniture);
-                            currentStep = Step.INTERACTABLES_ACTION;
+                            transition(Step.INTERACTABLES_ACTION);
                         }
                     } catch (NumberFormatException ignored) {
                     }
@@ -129,7 +147,7 @@ public class MainState extends BaseState<String> {
             case INTERACTABLES_ACTION -> {
                 if (input.equals("0")) {
                     interactPanel.clearSelection();
-                    currentStep = Step.INTERACTABLES;
+                    transition(Step.INTERACTABLES);
                 } else {
                     List<String> actions = selectedFurniture.getActionNames();
                     try {
@@ -153,7 +171,7 @@ public class MainState extends BaseState<String> {
                         if (idx >= 0 && idx < npcsHere.size()) {
                             selectedNPC = npcsHere.get(idx);
                             socialisePanel.selectNPC(selectedNPC);
-                            currentStep = Step.SOCIALISE_ACTION;
+                            transition(Step.SOCIALISE_ACTION);
                         }
                     } catch (NumberFormatException ignored) {
                     }
@@ -163,7 +181,7 @@ public class MainState extends BaseState<String> {
                 if (input.equals("0")) {
                     socialisePanel.clearSelection();
                     selectedNPC = null;
-                    currentStep = Step.SOCIALISE;
+                    transition(Step.SOCIALISE);
                 } else {
                     InteractionType[] types = InteractionType.values();
                     try {
