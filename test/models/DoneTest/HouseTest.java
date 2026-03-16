@@ -3,59 +3,57 @@ package models.DoneTest;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import models.Location;
 import models.House;
-import models.Activity;
+import models.furnitureactions.Furniture;
 import models.NPCCharacter;
 
 import java.util.ArrayList;
 
 public class HouseTest {
 
-  @Test
-  public void testUpgradedHouseConstructor() {
+    @Test
+    public void testUpgradedHouseConstructor() {
 
-    ArrayList<Activity> activities = new ArrayList<>();
-    ArrayList<NPCCharacter> npcs = new ArrayList<>();
+        ArrayList<Furniture> furnitures = new ArrayList<>();
 
-    House house = new House("Luxury Villa", activities, 500000, 2.5, 5);
+        House house = new House("Luxury Villa", furnitures, 500000, 2.5, 5);
 
-    assertEquals("Luxury Villa", house.getLocationName());
-    assertEquals(500000, house.getHousePrice(), 0.001);
-    assertEquals(2.5, house.getHouseRate(), 0.001);
-    assertEquals(5, house.getHouseTier());
-    assertFalse(house.isIsOwned());
-  }
+        assertEquals("Luxury Villa", house.getLocationName());
+        assertEquals(500000, house.getHousePrice(), 0.001);
+        assertEquals(2.5, house.getHouseRate(), 0.001);
+        assertEquals(5, house.getHouseTier());
+        assertFalse(house.isOwned());
+    }
 
-  @Test
-  public void testNewHouseConstructorDefaults() {
+    @Test
+    public void testStarterHouseConstructorDefaults() {
 
-    House house = new House("Starter House", new ArrayList<>());
+        House house = new House("Starter House", new ArrayList<>());
 
-    assertEquals("Starter House", house.getLocationName());
-    assertEquals(0, house.getHousePrice(), 0.001);
-    assertEquals(1, house.getHouseRate(), 0.001);
-    assertEquals(1, house.getHouseTier());
-    assertTrue(house.isIsOwned());
-  }
+        assertEquals("Starter House", house.getLocationName());
+        assertEquals(0, house.getHousePrice(), 0.001);
+        assertEquals(1, house.getHouseRate(), 0.001);
+        assertEquals(1, house.getHouseTier());
+        assertTrue(house.isOwned());
+    }
 
-  @Test
-  public void testSetIsOwned() {
+    @Test
+    public void testUpgradeHouse() {
 
-    House house = new House("Upgrade House", new ArrayList<>(), 200000, 1.5, 3);
+        House tier1 = new House("Starter House", new ArrayList<>());
+        House tier2 = new House("Family House", new ArrayList<>(), 200000, 1.5, 2);
 
-    house.setIsOwned(true);
+        tier1.upgradeHouse(tier2);
 
-    assertTrue(house.isIsOwned());
-  }
+        assertFalse(tier1.isOwned());
+        assertTrue(tier2.isOwned());
+    }
 
+    @Test
+    public void testHouseTierGetter() {
 
+        House house = new House("Penthouse", new ArrayList<>(), 1000000, 3.0, 6);
 
-  @Test
-  public void testHouseTierGetter() {
-
-    House house = new House("Penthouse", new ArrayList<>(), 1000000, 3.0, 6);
-
-    assertEquals(6, house.getHouseTier());
-  }
+        assertEquals(6, house.getHouseTier());
+    }
 }

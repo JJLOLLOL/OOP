@@ -4,57 +4,70 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import models.Location;
-import models.Activity;
 import models.NPCCharacter;
+import models.furnitureactions.Furniture;
 
 import java.util.ArrayList;
 
 public class LocationTest {
 
-  @Test
-  public void testConstructorInitialization() {
+    @Test
+    public void testConstructorInitialization() {
 
-    ArrayList<Activity> activities = new ArrayList<>();
-    ArrayList<NPCCharacter> npcs = new ArrayList<>();
+        ArrayList<Furniture> furnitures = new ArrayList<>();
 
-    Location location = new Location("Park", activities);
-    System.out.println(location.getLocationName());
-    assertEquals("Park", location.getLocationName());
-    assertEquals(activities, location.getActivities());
-  }
+        Location location = new Location("Park", furnitures);
 
+        assertEquals("Park", location.getLocationName());
+        assertEquals(furnitures, location.getFurnitures());
+    }
 
-  @Test
-  public void testSetActivities() {
+    @Test
+    public void testSetNPCs() {
 
-    Location location = new Location("Mall", new ArrayList<>());
+        Location location = new Location("Gym", new ArrayList<>());
 
-    ArrayList<Activity> newActivities = new ArrayList<>();
-    location.setActivities(newActivities);
+        ArrayList<NPCCharacter> npcList = new ArrayList<>();
+        location.setNpcs(npcList);
 
-    assertEquals(newActivities, location.getActivities());
-  }
+        assertEquals(npcList, location.getNpcs());
+    }
 
-  @Test
-  public void testSetNPCs() {
+    @Test
+    public void testAddNpcCharacter() {
 
-    Location location = new Location("Gym", new ArrayList<>());
+        Location location = new Location("Cafe", new ArrayList<>());
 
-    ArrayList<NPCCharacter> npcList = new ArrayList<>();
-    location.setNpcs(npcList);
+        NPCCharacter npc = new NPCCharacter("John", 30, "Male", new ArrayList<>());
 
-    assertEquals(npcList, location.getNpcs());
-  }
+        location.addNpcCharacter(npc);
 
-  @Test
-  public void testActivitiesListModification() {
+        assertEquals(1, location.getNpcs().size());
+        assertTrue(location.getNpcs().contains(npc));
+    }
 
-    ArrayList<Activity> activities = new ArrayList<>();
-    Location location = new Location("Beach", activities);
+    @Test
+    public void testRemoveNpcCharacter() {
 
-    activities.add(null); 
+        Location location = new Location("Library", new ArrayList<>());
 
-    assertEquals(1, location.getActivities().size());
-  }
+        NPCCharacter npc = new NPCCharacter("Emily", 25, "Female", new ArrayList<>());
 
+        location.addNpcCharacter(npc);
+        location.removeNpcCharacter(npc);
+
+        assertEquals(0, location.getNpcs().size());
+    }
+
+    @Test
+    public void testFurnitureListModification() {
+
+        ArrayList<Furniture> furnitures = new ArrayList<>();
+
+        Location location = new Location("Beach", furnitures);
+
+        furnitures.add(null);
+
+        assertEquals(1, location.getFurnitures().size());
+    }
 }
