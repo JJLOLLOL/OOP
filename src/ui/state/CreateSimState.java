@@ -4,8 +4,6 @@ import core.GameEngine;
 import core.WorldRegistry;
 import java.util.ArrayList;
 import java.util.List;
-import models.Career;
-import models.CareerList;
 import models.Location;
 import models.SimCharacter;
 import ui.layout.ScreenLayout;
@@ -233,10 +231,9 @@ public class CreateSimState extends BaseState<List<String[]>> {
     @Override
     public void handleInput(List<String[]> sims, GameEngine engine) {
         Location home = WorldRegistry.getInstance().getLocation("Home");
-        Career jobless = new Career(CareerList.JOBLESS);
 
         for (String[] data : sims) {
-            SimCharacter sim = new SimCharacter(data[0], Integer.parseInt(data[1]), data[2], home, jobless);
+            SimCharacter sim = new SimCharacter(data[0], Integer.parseInt(data[1]), data[2], home);
             engine.getRelationshipManager().registerNewSim(
                     sim, engine.getSims(), WorldRegistry.getInstance().getAllNPCs());
             engine.getSims().add(sim);
