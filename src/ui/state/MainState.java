@@ -14,6 +14,7 @@ import ui.panel.ActionPanel;
 import ui.panel.InteractablesPanel;
 import ui.panel.LocationPanel;
 import ui.panel.SocialisePanel;
+import ui.panel.SwitchCharacterPanel;
 import ui.screen.MainScreen;
 import ui.screen.Screen;
 
@@ -26,17 +27,19 @@ public class MainState extends BaseState<String> {
         MAIN,
         INTERACTABLES, INTERACTABLES_ACTION,
         SOCIALISE, SOCIALISE_ACTION,
-        CHANGE_LOCATION
+        CHANGE_LOCATION,
+        SWITCH_CHARACTER
     }
 
     private Step currentStep = Step.MAIN;
     private Furniture selectedFurniture = null;
-    private NPCCharacter selectedNPC = null;
+    private models.Character selectedCharacter = null;
 
     private final ActionPanel actionPanel = new ActionPanel();
     private final InteractablesPanel interactPanel = new InteractablesPanel();
     private final SocialisePanel socialisePanel = new SocialisePanel();
     private final LocationPanel locationPanel = new LocationPanel();
+    private final SwitchCharacterPanel switchCharacterPanel = new SwitchCharacterPanel();
 
     @Override
     protected Screen getScreen() {
@@ -88,7 +91,13 @@ public class MainState extends BaseState<String> {
         screen.getPanelBL().setNotifications(player.getNotifications());
 
         interactPanel.setFurniture(loc.getFurnitures());
-        socialisePanel.setNPCs(npcsHere);
+        
+        List<models.Character> charsHere = new ArrayList<>();
+        charsHere.addAll(simsHere);
+        charsHere.addAll(npcsHere);
+        socialisePanel.setCharacters(charsHere);
+        
+        switchCharacterPanel.setSims(engine.getSims(), player);
     }
 
     private void transition(Step next) {
@@ -103,6 +112,8 @@ public class MainState extends BaseState<String> {
                 socialisePanel;
             case CHANGE_LOCATION ->
                 locationPanel;
+            case SWITCH_CHARACTER ->
+                switchCharacterPanel;
         });
     }
 
@@ -125,6 +136,8 @@ public class MainState extends BaseState<String> {
                     case "3" ->
                         transition(Step.CHANGE_LOCATION);
                     case "4" ->
+                        transition(Step.SWITCH_CHARACTER);
+                    case "5" ->
                         engine.end();
                 }
             }
@@ -166,11 +179,16 @@ public class MainState extends BaseState<String> {
                 if (input.equals("0")) {
                     transition(Step.MAIN);
                 } else {
+                    List<models.Character> charsHere = new ArrayList<>();
+                    charsHere.addAll(engine.getSims().stream()
+                            .filter(s -> !s.equals(player) && s.getLocation().equals(loc))
+                            .toList());
+                    charsHere.addAll(npcsHere);
                     try {
                         int idx = Integer.parseInt(input) - 1;
-                        if (idx >= 0 && idx < npcsHere.size()) {
-                            selectedNPC = npcsHere.get(idx);
-                            socialisePanel.selectNPC(selectedNPC);
+                        if (idx >= 0 && idx < charsHere.size()) {
+                            selectedCharacter = charsHere.get(idx);
+                            socialisePanel.selectCharacter(selectedCharacter);
                             transition(Step.SOCIALISE_ACTION);
                         }
                     } catch (NumberFormatException ignored) {
@@ -180,7 +198,7 @@ public class MainState extends BaseState<String> {
             case SOCIALISE_ACTION -> {
                 if (input.equals("0")) {
                     socialisePanel.clearSelection();
-                    selectedNPC = null;
+                    selectedCharacter = null;
                     transition(Step.SOCIALISE);
                 } else {
                     InteractionType[] types = InteractionType.values();
@@ -188,9 +206,9 @@ public class MainState extends BaseState<String> {
                         int idx = Integer.parseInt(input) - 1;
                         if (idx >= 0 && idx < types.length) {
                             engine.getRelationshipManager()
-                                    .interact(player, selectedNPC, types[idx]);
+                                    .interact(player, selectedCharacter, types[idx]);
                             socialisePanel.clearSelection();
-                            selectedNPC = null;
+                            selectedCharacter = null;
                             transition(Step.MAIN);
                         }
                     } catch (NumberFormatException ignored) {
@@ -207,6 +225,21 @@ public class MainState extends BaseState<String> {
                         int idx = Integer.parseInt(input) - 1;
                         if (idx >= 0 && idx < locations.size()) {
                             player.setLocation(locations.get(idx));
+                            transition(Step.MAIN);
+                        }
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
+            }
+            case SWITCH_CHARACTER -> {
+                if (input.equals("0")) {
+                    transition(Step.MAIN);
+                } else {
+                    List<SimCharacter> sims = engine.getSims();
+                    try {
+                        int idx = Integer.parseInt(input) - 1;
+                        if (idx >= 0 && idx < sims.size()) {
+                            engine.setActivePlayer(sims.get(idx));
                             transition(Step.MAIN);
                         }
                     } catch (NumberFormatException ignored) {
