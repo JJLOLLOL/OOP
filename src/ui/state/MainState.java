@@ -46,6 +46,25 @@ public class MainState extends BaseState<String> {
     @Override
     public void update(GameEngine engine, double deltaTime) {
 
+        // Always refresh panel data first so the first render is never stale
+        refreshPanels(engine);
+
+        if (!initialized) {
+            transition(currentStep);
+            dirty = true;
+            initialized = true;
+        }
+
+        String input = engine.pollInput();
+        if (input != null) {
+            dirty = true;
+            handleInput(input.trim(), engine);
+            // Refresh again after input so location changes show immediately
+            refreshPanels(engine);
+        }
+    }
+
+    private void refreshPanels(GameEngine engine) {
         SimCharacter player = engine.getActivePlayer();
         Location loc = player.getLocation();
 
@@ -53,7 +72,6 @@ public class MainState extends BaseState<String> {
                 .filter(npc -> npc.getLocation().equals(loc))
                 .collect(Collectors.toList());
 
-        // other player-created sims at the same location (exclude active player)
         List<SimCharacter> simsHere = engine.getSims().stream()
                 .filter(s -> !s.equals(player) && s.getLocation().equals(loc))
                 .collect(Collectors.toList());
@@ -68,27 +86,20 @@ public class MainState extends BaseState<String> {
 
         interactPanel.setFurniture(loc.getFurniture());
         socialisePanel.setNPCs(npcsHere);
-
-        if (!initialized) {
-            transition(currentStep);
-            dirty = true;
-            initialized = true;
-        }
-
-        String input = engine.pollInput();
-        if (input == null) return;
-
-        dirty = true;
-        handleInput(input.trim(), engine);
     }
 
     private void transition(Step next) {
+        dirty = true;
         currentStep = next;
         screen.setActionPanel(switch (next) {
-            case MAIN -> actionPanel;
-            case INTERACTABLES, INTERACTABLES_ACTION -> interactPanel;
-            case SOCIALISE, SOCIALISE_ACTION -> socialisePanel;
-            case CHANGE_LOCATION -> locationPanel;
+            case MAIN ->
+                actionPanel;
+            case INTERACTABLES, INTERACTABLES_ACTION ->
+                interactPanel;
+            case SOCIALISE, SOCIALISE_ACTION ->
+                socialisePanel;
+            case CHANGE_LOCATION ->
+                locationPanel;
         });
     }
 
@@ -124,7 +135,7 @@ public class MainState extends BaseState<String> {
                         if (idx >= 0 && idx < furniture.size()) {
                             selectedFurniture = furniture.get(idx);
                             interactPanel.selectFurniture(selectedFurniture);
-                            currentStep = Step.INTERACTABLES_ACTION;
+                            transition(Step.INTERACTABLES_ACTION);
                         }
                     } catch (NumberFormatException ignored) {
                     }
@@ -133,7 +144,7 @@ public class MainState extends BaseState<String> {
             case INTERACTABLES_ACTION -> {
                 if (input.equals("0")) {
                     interactPanel.clearSelection();
-                    currentStep = Step.INTERACTABLES;
+                    transition(Step.INTERACTABLES);
                 } else {
                     List<String> actions = selectedFurniture.getActionNames();
                     try {
@@ -157,7 +168,7 @@ public class MainState extends BaseState<String> {
                         if (idx >= 0 && idx < npcsHere.size()) {
                             selectedNPC = npcsHere.get(idx);
                             socialisePanel.selectNPC(selectedNPC);
-                            currentStep = Step.SOCIALISE_ACTION;
+                            transition(Step.SOCIALISE_ACTION);
                         }
                     } catch (NumberFormatException ignored) {
                     }
@@ -167,7 +178,7 @@ public class MainState extends BaseState<String> {
                 if (input.equals("0")) {
                     socialisePanel.clearSelection();
                     selectedNPC = null;
-                    currentStep = Step.SOCIALISE;
+                    transition(Step.SOCIALISE);
                 } else {
                     InteractionType[] types = InteractionType.values();
                     try {
