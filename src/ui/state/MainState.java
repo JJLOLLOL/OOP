@@ -208,8 +208,10 @@ public class MainState extends BaseState<String> {
                     try {
                         int idx = Integer.parseInt(input) - 1;
                         if (idx >= 0 && idx < types.length) {
+                            InteractionType selectedType = types[idx];
                             engine.getRelationshipManager()
-                                    .interact(player, selectedCharacter, types[idx]);
+                                .interact(player, selectedCharacter, selectedType);
+                            player.adjustNeed("Social", selectedType.getValue());
                             socialisePanel.clearSelection();
                             selectedCharacter = null;
                             transition(Step.MAIN);
