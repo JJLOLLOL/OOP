@@ -87,7 +87,7 @@ public class MainState extends BaseState<String> {
                 
         screen.getPanelBL().setNotifications(player.getNotifications());
 
-        interactPanel.setFurniture(loc.getFurniture());
+        interactPanel.setFurniture(loc.getFurnitures());
         socialisePanel.setNPCs(npcsHere);
     }
 
@@ -132,7 +132,7 @@ public class MainState extends BaseState<String> {
                 if (input.equals("0")) {
                     transition(Step.MAIN);
                 } else {
-                    List<Furniture> furniture = loc.getFurniture();
+                    List<Furniture> furniture = loc.getFurnitures();
                     try {
                         int idx = Integer.parseInt(input) - 1;
                         if (idx >= 0 && idx < furniture.size()) {
