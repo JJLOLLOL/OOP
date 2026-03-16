@@ -1,6 +1,8 @@
-package ui.screens;
+package ui.screen;
 
 public interface Screen {
 
     void render();
+
+    void parkCursor();
 }

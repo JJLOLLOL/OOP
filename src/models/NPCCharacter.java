@@ -2,21 +2,33 @@ package models;
 
 import java.util.ArrayList;
 import java.util.Map;
-import models.furnitureactions.Activity;
 import java.util.TreeMap;
 
 public class NPCCharacter extends Character {
     private TreeMap<Integer, Location> schedule;
+    private String description;
 
     // Constructor 1: Game auto-generates schedule from locations
     public NPCCharacter(String name, int age, String gender, ArrayList<Location> locations) {
+        this(name, age, gender, "", locations);
+    }
+
+    // Constructor 1 with description
+    public NPCCharacter(String name, int age, String gender, String description, ArrayList<Location> locations) {
         super(name, age, gender, locations.get(0)); // first location = default
+        this.description = description;
         this.schedule = generateSchedule(locations);
     }
 
     // Constructor 2: Player provides schedule directly
     public NPCCharacter(String name, int age, String gender, TreeMap<Integer, Location> schedule) {
+        this(name, age, gender, "", schedule);
+    }
+
+    // Constructor 2 with description
+    public NPCCharacter(String name, int age, String gender, String description, TreeMap<Integer, Location> schedule) {
         super(name, age, gender, schedule.firstEntry().getValue()); // first location = default
+        this.description = description;
         this.schedule = schedule;
     }
 
@@ -51,5 +63,13 @@ public class NPCCharacter extends Character {
 
     public void setSchedule(TreeMap<Integer, Location> schedule) {
         this.schedule = schedule;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
