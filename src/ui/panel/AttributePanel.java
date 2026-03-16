@@ -12,14 +12,16 @@ public class AttributePanel implements Panel {
     private int age;
     private double money;
     private Map<String, Need> needs;
+    private String timeString = "";
 
     private static final int BAR_WIDTH = 10;
 
-    public void setCharacter(String name, int age, double money, Map<String, Need> needs) {
+    public void setCharacter(String name, int age, double money, Map<String, Need> needs, String timeString) {
         this.name = name;
         this.age = age;
         this.money = money;
         this.needs = needs;
+        this.timeString = timeString;
     }
 
     @Override
@@ -30,7 +32,7 @@ public class AttributePanel implements Panel {
             lines.add("Loading...");
             return lines;
         }
-        lines.add(Color.CYAN + name + " | Age " + age + Color.RESET);
+        lines.add(Color.CYAN + name + " | Age " + age + " | " + timeString + Color.RESET);
         lines.add("─".repeat(40));
         lines.add("");
 

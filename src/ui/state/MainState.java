@@ -78,7 +78,8 @@ public class MainState extends BaseState<String> {
 
         screen.getAttributePanel().setCharacter(
                 player.getName(), player.getAge(),
-                player.getMoney(), player.getNeeds());
+                player.getMoney(), player.getNeeds(),
+                engine.getGameClock().getTimeString());
 
         screen.getNearbyPanel().setNearby(
                 loc.getLocationName(), simsHere, npcsHere,
