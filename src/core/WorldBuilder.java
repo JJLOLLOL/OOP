@@ -94,21 +94,21 @@ public class WorldBuilder {
         // --- add schedule 2100 at park
         // --- add the NPC Character
         TreeMap<Integer, Location> johnSchedule = new TreeMap<>();
-        johnSchedule.put(900, home);
+        johnSchedule.put(900, park);
         johnSchedule.put(1500, gym);
-        johnSchedule.put(2100, park);
+        johnSchedule.put(2100, cafe);
         npcs.add(new NPCCharacter("Nicholas", 30, "Male", "A friendly local.", johnSchedule));
 
         TreeMap<Integer, Location> emilySchedule = new TreeMap<>();
-        emilySchedule.put(800, home);
+        emilySchedule.put(800, library);
         emilySchedule.put(1200, cafe);
-        emilySchedule.put(1800, library);
+        emilySchedule.put(1800, gym);
         npcs.add(new NPCCharacter("Jia Jing", 25, "Female", "A busy student.", emilySchedule));
 
         TreeMap<Integer, Location> davidSchedule = new TreeMap<>();
         davidSchedule.put(600, gym);
         davidSchedule.put(1400, library);
-        davidSchedule.put(2200, home);
+        davidSchedule.put(2200, park);
         npcs.add(new NPCCharacter("Mahesha", 40, "Male", "A frequent gym-goer.", davidSchedule));
 
         return npcs;

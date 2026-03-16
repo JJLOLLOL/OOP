@@ -3,16 +3,20 @@ package ui.screen;
 import ui.layout.FrameType;
 import ui.layout.Region;
 import ui.layout.ScreenLayout;
-import ui.panel.CreateSimPanel;
+import ui.panel.CreateSimActionPanel;
+import ui.panel.CreateSimListPanel;
 
 public class CreateSimScreen implements Screen {
 
     private static final String TITLE = "CREATE SIM";
-    private final ScreenLayout layout = new ScreenLayout(FrameType.SINGLE);
-    private final CreateSimPanel panel = new CreateSimPanel();
+    private final ScreenLayout layout = new ScreenLayout(FrameType.DOUBLE_HORIZONTAL);
+    private final CreateSimListPanel listPanel = new CreateSimListPanel();
+    private final CreateSimActionPanel actionPanel = new CreateSimActionPanel();
 
     public CreateSimScreen() {
-        layout.setPanel(Region.MAIN, panel);
+        layout.setPanel(Region.LEFT, listPanel);
+        layout.setPanel(Region.RIGHT, actionPanel);
+        layout.setInputMode(ScreenLayout.InputMode.CREATESIM);
     }
 
     @Override
@@ -24,8 +28,12 @@ public class CreateSimScreen implements Screen {
         return layout;
     }
 
-    public CreateSimPanel getPanel() {
-        return panel;
+    public CreateSimListPanel getListPanel() {
+        return listPanel;
+    }
+
+    public CreateSimActionPanel getActionPanel() {
+        return actionPanel;
     }
 
     @Override

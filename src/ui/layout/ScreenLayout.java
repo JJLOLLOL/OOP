@@ -22,9 +22,11 @@ public class ScreenLayout {
     private String errorMessage = null;
 
     public enum InputMode {
-        REQUEST,
-        CONFIRM,
-        ACTION
+        CREATESIM, // asking how many sims to create
+        REQUEST, // asking for a field value
+        CONFIRM, // y/n confirmation
+        SELECT, // all sims filled — type a number or C to confirm
+        ACTION      // choose an action from a numbered list
     }
 
     public ScreenLayout(FrameType frameType) {
@@ -140,10 +142,14 @@ public class ScreenLayout {
 
         String label;
         if (error != null) {
-            label = "Error: " + error; 
-        }else if (mode == InputMode.CONFIRM) {
-            label = "Confirm? (y/n)"; 
-        }else if (mode == InputMode.REQUEST) {
+            label = "Error: " + error;
+        } else if (mode == InputMode.CREATESIM) {
+            label = "How many SIMs do you want to create?";
+        } else if (mode == InputMode.CONFIRM) {
+            label = "Confirm? (y/n)";
+        } else if (mode == InputMode.SELECT) {
+            label = "Enter sim number to manage, or C to confirm all";
+        } else if (mode == InputMode.REQUEST) {
             label = "Input the following field";
         } else {
             label = "Select your action";
@@ -153,7 +159,7 @@ public class ScreenLayout {
         put(footerTop + 2, "│ > " + pad("", FRAME_WIDTH - 4) + " │");
         put(footerTop + 3, "└" + "─".repeat(FRAME_WIDTH) + "┘");
 
-        inputRow = footerTop + 2; // blank line where the user types
+        inputRow = footerTop + 2;
     }
 
     private void put(int row, String text) {
@@ -183,10 +189,11 @@ public class ScreenLayout {
     }
 
     private void clearBelowFrame() {
-        int frameBottom = TOP_ROW + 3 + CONTENT_ROWS + 4; // last row of frame
+        int frameBottom = TOP_ROW + 3 + CONTENT_ROWS + 4;
         ConsoleUI.moveCursor(frameBottom + 1, 1);
-        ConsoleUI.print("\033[J"); // erase from cursor to end of screen
+        ConsoleUI.print("\033[J");
     }
+
     public void parkCursor() {
         ConsoleUI.moveCursor(inputRow, getInputCol());
         ConsoleUI.flush();
