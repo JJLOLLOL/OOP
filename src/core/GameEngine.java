@@ -93,7 +93,9 @@ public class GameEngine {
                 double deltaTime = 1.0 / UPDATES_PER_SECOND;
                 gameClock.tick(deltaTime);
                 if (activePlayer != null) {
-                    activePlayer.updateNeed(deltaTime);
+                    // Scale deltaTime so decay rates (e.g., 2.0) apply per real minute instead of per real second
+                    // This gives the player plenty of time to explore without constant need interruptions
+                    activePlayer.updateNeed(deltaTime / 60.0);
                 }
                 
                 activeState.update(this, deltaTime);

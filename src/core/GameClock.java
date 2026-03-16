@@ -13,7 +13,7 @@ public class GameClock {
         this.hours = 8;
         this.minutes = 0;
         this.accumulator = 0.0;
-        this.realSecondsPerGameMinute = 1.0; // 1 real second = 1 game minute
+        this.realSecondsPerGameMinute = 2.0; // 2 real seconds = 1 game minute (1 game hour = 2 real minutes)
     }
 
     public void tick(double deltaTime) {
