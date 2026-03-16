@@ -2,7 +2,6 @@ package ui.state;
 
 import Types.InteractionType;
 import core.GameEngine;
-import core.InputQueue;
 import core.WorldRegistry;
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +67,7 @@ public class MainState extends BaseState<String> {
             initialized = true;
         }
 
-        String input = InputQueue.poll();
+        String input = engine.pollInput();
         if (input == null) {
             return;
         }
