@@ -9,6 +9,8 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 import models.AchievementType;
+import models.CareerList;
+import models.CareerRank;
 import models.Character;
 import models.SimCharacter;
 
@@ -48,11 +50,70 @@ public class AchievementService {
 
     public List<AchievementType> evaluateCareerAchievements(SimCharacter sim) {
         List<AchievementType> newlyUnlocked = new ArrayList<>();
-        // Caller should invoke this only when the Sim has just obtained a non-jobless career.
-        if (sim != null && sim.unlockAchievement(AchievementType.FIRST_JOB)) {
+        if (sim == null) {
+            return newlyUnlocked;
+        }
+
+        CareerList careerType = resolveCareerType(sim);
+
+        if (careerType == null || careerType == CareerList.JOBLESS) {
+            return newlyUnlocked;
+        }
+
+        if (isFirstJob(sim, careerType) && sim.unlockAchievement(AchievementType.FIRST_JOB)) {
             newlyUnlocked.add(AchievementType.FIRST_JOB);
         }
+
+        AchievementType careerAchievement = getCareerTypeAchievement(careerType);
+        if (careerAchievement != null && sim.unlockAchievement(careerAchievement)) {
+            newlyUnlocked.add(careerAchievement);
+        }
+
+        int rank = resolveCareerRank(sim);
+        if (rank >= 2 && sim.unlockAchievement(AchievementType.FIRST_PROMOTION)) {
+            newlyUnlocked.add(AchievementType.FIRST_PROMOTION);
+        }
+        if (rank >= 4 && sim.unlockAchievement(AchievementType.SENIOR_STAFF)) {
+            newlyUnlocked.add(AchievementType.SENIOR_STAFF);
+        }
+        if (rank >= 7 && sim.unlockAchievement(AchievementType.CORPORATE_EXECUTIVE)) {
+            newlyUnlocked.add(AchievementType.CORPORATE_EXECUTIVE);
+        }
         return newlyUnlocked;
+    }
+
+    private boolean isFirstJob(SimCharacter sim, CareerList careerType) {
+        return careerType != CareerList.JOBLESS && !sim.hasAchievement(AchievementType.FIRST_JOB);
+    }
+
+    private CareerList resolveCareerType(SimCharacter sim) {
+        String careerInfo = sim.displayCareer();
+        if (careerInfo == null || careerInfo.isBlank()) {
+            return null;
+        }
+
+        for (CareerList career : CareerList.values()) {
+            String titleLine = "Title:         " + career.getTitle();
+            if (careerInfo.contains(titleLine)) {
+                return career;
+            }
+        }
+        return null;
+    }
+
+    private int resolveCareerRank(SimCharacter sim) {
+        String careerInfo = sim.displayCareer();
+        if (careerInfo == null || careerInfo.isBlank()) {
+            return 0;
+        }
+
+        for (int rank = 1; rank <= CareerRank.RANK.length; rank++) {
+            String rankLine = "Rank:          " + CareerRank.getTitle(rank);
+            if (careerInfo.contains(rankLine)) {
+                return rank;
+            }
+        }
+        return 0;
     }
 
     public List<AchievementType> evaluateSocialAchievements(
@@ -129,6 +190,29 @@ public class AchievementService {
                 return AchievementType.FIRST_WRITING;
             case "painting":
                 return AchievementType.FIRST_PAINTING;
+            default:
+                return null;
+        }
+    }
+
+    private AchievementType getCareerTypeAchievement(CareerList careerType) {
+        switch (careerType) {
+            case SOFTWARE_DEVELOPER:
+            case ENGINEER:
+                return AchievementType.TECH_TRAILBLAZER;
+            case DOCTOR:
+                return AchievementType.HEALING_HANDS;
+            case TEACHER:
+            case POLICE_OFFICER:
+                return AchievementType.PUBLIC_SERVICE;
+            case LAWYER:
+            case ACCOUNTANT:
+            case BUSINESS_MANAGER:
+                return AchievementType.BUSINESS_MINDED;
+            case ARTIST:
+            case MUSICIAN:
+            case WRITER:
+                return AchievementType.CREATIVE_SOUL;
             default:
                 return null;
         }
