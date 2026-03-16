@@ -76,9 +76,7 @@ public class MainState extends BaseState<String> {
         }
 
         String input = engine.pollInput();
-        if (input == null) {
-            return;
-        }
+        if (input == null) return;
 
         dirty = true;
         handleInput(input.trim(), engine);
@@ -87,14 +85,10 @@ public class MainState extends BaseState<String> {
     private void transition(Step next) {
         currentStep = next;
         screen.setActionPanel(switch (next) {
-            case MAIN ->
-                actionPanel;
-            case INTERACTABLES, INTERACTABLES_ACTION ->
-                interactPanel;
-            case SOCIALISE, SOCIALISE_ACTION ->
-                socialisePanel;
-            case CHANGE_LOCATION ->
-                locationPanel;
+            case MAIN -> actionPanel;
+            case INTERACTABLES, INTERACTABLES_ACTION -> interactPanel;
+            case SOCIALISE, SOCIALISE_ACTION -> socialisePanel;
+            case CHANGE_LOCATION -> locationPanel;
         });
     }
 
