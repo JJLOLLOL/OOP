@@ -166,7 +166,10 @@ public class MainState extends BaseState<String> {
                     try {
                         int idx = Integer.parseInt(input) - 1;
                         if (idx >= 0 && idx < actions.size()) {
-                            selectedFurniture.performAction(actions.get(idx), player);
+                            boolean performed = selectedFurniture.performAction(actions.get(idx), player);
+                            if (!performed) {
+                                player.addNotification("Action failed: not enough money or needs.");
+                            }
                             interactPanel.clearSelection();
                             selectedFurniture = null;
                             transition(Step.MAIN);
