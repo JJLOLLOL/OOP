@@ -2,10 +2,10 @@ package models;
 
 public class CareerRank {
   public static final Object[][] RANK = {
-    {"Intern", 1.0},
-    {"Junior Employee", 1.25},
-    {"Employee", 1.5},
-    {"Senior Employee", 1.8},
+    {"Intern", 0.5},
+    {"Junior Employee", 1.0},
+    {"Employee", 1.25},
+    {"Senior Employee", 1.7},
     {"Manager", 2.2},
     {"Director", 2.8},
     {"Executive", 3.5}

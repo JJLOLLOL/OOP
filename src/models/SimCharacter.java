@@ -1,8 +1,10 @@
 package models;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import models.furnitureactions.Furniture;
@@ -13,16 +15,17 @@ public class SimCharacter extends Character {
     private double money;
     private House house;
     private Map<String, Need> needs = new HashMap<>();
-    private HashMap<String, Skills> skills = new HashMap<>();
+    private SkillsList skillsList = new SkillsList();
     private Career career;
     private Set<AchievementType> unlockedAchievements = new HashSet<>();
+    private List<String> notifications = new ArrayList<>();
 
-    public SimCharacter(String name, int age, String gender, Location defaultLocation, Career career) {
+    public SimCharacter(String name, int age, String gender, Location defaultLocation) {
         super(name, age, gender, defaultLocation);
         this.money = 1000.0;
-        this.career = career;
+        this.career = new Career(CareerList.JOBLESS);
         initialiseNeeds();
-        initialiseSkills();
+        skillsList.initialiseSkills();
     }
 
     private void initialiseNeeds() {
@@ -33,19 +36,45 @@ public class SimCharacter extends Character {
         needs.put("Social", new Social());
     }
 
-    private void initialiseSkills() {
-        skills.put("Cooking", new Skills("Cooking"));
-        skills.put("Fitness", new Skills("Fitness"));
-        skills.put("Programming", new Skills("Programming"));
-        skills.put("Charisma", new Skills("Charisma"));
-        skills.put("Creativity", new Skills("Creativity"));
-        skills.put("Logic", new Skills("Logic"));
-        skills.put("Gardening", new Skills("Gardening"));
-        skills.put("Music", new Skills("Music"));
-        skills.put("Writing", new Skills("Writing"));
-        skills.put("Painting", new Skills("Painting"));
+    //career methods
+    public String updateCareer(double amount) {
+        if (career.getTitle().equals("Jobless")){
+            return "Cannot gain career XP while unemployed!";
+        }
+        return career.addProgress(amount);
     }
 
+    public String displayCareer() {
+        return career.toString();
+    }
+
+    public void joinCareer(CareerList newCareer) {
+        this.career = new Career(newCareer);
+    }
+
+
+    //NOT FINALISED WORK METHOD, just added to test if the addProgress and updateSkills are working
+    //please remove if needed during merge
+    public String work() {
+        String careerResult = career.addProgress(10.0);
+        for (String skill : career.getCurrentCareer().getRelatedSkills()) {
+            updateSkill(skill, 5.0);
+        }
+        return careerResult;
+    }
+
+    //skills methods
+    public String updateSkill(String skillName, double amount) {
+        Skills skill = skillsList.getSkill(skillName);
+        if (skill == null) {
+            return "Skill " + skillName + " not found!";
+        }
+        return skill.addProgress(amount);
+    }
+
+    public String displaySkills() {
+        return skillsList.displaySkills();
+    }
     // getters & setters
     public void setMoney(double amount) {
         money += amount;
@@ -59,8 +88,8 @@ public class SimCharacter extends Character {
         return needs;
     }
 
-    public Map<String, Skills> getSkills() {
-        return skills;
+    public HashMap<String, Skills> getAllSkills() {
+        return skillsList.getAllSkills();
     }
 
     public void adjustNeed(String needName, double amount) {
@@ -70,9 +99,12 @@ public class SimCharacter extends Character {
         }
     }
 
-    public void addSkillProgress(String skillName, double amount) {
-        Skills skill = skills.computeIfAbsent(skillName, Skills::new);
-        skill.addProgress(amount);
+    public String addSkillProgress(String skillName, double amount) {
+        Skills skill = skillsList.getSkill(skillName);
+        if (skill == null) {
+            return "Skill " + skillName + " not found!";
+        }
+        return skill.addProgress(amount);
     }
 
     public boolean performFurnitureActivity(Furniture furniture, String actionName) {
@@ -94,11 +126,27 @@ public class SimCharacter extends Character {
         return Collections.unmodifiableSet(unlockedAchievements);
     }
 
+    public void addNotification(String message) {
+        notifications.add(message);
+        if (notifications.size() > 3) {
+            notifications.remove(0); // keep only last 3 to avoid panel UI overflow
+        }
+    }
+
+    public List<String> getNotifications() {
+        return notifications;
+    }
+
     public void updateNeed(double deltaTime) {
         for (Need need : needs.values()) {
             need.decay(deltaTime);
             if (need.isCriticallyLow()) {
-                need.onCriticallyLow(this);
+                if (!need.isCriticallyLowNotified()) {
+                    need.onCriticallyLow(this);
+                    need.setCriticallyLowNotified(true);
+                }
+            } else {
+                need.setCriticallyLowNotified(false);
             }
         }
     }

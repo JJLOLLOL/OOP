@@ -14,6 +14,7 @@ public class GameEngine {
     private final RelationshipManager relationshipManager = new RelationshipManager();
     private boolean isRunning;
     private State<?> activeState;
+    private final GameClock gameClock;
 
     // The engine now owns its input pipeline
     private final InputQueue inputQueue;
@@ -25,6 +26,11 @@ public class GameEngine {
         this.inputThread = new InputThread(new Scanner(System.in), this.inputQueue);
         this.inputThreadHandle = new Thread(this.inputThread, "Input-Thread");
         this.inputThreadHandle.setDaemon(true); // The JVM can exit even if this thread is running
+        this.gameClock = new GameClock();
+    }
+
+    public GameClock getGameClock() {
+        return gameClock;
     }
 
     public SimCharacter getActivePlayer() {
@@ -83,7 +89,16 @@ public class GameEngine {
             // Process updates in a fixed timestep to ensure deterministic game logic
             while (unprocessedTime >= NANO_SECONDS_PER_UPDATE) {
                 unprocessedTime -= NANO_SECONDS_PER_UPDATE;
-                activeState.update(this, 1.0 / UPDATES_PER_SECOND);
+                
+                double deltaTime = 1.0 / UPDATES_PER_SECOND;
+                gameClock.tick(deltaTime);
+                if (activePlayer != null) {
+                    // Scale deltaTime so decay rates (e.g., 2.0) apply per real minute instead of per real second
+                    // This gives the player plenty of time to explore without constant need interruptions
+                    activePlayer.updateNeed(deltaTime / 60.0);
+                }
+                
+                activeState.update(this, deltaTime);
             }
 
             // Render as fast as possible (or with a frame cap)

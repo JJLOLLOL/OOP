@@ -8,6 +8,7 @@ public abstract class Need {
     private double value; // 0 to 100
     private double decayRate; // How much it decreases per tick
     private static final double CRITICAL_THRESHOLD = 20.0; // Below this, the need is critically low
+    private boolean criticallyLowNotified = false;
 
     // Constructor
     public Need(String needName, double decayRate) {
@@ -48,6 +49,14 @@ public abstract class Need {
 
     public double getDecayRate() {
         return decayRate;
+    }
+
+    public boolean isCriticallyLowNotified() {
+        return criticallyLowNotified;
+    }
+
+    public void setCriticallyLowNotified(boolean criticallyLowNotified) {
+        this.criticallyLowNotified = criticallyLowNotified;
     }
 
     // Setters
