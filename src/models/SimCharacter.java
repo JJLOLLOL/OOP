@@ -1,8 +1,8 @@
 package models;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 import models.furnitureactions.Furniture;
@@ -92,6 +92,15 @@ public class SimCharacter extends Character {
 
     public Set<AchievementType> getUnlockedAchievements() {
         return Collections.unmodifiableSet(unlockedAchievements);
+    }
+
+    public void updateNeed(double deltaTime) {
+        for (Need need : needs.values()) {
+            need.decay(deltaTime);
+            if (need.isCriticallyLow()) {
+                need.onCriticallyLow(this);
+            }
+        }
     }
 
 }

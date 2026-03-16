@@ -1,6 +1,7 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.List;
 import models.furnitureactions.Furniture;
 
 public class Location {
@@ -14,7 +15,7 @@ public class Location {
         // this.activities = activities;
         this.furnitures = furnitures;
     }
-   
+
     public void listFurnitures() {
         System.out.println("Furnitures in " + LocationName + ":");
         for (Furniture furniture : furnitures) {
@@ -29,7 +30,9 @@ public class Location {
     // public void setActivities(ArrayList<Activity> activities) {
     //     this.activities = activities;
     // }
-
+    public List<Furniture> getFurniture() {
+        return furnitures;
+    }
     public String getLocationName() {
         return LocationName;
     }
@@ -41,6 +44,7 @@ public class Location {
     public void setNpcs(ArrayList<NPCCharacter> npcs) {
         this.npcs = npcs;
     }
+
     public ArrayList<NPCCharacter> addNpcCharacters(ArrayList<NPCCharacter> npcs, NPCCharacter npc) {
         npcs.add(npc);
         return npcs;
@@ -50,7 +54,5 @@ public class Location {
         npcs.remove(npc);
         return npcs;
     }
-
-
 
 }

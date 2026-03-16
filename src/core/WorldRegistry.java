@@ -1,17 +1,19 @@
 package core;
 
-import models.Location;
-
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import models.Location;
+import models.NPCCharacter;
 
 public class WorldRegistry {
     private static WorldRegistry instance;
     private Map<String, Location> locationsMap;
+    private List<NPCCharacter> npcList;
 
     private WorldRegistry() {
-        buildWorld();
+        build();
     }
 
     public static WorldRegistry getInstance() {
@@ -21,9 +23,10 @@ public class WorldRegistry {
         return instance;
     }
 
-    private void buildWorld() {
+    private void build() {
         WorldBuilder builder = new WorldBuilder();
         this.locationsMap = builder.buildWorld();
+        this.npcList = builder.buildNPCs(locationsMap);
     }
 
 
@@ -33,5 +36,9 @@ public class WorldRegistry {
 
     public Collection<Location> getAllLocations() {
         return Collections.unmodifiableCollection(locationsMap.values());
+    }
+
+    public List<NPCCharacter> getAllNPCs() {
+        return npcList;
     }
 }
