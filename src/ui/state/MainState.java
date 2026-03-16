@@ -48,16 +48,24 @@ public class MainState extends BaseState<String> {
 
         SimCharacter player = engine.getActivePlayer();
         Location loc = player.getLocation();
+
         List<NPCCharacter> npcsHere = WorldRegistry.getInstance().getAllNPCs().stream()
                 .filter(npc -> npc.getLocation().equals(loc))
+                .collect(Collectors.toList());
+
+        // other player-created sims at the same location (exclude active player)
+        List<SimCharacter> simsHere = engine.getSims().stream()
+                .filter(s -> !s.equals(player) && s.getLocation().equals(loc))
                 .collect(Collectors.toList());
 
         screen.getAttributePanel().setCharacter(
                 player.getName(), player.getAge(),
                 player.getMoney(), player.getNeeds());
-        screen.getNpcPanel().setNPCs(
-                loc.getLocationName(), npcsHere,
+
+        screen.getNearbyPanel().setNearby(
+                loc.getLocationName(), simsHere, npcsHere,
                 player, engine.getRelationshipManager());
+
         interactPanel.setFurniture(loc.getFurniture());
         socialisePanel.setNPCs(npcsHere);
 
@@ -75,6 +83,7 @@ public class MainState extends BaseState<String> {
         dirty = true;
         handleInput(input.trim(), engine);
     }
+
     private void transition(Step next) {
         currentStep = next;
         screen.setActionPanel(switch (next) {
@@ -93,6 +102,7 @@ public class MainState extends BaseState<String> {
     public void handleInput(String input, GameEngine engine) {
         SimCharacter player = engine.getActivePlayer();
         Location loc = player.getLocation();
+
         List<NPCCharacter> npcsHere = WorldRegistry.getInstance().getAllNPCs().stream()
                 .filter(npc -> npc.getLocation().equals(loc))
                 .toList();
