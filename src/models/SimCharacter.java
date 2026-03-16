@@ -60,7 +60,7 @@ public class SimCharacter extends Character {
         if (skill == null) {
             return "Skill " + skillName + " not found!";
         }
-        return skill.addProgress(amount);  // ✅ now returns String
+        return skill.addProgress(amount);
     }
 
     public String displaySkills() {
