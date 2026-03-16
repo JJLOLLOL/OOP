@@ -1,7 +1,13 @@
 package models;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import models.furnitureactions.Furniture;
 import models.needs.*;
 
 public class SimCharacter extends Character {
@@ -11,12 +17,15 @@ public class SimCharacter extends Character {
     private Map<String, Need> needs = new HashMap<>();
     private SkillsList skillsList = new SkillsList();
     private Career career;
+    private Set<AchievementType> unlockedAchievements = new HashSet<>();
+    private List<String> notifications = new ArrayList<>();
 
     public SimCharacter(String name, int age, String gender, Location defaultLocation) {
         super(name, age, gender, defaultLocation);
         this.money = 1000.0;
         this.career = new Career(CareerList.JOBLESS);
         initialiseNeeds();
+        initialiseSkills();
     }
 
     private void initialiseNeeds() {
@@ -74,4 +83,69 @@ public class SimCharacter extends Character {
     public double getMoney() {
         return money;
     }
+
+    public Map<String, Need> getNeeds() {
+        return needs;
+    }
+
+    public Map<String, Skills> getSkills() {
+        return skills;
+    }
+
+    public void adjustNeed(String needName, double amount) {
+        Need need = needs.get(needName);
+        if (need != null) {
+            need.adjustNeed(amount);
+        }
+    }
+
+    public void addSkillProgress(String skillName, double amount) {
+        Skills skill = skills.computeIfAbsent(skillName, Skills::new);
+        skill.addProgress(amount);
+    }
+
+    public boolean performFurnitureActivity(Furniture furniture, String actionName) {
+        if (furniture == null || actionName == null || actionName.isBlank()) {
+            return false;
+        }
+        return furniture.performAction(actionName, this);
+    }
+
+    public boolean unlockAchievement(AchievementType achievement) {
+        return unlockedAchievements.add(achievement);
+    }
+
+    public boolean hasAchievement(AchievementType achievement) {
+        return unlockedAchievements.contains(achievement);
+    }
+
+    public Set<AchievementType> getUnlockedAchievements() {
+        return Collections.unmodifiableSet(unlockedAchievements);
+    }
+
+    public void addNotification(String message) {
+        notifications.add(message);
+        if (notifications.size() > 3) {
+            notifications.remove(0); // keep only last 3 to avoid panel UI overflow
+        }
+    }
+
+    public List<String> getNotifications() {
+        return notifications;
+    }
+
+    public void updateNeed(double deltaTime) {
+        for (Need need : needs.values()) {
+            need.decay(deltaTime);
+            if (need.isCriticallyLow()) {
+                if (!need.isCriticallyLowNotified()) {
+                    need.onCriticallyLow(this);
+                    need.setCriticallyLowNotified(true);
+                }
+            } else {
+                need.setCriticallyLowNotified(false);
+            }
+        }
+    }
+
 }

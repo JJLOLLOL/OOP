@@ -1,99 +1,127 @@
 package core;
 
-import ui.GameLayout;
-import ui.GameState;
-import ui.InitializationState;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import models.SimCharacter;
+import services.RelationshipManager;
+import ui.state.State;
 
 public class GameEngine {
+
+    private final ArrayList<SimCharacter> sims = new ArrayList<>();
+    private SimCharacter activePlayer;
+    private final RelationshipManager relationshipManager = new RelationshipManager();
     private boolean isRunning;
-    private GameState currentGameState;
+    private State<?> activeState;
+    private final GameClock gameClock;
+
+    // The engine now owns its input pipeline
+    private final InputQueue inputQueue;
+    private final InputThread inputThread;
+    private final Thread inputThreadHandle;
 
     public GameEngine() {
-        this.isRunning = false;
+        this.inputQueue = new InputQueue();
+        this.inputThread = new InputThread(new Scanner(System.in), this.inputQueue);
+        this.inputThreadHandle = new Thread(this.inputThread, "Input-Thread");
+        this.inputThreadHandle.setDaemon(true); // The JVM can exit even if this thread is running
+        this.gameClock = new GameClock();
     }
 
-    public void setGameState(GameState newState) {
-        this.currentGameState = newState;
+    public GameClock getGameClock() {
+        return gameClock;
     }
 
-    public void setIsRunning(boolean value) {
-        this.isRunning = value;
+    public SimCharacter getActivePlayer() {
+        return activePlayer;
     }
 
-    public void start() {
-        if (!isRunning) {
-            setIsRunning(true);
-            // Trigger point to start UI, navigating between interfaces handled by UI classes
-            setGameState(new InitializationState());
-            while (isRunning) {
-                currentGameState.render(this);
+    public void setActivePlayer(SimCharacter character) {
+        activePlayer = character;
+    }
+
+    public RelationshipManager getRelationshipManager() {
+        return relationshipManager;
+    }
+
+    public List<SimCharacter> getSims() {
+        return sims;
+    }
+    
+    public void addSim(SimCharacter sim) {
+        sims.add(sim);
+    }
+
+    public void setGameState(State<?> newState) {
+        this.activeState = newState;
+    }
+
+    /**
+     * Allows states to poll for user input in a decoupled way.
+     */
+    public String pollInput() {
+        return inputQueue.poll();
+    }
+
+    public void start(State<?> initialState) {
+        setGameState(initialState);
+        WorldRegistry.getInstance(); // Initialize the world data
+        inputThreadHandle.start();
+        run();
+    }
+
+    private void run() {
+        isRunning = true;
+
+        final double NANO_SECONDS_PER_SECOND = 1_000_000_000.0;
+        final double UPDATES_PER_SECOND = 20.0; // Target updates per second for game logic
+        final double NANO_SECONDS_PER_UPDATE = NANO_SECONDS_PER_SECOND / UPDATES_PER_SECOND;
+
+        long lastTime = System.nanoTime();
+        double unprocessedTime = 0;
+
+        while (isRunning) {
+            long now = System.nanoTime();
+            unprocessedTime += (now - lastTime);
+            lastTime = now;
+
+            // Process updates in a fixed timestep to ensure deterministic game logic
+            while (unprocessedTime >= NANO_SECONDS_PER_UPDATE) {
+                unprocessedTime -= NANO_SECONDS_PER_UPDATE;
+                
+                double deltaTime = 1.0 / UPDATES_PER_SECOND;
+                gameClock.tick(deltaTime);
+                if (activePlayer != null) {
+                    // Scale deltaTime so decay rates (e.g., 2.0) apply per real minute instead of per real second
+                    // This gives the player plenty of time to explore without constant need interruptions
+                    activePlayer.updateNeed(deltaTime / 60.0);
+                }
+                
+                activeState.update(this, deltaTime);
             }
-        } else {
-            System.out.println("Game engine failed to start!");
+
+            // Render as fast as possible (or with a frame cap)
+            activeState.render(this);
+
+            // Yield to other threads to avoid busy-waiting and save CPU
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                end(); // Exit gracefully if the main thread is interrupted
+            }
         }
+        shutdown();
     }
 
-    public void end(){
-        setIsRunning(false);
+    public void end() {
+        isRunning = false;
     }
 
-//    private void handleInput() {
-//        String choice = scanner.nextLine();
-//        Activity activity = null;
-//
-//        switch (choice) {
-//            case "1":
-//                activity = new Activity("Eat", 30);
-//                activity.addEffect("Hunger", 30.0);
-////                activity.addEffect("Bladder", -5.0); // Eating slightly fulls bladder
-//                break;
-//            case "2":
-//                activity = new Activity("Sleep", 480); // 8 hours
-//                activity.addEffect("Energy", 80.0);
-//                activity.addEffect("Hunger", -20.0);
-//                break;
-//            case "3":
-//                activity = new Activity("Work", 240); // 4 hours
-//                activity.addEffect("Money", 50.0);
-//                activity.addEffect("Energy", -30.0);
-//                activity.addEffect("Fun", -20.0);
-//                break;
-//            case "4":
-//                System.out.println("Who do you want to talk to?");
-//                for (int i = 0; i < npcs.size(); i++) {
-//                    System.out.println((i + 1) + ". " + npcs.get(i).getName());
-//                }
-//                String npcChoiceStr = scanner.nextLine();
-//                try {
-//                    int npcIndex = Integer.parseInt(npcChoiceStr) - 1;
-//                    if (npcIndex >= 0 && npcIndex < npcs.size()) {
-//                        NPCCharacter npc = npcs.get(npcIndex);
-//                        npc.interact(player, "Talk");
-//                        activity = new Activity("Socialize", 30);
-//                        activity.addEffect("Social", 25.0);
-//                        activity.addEffect("Energy", -5.0);
-//                    } else {
-//                        System.out.println("Invalid NPC.");
-//                    }
-//                } catch (NumberFormatException e) {
-//                    System.out.println("Invalid input.");
-//                }
-//                break;
-//            case "5":
-//                activity = new Activity("Wait", 30);
-//                break;
-//            case "6":
-//                isRunning = false;
-//                System.out.println("Goodbye!");
-//                return;
-//            default:
-//                System.out.println("Invalid choice.");
-//                return;
-//        }
-//
-//        if (activity != null) {
-//            player.performActivity(activity);
-//            advanceTime(activity.getDurationMinutes());
-//        }
-//    }
+    private void shutdown() {
+        System.out.println("Shutting down...\n");
+        inputThread.stop();
+        // No need to close System.in scanner, let the JVM handle it.
+    }
 }

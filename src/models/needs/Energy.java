@@ -10,9 +10,7 @@ public class Energy extends Need {
 
     @Override
     public void onCriticallyLow(SimCharacter character) {
-        System.out.println(character.getName() + " is exhausted! Find a place to rest soon!");
-        // Additional consequences can be implemented here (e.g., reduced performance in
-        // activities)
+        character.addNotification(character.getName() + " is exhausted! Find a place to rest soon!");
     }
 
 }
