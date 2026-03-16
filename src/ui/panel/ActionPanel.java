@@ -16,7 +16,7 @@ public class ActionPanel implements Panel {
 
     private Mode mode = Mode.MAIN;
     private List<Furniture> availableFurniture = new ArrayList<>();
-    private List<NPCCharacter> nearbyNPCs = new ArrayList<>();
+    private List<models.Character> nearbyCharacters = new ArrayList<>();
 
     public void setMode(Mode mode) {
         this.mode = mode;
@@ -26,8 +26,8 @@ public class ActionPanel implements Panel {
         this.availableFurniture = furniture;
     }
 
-    public void setNearbyNPCs(List<NPCCharacter> npcs) {
-        this.nearbyNPCs = npcs;
+    public void setNearbyCharacters(List<models.Character> characters) {
+        this.nearbyCharacters = characters;
     }
 
     public Mode getMode() {
@@ -90,11 +90,11 @@ public class ActionPanel implements Panel {
         lines.add("Socialise");
         lines.add("");
 
-        if (nearbyNPCs.isEmpty()) {
+        if (nearbyCharacters.isEmpty()) {
             lines.add("No one around to socialise with.");
         } else {
-            for (NPCCharacter npc : nearbyNPCs) {
-                lines.add(npc.getName());
+            for (models.Character c : nearbyCharacters) {
+                lines.add(c.getName());
                 int i = 1;
                 for (InteractionType type : InteractionType.values()) {
                     lines.add("   " + i + ". " + type.getLabel());

@@ -33,7 +33,7 @@ public class MainState extends BaseState<String> {
 
     private Step currentStep = Step.MAIN;
     private Furniture selectedFurniture = null;
-    private NPCCharacter selectedNPC = null;
+    private models.Character selectedCharacter = null;
 
     private final ActionPanel actionPanel = new ActionPanel();
     private final InteractablesPanel interactPanel = new InteractablesPanel();
@@ -91,7 +91,11 @@ public class MainState extends BaseState<String> {
         screen.getPanelBL().setNotifications(player.getNotifications());
 
         interactPanel.setFurniture(loc.getFurnitures());
-        socialisePanel.setNPCs(npcsHere);
+        
+        List<models.Character> charsHere = new ArrayList<>();
+        charsHere.addAll(simsHere);
+        charsHere.addAll(npcsHere);
+        socialisePanel.setCharacters(charsHere);
         
         switchCharacterPanel.setSims(engine.getSims(), player);
     }
@@ -175,11 +179,16 @@ public class MainState extends BaseState<String> {
                 if (input.equals("0")) {
                     transition(Step.MAIN);
                 } else {
+                    List<models.Character> charsHere = new ArrayList<>();
+                    charsHere.addAll(engine.getSims().stream()
+                            .filter(s -> !s.equals(player) && s.getLocation().equals(loc))
+                            .toList());
+                    charsHere.addAll(npcsHere);
                     try {
                         int idx = Integer.parseInt(input) - 1;
-                        if (idx >= 0 && idx < npcsHere.size()) {
-                            selectedNPC = npcsHere.get(idx);
-                            socialisePanel.selectNPC(selectedNPC);
+                        if (idx >= 0 && idx < charsHere.size()) {
+                            selectedCharacter = charsHere.get(idx);
+                            socialisePanel.selectCharacter(selectedCharacter);
                             transition(Step.SOCIALISE_ACTION);
                         }
                     } catch (NumberFormatException ignored) {
@@ -189,7 +198,7 @@ public class MainState extends BaseState<String> {
             case SOCIALISE_ACTION -> {
                 if (input.equals("0")) {
                     socialisePanel.clearSelection();
-                    selectedNPC = null;
+                    selectedCharacter = null;
                     transition(Step.SOCIALISE);
                 } else {
                     InteractionType[] types = InteractionType.values();
@@ -197,9 +206,9 @@ public class MainState extends BaseState<String> {
                         int idx = Integer.parseInt(input) - 1;
                         if (idx >= 0 && idx < types.length) {
                             engine.getRelationshipManager()
-                                    .interact(player, selectedNPC, types[idx]);
+                                    .interact(player, selectedCharacter, types[idx]);
                             socialisePanel.clearSelection();
-                            selectedNPC = null;
+                            selectedCharacter = null;
                             transition(Step.MAIN);
                         }
                     } catch (NumberFormatException ignored) {
