@@ -84,6 +84,8 @@ public class MainState extends BaseState<String> {
         screen.getNearbyPanel().setNearby(
                 loc.getLocationName(), simsHere, npcsHere,
                 player, engine.getRelationshipManager());
+                
+        screen.getPanelBL().setNotifications(player.getNotifications());
 
         interactPanel.setFurniture(loc.getFurniture());
         socialisePanel.setNPCs(npcsHere);
