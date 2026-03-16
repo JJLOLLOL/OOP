@@ -3,43 +3,42 @@ package ui.panel;
 import Types.InteractionType;
 import java.util.ArrayList;
 import java.util.List;
-import models.NPCCharacter;
 
 public class SocialisePanel implements Panel {
 
-    private List<NPCCharacter> npcs = new ArrayList<>();
-    private NPCCharacter selectedNPC = null;
+    private List<models.Character> characters = new ArrayList<>();
+    private models.Character selectedCharacter = null;
 
-    public void setNPCs(List<NPCCharacter> npcs) {
-        if (!npcs.equals(this.npcs)) {
-            this.npcs = npcs;
-            this.selectedNPC = null; // only reset when NPC list changes
+    public void setCharacters(List<models.Character> characters) {
+        if (!characters.equals(this.characters)) {
+            this.characters = characters;
+            this.selectedCharacter = null; // only reset when list changes
         }
     }
 
-    public void selectNPC(NPCCharacter npc) {
-        this.selectedNPC = npc;
+    public void selectCharacter(models.Character character) {
+        this.selectedCharacter = character;
     }
 
     public void clearSelection() {
-        this.selectedNPC = null;
+        this.selectedCharacter = null;
     }
 
     @Override
     public List<String> render() {
-        return selectedNPC == null ? renderNPCList() : renderInteractionList();
+        return selectedCharacter == null ? renderCharacterList() : renderInteractionList();
     }
 
-    private List<String> renderNPCList() {
+    private List<String> renderCharacterList() {
         List<String> lines = new ArrayList<>();
         lines.add("Socialise");
         lines.add("");
 
-        if (npcs.isEmpty()) {
+        if (characters.isEmpty()) {
             lines.add("No one around to socialise with.");
         } else {
-            for (int i = 0; i < npcs.size(); i++) {
-                lines.add((i + 1) + ". " + npcs.get(i).getName());
+            for (int i = 0; i < characters.size(); i++) {
+                lines.add((i + 1) + ". " + characters.get(i).getName());
             }
         }
 
@@ -50,7 +49,7 @@ public class SocialisePanel implements Panel {
 
     private List<String> renderInteractionList() {
         List<String> lines = new ArrayList<>();
-        lines.add(selectedNPC.getName());
+        lines.add(selectedCharacter.getName());
         lines.add("");
 
         InteractionType[] types = InteractionType.values();
