@@ -14,6 +14,7 @@ import ui.panel.ActionPanel;
 import ui.panel.InteractablesPanel;
 import ui.panel.LocationPanel;
 import ui.panel.SocialisePanel;
+import ui.panel.SwitchCharacterPanel;
 import ui.screen.MainScreen;
 import ui.screen.Screen;
 
@@ -26,7 +27,8 @@ public class MainState extends BaseState<String> {
         MAIN,
         INTERACTABLES, INTERACTABLES_ACTION,
         SOCIALISE, SOCIALISE_ACTION,
-        CHANGE_LOCATION
+        CHANGE_LOCATION,
+        SWITCH_CHARACTER
     }
 
     private Step currentStep = Step.MAIN;
@@ -37,6 +39,7 @@ public class MainState extends BaseState<String> {
     private final InteractablesPanel interactPanel = new InteractablesPanel();
     private final SocialisePanel socialisePanel = new SocialisePanel();
     private final LocationPanel locationPanel = new LocationPanel();
+    private final SwitchCharacterPanel switchCharacterPanel = new SwitchCharacterPanel();
 
     @Override
     protected Screen getScreen() {
@@ -89,6 +92,8 @@ public class MainState extends BaseState<String> {
 
         interactPanel.setFurniture(loc.getFurnitures());
         socialisePanel.setNPCs(npcsHere);
+        
+        switchCharacterPanel.setSims(engine.getSims(), player);
     }
 
     private void transition(Step next) {
@@ -103,6 +108,8 @@ public class MainState extends BaseState<String> {
                 socialisePanel;
             case CHANGE_LOCATION ->
                 locationPanel;
+            case SWITCH_CHARACTER ->
+                switchCharacterPanel;
         });
     }
 
@@ -125,6 +132,8 @@ public class MainState extends BaseState<String> {
                     case "3" ->
                         transition(Step.CHANGE_LOCATION);
                     case "4" ->
+                        transition(Step.SWITCH_CHARACTER);
+                    case "5" ->
                         engine.end();
                 }
             }
@@ -207,6 +216,21 @@ public class MainState extends BaseState<String> {
                         int idx = Integer.parseInt(input) - 1;
                         if (idx >= 0 && idx < locations.size()) {
                             player.setLocation(locations.get(idx));
+                            transition(Step.MAIN);
+                        }
+                    } catch (NumberFormatException ignored) {
+                    }
+                }
+            }
+            case SWITCH_CHARACTER -> {
+                if (input.equals("0")) {
+                    transition(Step.MAIN);
+                } else {
+                    List<SimCharacter> sims = engine.getSims();
+                    try {
+                        int idx = Integer.parseInt(input) - 1;
+                        if (idx >= 0 && idx < sims.size()) {
+                            engine.setActivePlayer(sims.get(idx));
                             transition(Step.MAIN);
                         }
                     } catch (NumberFormatException ignored) {

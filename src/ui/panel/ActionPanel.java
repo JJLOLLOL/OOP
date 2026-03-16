@@ -55,7 +55,8 @@ public class ActionPanel implements Panel {
         lines.add("1. Interactables");
         lines.add("2. Socialise");
         lines.add("3. Change Location");
-        lines.add("4. Exit Game");
+        lines.add("4. Switch Character");
+        lines.add("5. Exit Game");
         return lines;
     }
 
