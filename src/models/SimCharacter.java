@@ -25,7 +25,7 @@ public class SimCharacter extends Character {
         this.money = 1000.0;
         this.career = new Career(CareerList.JOBLESS);
         initialiseNeeds();
-        initialiseSkills();
+        skillsList.initialiseSkills();
     }
 
     private void initialiseNeeds() {
@@ -88,8 +88,8 @@ public class SimCharacter extends Character {
         return needs;
     }
 
-    public Map<String, Skills> getSkills() {
-        return skills;
+    public HashMap<String, Skills> getAllSkills() {
+        return skillsList.getAllSkills();
     }
 
     public void adjustNeed(String needName, double amount) {
@@ -99,9 +99,12 @@ public class SimCharacter extends Character {
         }
     }
 
-    public void addSkillProgress(String skillName, double amount) {
-        Skills skill = skills.computeIfAbsent(skillName, Skills::new);
-        skill.addProgress(amount);
+    public String addSkillProgress(String skillName, double amount) {
+        Skills skill = skillsList.getSkill(skillName);
+        if (skill == null) {
+            return "Skill " + skillName + " not found!";
+        }
+        return skill.addProgress(amount);
     }
 
     public boolean performFurnitureActivity(Furniture furniture, String actionName) {
