@@ -3,7 +3,6 @@ package core;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
-import models.Location;
 import models.SimCharacter;
 import services.RelationshipManager;
 import ui.state.State;
@@ -106,7 +105,7 @@ public class GameEngine {
     }
 
     private void shutdown() {
-        System.out.println("Shutting down...");
+        System.out.println("Shutting down...\n");
         inputThread.stop();
         // No need to close System.in scanner, let the JVM handle it.
     }
