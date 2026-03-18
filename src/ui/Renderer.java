@@ -266,7 +266,7 @@ public class Renderer {
         lines.add(BORDER + repeat("─", LEFT_W) + RESET);
 
         // Location
-        lines.add(LABEL + "at  " + RESET + BRIGHT_CYAN + loc.getLocationName() + RESET);
+        lines.add(LABEL + "At " + RESET + BRIGHT_CYAN + loc.getLocationName() + RESET);
 
         // Nearby characters
         List<models.Character> chars = PlayController.charsAt(loc, state, world);
@@ -374,13 +374,21 @@ public class Renderer {
 
             case PICK_CAREER -> {
                 lines.add(menuTitle("Choose Career"));
+
                 List<CareerList> careers = PlayController.getAvailableCareers();
+
                 for (int i = 0; i < careers.size(); i++) {
                     CareerList c = careers.get(i);
-                    String label = BRIGHT_WHITE + c.getTitle() + RESET
-                            + MUTED + "  $" + String.format("%.0f", c.getBaseSalary())
-                            + "/day  " + String.format("%.0f", c.getWorkingHours()) + "h" + RESET;
-                    lines.add(BRIGHT_YELLOW + (i + 1) + ". " + RESET + label);
+                    int TITLE_W = 18;
+                    int SALARY_W = 10;
+                    int HOURS_W = 4;
+                    String title = pad(c.getTitle(), TITLE_W);
+                    String salary = String.format("$%.0f/d", c.getBaseSalary());
+                    salary = pad(salary, SALARY_W);
+                    String hours = c.getWorkingHours() > 0 ? String.format("%dh", (int) c.getWorkingHours()): "";
+                    hours = pad(hours, HOURS_W);
+                    String row = BRIGHT_YELLOW + (i + 1) + ". " + RESET + BRIGHT_WHITE + title + RESET + MUTED + " " + salary + " " + hours + RESET;
+                    lines.add(row);
                 }
                 lines.add(backItem());
             }
@@ -465,7 +473,7 @@ public class Renderer {
                 + colour + repeat("#", filled) + RESET
                 + MUTED + repeat("-", empty) + RESET
                 + MUTED + "]" + RESET;
-        String valueStr = colour + String.format("%3d", val) + RESET;
+        String valueStr = colour + String.format("%3d", val) +  "%" + RESET;
 
         return label + " " + bar + " " + valueStr;
     }
@@ -484,7 +492,7 @@ public class Renderer {
                 + colour + repeat("#", filled) + RESET
                 + MUTED + repeat("-", empty) + RESET
                 + MUTED + "]" + RESET;
-        String level = MUTED + "Level: " + (int) skill.getProgress() + RESET;
+        String level = MUTED + "Lv" + (int) skill.getLevel() + RESET;
 
         return label + " " + bar + " " + level;
     }
