@@ -22,25 +22,31 @@ import models.needs.Need;
  * driven by {@link #render(GameState, WorldRegistry)}, which dispatches to the
  * correct phase renderer based on {@link GameState.Phase}.
  *
- * <h3>Layout (playing screen)</h3>
+ * <h3>Colour scheme</h3>
  * <pre>
- * ┌─────────────────────────── DAY 1 - 08:17 ───────────────────────────────────┐
- * ├────────────┬──────────────┬──────────────┬────────────────────────────────┤
- * │ Left       │ Middle       │ Skills       │ Notifications                   │
- * │ (stats)    │ (actions)    │ (skill bars) │ (gameplay + achievements)       │
- * └────────────┴──────────────┴──────────────┴────────────────────────────────┘
+ *  Borders / labels      → BRIGHT_BLACK (dark gray)
+ *  Panel titles          → BOLD + BRIGHT_CYAN
+ *  Clock header          → BOLD + BRIGHT_WHITE
+ *  Sim name              → BOLD + BRIGHT_WHITE
+ *  Menu numbers          → BRIGHT_YELLOW
+ *  Menu labels           → WHITE
+ *  Back item             → BRIGHT_BLACK
+ *  Money                 → BRIGHT_YELLOW
+ *  Location name         → BRIGHT_CYAN
+ *  Need bars (high)      → BRIGHT_GREEN
+ *  Need bars (mid)       → BRIGHT_YELLOW
+ *  Need bars (low)       → BRIGHT_RED
+ *  Skill bars            → BRIGHT_BLACK labels, colour-coded fill
+ *  Relationship positive → BRIGHT_GREEN
+ *  Relationship negative → BRIGHT_RED
+ *  Relationship neutral  → BRIGHT_YELLOW
+ *  Notifications pos     → BRIGHT_GREEN
+ *  Notifications neg     → BRIGHT_RED
+ *  Notifications warn    → BRIGHT_YELLOW
+ *  Notifications neutral → BRIGHT_WHITE
+ *  Error prompt          → BRIGHT_RED
+ *  Career info           → MAGENTA / BRIGHT_MAGENTA
  * </pre>
- *
- * <h3>ANSI alignment rule</h3>
- * ANSI escape codes are invisible in the terminal but count toward
- * {@link String#length()}. All padding uses {@link #padColoured(String, int)}
- * and {@link #visibleLength(String)}, which strip escape codes before
- * measuring, so box borders are never pushed out of alignment.
- *
- * <h3>Bar character rule</h3> {@code █} and {@code ░} have
- * {@code east_asian_width=Ambiguous} and render as 2 columns in some terminals.
- * Plain ASCII {@code #} and {@code -} are always exactly 1 column wide and are
- * used instead.
  */
 public class Renderer {
 
@@ -51,46 +57,38 @@ public class Renderer {
     private static final String GREEN = "\u001B[32m";
     private static final String YELLOW = "\u001B[33m";
     private static final String RED = "\u001B[31m";
+    private static final String BLUE = "\u001B[34m";
+    private static final String MAGENTA = "\u001B[35m";
     private static final String WHITE = "\u001B[37m";
-    private static final String GRAY = "\u001B[90m";
+    private static final String BRIGHT_BLACK = "\u001B[90m";
+    private static final String BRIGHT_RED = "\u001B[91m";
+    private static final String BRIGHT_GREEN = "\u001B[92m";
+    private static final String BRIGHT_YELLOW = "\u001B[93m";
+    private static final String BRIGHT_BLUE = "\u001B[94m";
+    private static final String BRIGHT_MAGENTA = "\u001B[95m";
+    private static final String BRIGHT_CYAN = "\u001B[96m";
+    private static final String BRIGHT_WHITE = "\u001B[97m";
 
-    // ── Column widths (visible characters, excluding border chars) ────────────
-    /**
-     * All four columns share the same inner content width. Total box width = 4
-     * × (COL_W + 2) + 3 dividers + 2 outer borders = 4 × 32 + 3 + 2 = 133
-     * visible chars.
-     */
+    // ── Semantic aliases (change the scheme here, not throughout the code) ────
+    private static final String BORDER = BRIGHT_BLACK;   // box lines and dividers
+    private static final String LABEL = BRIGHT_BLACK;   // dim labels like "Location:"
+    private static final String MUTED = BRIGHT_BLACK;   // secondary / inactive text
+    private static final String TITLE = BOLD + BRIGHT_CYAN;  // panel headings
+    private static final String CLOCK = BOLD + BRIGHT_WHITE; // clock header
+    private static final String SIM_NAME = BOLD + BRIGHT_WHITE; // sim name
+
+    // ── Column widths ─────────────────────────────────────────────────────────
     private static final int COL_W = 30;
-
-    /**
-     * Aliases so existing code stays readable.
-     */
     private static final int LEFT_W = COL_W;
     private static final int MID_W = COL_W;
     private static final int SKILLS_W = COL_W;
     private static final int NOTIF_W = COL_W;
-
-    /**
-     * Total inner width of the box (between ┌ and ┐), used for the clock
-     * header. Formula: 4 × (COL_W + 2) + 3 inner dividers = 4 × 32 + 3 = 131.
-     */
     private static final int INNER_W = 4 * (COL_W + 2) + 3;
-
-    /**
-     * Number of {@code #}/{@code -} characters in a need progress bar.
-     */
     private static final int BAR_WIDTH = 10;
 
     // ══════════════════════════════════════════════════════════════════════════
     //  Public API
     // ══════════════════════════════════════════════════════════════════════════
-    /**
-     * Clears the terminal and renders the appropriate screen for the current
-     * game phase.
-     *
-     * @param state the live game state
-     * @param world the world registry (locations and NPCs)
-     */
     public static void render(GameState state, WorldRegistry world) {
         clearScreen();
         switch (state.getPhase()) {
@@ -99,28 +97,18 @@ public class Renderer {
             case PLAYING ->
                 renderPlaying(state, world);
             case QUIT -> {
-                /* nothing to render */ }
+                /* nothing */ }
         }
     }
 
-    /**
-     * Prints an inline error message directly below the current screen without
-     * triggering a full redraw. Re-prints the input prompt afterwards.
-     *
-     * @param message the error text to display
-     */
     public static void showError(String message) {
-        System.out.println("  " + RED + "[!] " + message + RESET);
+        System.out.println("  " + BRIGHT_RED + "[!] " + RESET + WHITE + message + RESET);
         System.out.print("> ");
     }
 
     // ══════════════════════════════════════════════════════════════════════════
     //  CREATE SIM phase
     // ══════════════════════════════════════════════════════════════════════════
-    /**
-     * Renders the sim-creation wizard. Each step shows a prompt and, where
-     * relevant, the sims that have already been committed in this session.
-     */
     private static void renderCreateSim(GameState state) {
         printBanner("CREATE YOUR SIMS");
         System.out.println();
@@ -128,45 +116,50 @@ public class Renderer {
         switch (CreateSimController.getStep()) {
 
             case COUNT ->
-                System.out.println("  How many Sims do you want to create?");
+                System.out.println("  " + LABEL + "How many Sims do you want to create?" + RESET);
 
             case NAME -> {
                 showCommitted(CreateSimController.getCommitted());
-                System.out.printf("  Creating Sim %d of %d%n",
+                System.out.printf("  " + MUTED + "Creating Sim %d of %d%n" + RESET,
                         CreateSimController.getCurrentIndex() + 1,
                         CreateSimController.getTotalSims());
-                System.out.println("  Enter name:");
+                System.out.println("  " + LABEL + "Enter name:" + RESET);
             }
 
             case AGE -> {
                 showCommitted(CreateSimController.getCommitted());
-                System.out.println("  Name : " + CreateSimController.getInFlightName());
-                System.out.println("  Enter age:");
+                System.out.println("  " + MUTED + "Name : " + RESET
+                        + BRIGHT_WHITE + CreateSimController.getInFlightName() + RESET);
+                System.out.println("  " + LABEL + "Enter age:" + RESET);
             }
 
             case GENDER -> {
                 showCommitted(CreateSimController.getCommitted());
-                System.out.println("  Name : " + CreateSimController.getInFlightName());
-                System.out.println("  Age  : " + CreateSimController.getInFlightAge());
-                System.out.println("  Enter gender (M / F):");
+                System.out.println("  " + MUTED + "Name : " + RESET
+                        + BRIGHT_WHITE + CreateSimController.getInFlightName() + RESET);
+                System.out.println("  " + MUTED + "Age  : " + RESET
+                        + BRIGHT_WHITE + CreateSimController.getInFlightAge() + RESET);
+                System.out.println("  " + LABEL + "Enter gender (M / F):" + RESET);
             }
 
             case CONFIRM -> {
-                System.out.println("  Review your Sims:\n");
+                System.out.println("  " + TITLE + "Review your Sims:" + RESET + "\n");
                 List<String[]> committed = CreateSimController.getCommitted();
                 for (int i = 0; i < committed.size(); i++) {
                     String[] d = committed.get(i);
-                    String label = simLabel(d[0], d[1], d[2]);
-                    System.out.printf("    %d. %s%n", i + 1, label);
+                    System.out.printf("    " + BRIGHT_YELLOW + "%d. " + RESET
+                            + BRIGHT_WHITE + "%s" + RESET + "%n", i + 1, simLabel(d[0], d[1], d[2]));
                 }
-                System.out.println("\n  Confirm? (Y / N)");
+                System.out.println("\n  " + LABEL + "Confirm? " + RESET
+                        + BRIGHT_GREEN + "(Y)" + RESET + " / " + BRIGHT_RED + "(N)" + RESET);
             }
 
             case PICK_PLAYER -> {
-                System.out.println("  Choose your active Sim:\n");
+                System.out.println("  " + TITLE + "Choose your active Sim:" + RESET + "\n");
                 for (int i = 0; i < state.getSims().size(); i++) {
                     SimCharacter s = state.getSims().get(i);
-                    System.out.printf("    %d. %s%n", i + 1,
+                    System.out.printf("    " + BRIGHT_YELLOW + "%d. " + RESET
+                            + BRIGHT_WHITE + "%s" + RESET + "%n", i + 1,
                             simLabel(s.getName(), String.valueOf(s.getAge()), s.getGender()));
                 }
             }
@@ -178,10 +171,6 @@ public class Renderer {
     // ══════════════════════════════════════════════════════════════════════════
     //  PLAYING phase
     // ══════════════════════════════════════════════════════════════════════════
-    /**
-     * Renders the main game screen: a full-width clock header followed by a
-     * three-column panel layout (character info | actions | notifications).
-     */
     private static void renderPlaying(GameState state, WorldRegistry world) {
         SimCharacter player = state.getActivePlayer();
         Location loc = player.getLocation();
@@ -194,36 +183,25 @@ public class Renderer {
 
         printBoxTop(formatClock(state));
         printColumnSeparator();
-        printBodyRows(stats, skills, actions, notifs);
+        printBodyRows(stats, actions, skills, notifs);
         printBoxBottom();
 
         System.out.print("\n> ");
     }
 
-    // ── Box sections ──────────────────────────────────────────────────────────
-    /**
-     * Prints the top border with the clock title centered inside it.
-     */
+    // ── Box drawing ───────────────────────────────────────────────────────────
     private static void printBoxTop(String clock) {
-        System.out.println(GRAY + "┌" + repeat("─", INNER_W) + "┐" + RESET);
-        System.out.println(GRAY + "│" + RESET + centerColoured(clock, INNER_W) + GRAY + "│" + RESET);
+        System.out.println(BORDER + "┌" + repeat("─", INNER_W) + "┐" + RESET);
+        System.out.println(BORDER + "│" + RESET + centerColoured(clock, INNER_W) + BORDER + "│" + RESET);
     }
 
-    /**
-     * Prints the horizontal separator that splits the header from the four
-     * columns.
-     */
     private static void printColumnSeparator() {
-        System.out.println(GRAY + "├" + repeat("─", LEFT_W + 2)
+        System.out.println(BORDER + "├" + repeat("─", LEFT_W + 2)
                 + "┬" + repeat("─", MID_W + 2)
                 + "┬" + repeat("─", SKILLS_W + 2)
                 + "┬" + repeat("─", NOTIF_W + 2) + "┤" + RESET);
     }
 
-    /**
-     * Prints all body rows, padding shorter columns with empty lines so all
-     * four columns reach the same height.
-     */
     private static void printBodyRows(List<String> left, List<String> mid,
             List<String> skills, List<String> notifs) {
         int rows = Math.max(Math.max(left.size(), mid.size()),
@@ -238,67 +216,77 @@ public class Renderer {
         }
     }
 
-    /**
-     * Prints the bottom border of the four-column box.
-     */
     private static void printBoxBottom() {
-        System.out.println(GRAY + "└" + repeat("─", LEFT_W + 2)
+        System.out.println(BORDER + "└" + repeat("─", LEFT_W + 2)
                 + "┴" + repeat("─", MID_W + 2)
                 + "┴" + repeat("─", SKILLS_W + 2)
                 + "┴" + repeat("─", NOTIF_W + 2) + "┘" + RESET);
     }
 
+    private static void printRow(String l, String m, String s, String n) {
+        System.out.println(
+                BORDER + "│" + RESET + " " + padColoured(l, LEFT_W)
+                + " " + BORDER + "│" + RESET + " " + padColoured(m, MID_W)
+                + " " + BORDER + "│" + RESET + " " + padColoured(s, SKILLS_W)
+                + " " + BORDER + "│" + RESET + " " + padColoured(n, NOTIF_W)
+                + " " + BORDER + "│" + RESET
+        );
+    }
+
     // ── Panel builders ────────────────────────────────────────────────────────
-    /**
-     * Builds the left panel lines: character name, need bars, money, location,
-     * and nearby characters with relationship status.
-     */
     private static List<String> buildStatsPanel(SimCharacter player, Location loc,
             GameState state, WorldRegistry world) {
         List<String> lines = new ArrayList<>();
 
-        // Character name (bold white) and age/gender (white)
-        lines.add(BOLD + WHITE + player.getName() + RESET
-                + WHITE + " (" + player.getAge() + player.getGender().charAt(0) + ")" + RESET);
+        // Sim name + age/gender
+        lines.add(SIM_NAME + player.getName() + RESET
+                + MUTED + " (" + player.getAge() + player.getGender().charAt(0) + ")" + RESET);
 
-        // One need bar per need
+        // Career status under name
+        models.Career career = player.getCareer();
+        if (career.getCurrentCareer() != CareerList.JOBLESS) {
+            lines.add(BRIGHT_MAGENTA + career.getTitle() + RESET
+                    + MUTED + "  " + career.getRank() + RESET);
+        } else {
+            lines.add(MUTED + "Unemployed" + RESET);
+        }
+
+        lines.add(""); // breathing room
+
+        // Need bars
         for (Map.Entry<String, Need> e : player.getNeeds().entrySet()) {
             lines.add(needBar(e.getValue()));
         }
 
         // Money
-        lines.add(YELLOW + String.format("Money: $%.2f", player.getMoney()) + RESET);
+        lines.add("");
+        lines.add(BRIGHT_YELLOW + "Money: $" + String.format("%.2f", player.getMoney()) + RESET);
 
-        // Visual divider before the location section
-        lines.add(GRAY + repeat("─", LEFT_W) + RESET);
+        // Divider
+        lines.add(BORDER + repeat("─", LEFT_W) + RESET);
 
-        // Current location
-        lines.add(GRAY + "Location: " + RESET + CYAN + loc.getLocationName() + RESET);
+        // Location
+        lines.add(LABEL + "at  " + RESET + BRIGHT_CYAN + loc.getLocationName() + RESET);
 
-        // Characters present at this location
+        // Nearby characters
         List<models.Character> chars = PlayController.charsAt(loc, state, world);
         if (chars.isEmpty()) {
-            lines.add(GRAY + "No one nearby." + RESET);
+            lines.add(MUTED + "No one nearby." + RESET);
         } else {
-            lines.add(GRAY + "People here:" + RESET);
+            lines.add(LABEL + "nearby:" + RESET);
             for (models.Character c : chars) {
                 String status = state.getRelationshipService().getStatus(player, c);
                 int score = state.getRelationshipService().getScore(player, c);
-                lines.add(WHITE + c.getName() + RESET);
-                // Score colour: green if positive, red if negative, yellow if neutral
-                String scoreColour = score > 0 ? GREEN : score < 0 ? RED : YELLOW;
-                lines.add(GRAY + "- " + status + " " + RESET + scoreColour + "(" + score + ")" + RESET);
+                String scoreColour = score > 0 ? BRIGHT_GREEN : score < 0 ? BRIGHT_RED : BRIGHT_YELLOW;
+                lines.add(WHITE + c.getName() + RESET
+                        + MUTED + " [" + status + "] " + RESET
+                        + scoreColour + score + RESET);
             }
         }
 
         return lines;
     }
 
-    /**
-     * Builds the middle panel lines based on the current
-     * {@link PlayController.Step}. Each step renders a different numbered menu
-     * or list.
-     */
     private static List<String> buildActionsPanel(PlayController.Step step, Location loc,
             SimCharacter player, GameState state,
             WorldRegistry world) {
@@ -313,9 +301,6 @@ public class Renderer {
                 lines.add(menuItem("3", "Change Location"));
                 lines.add(menuItem("4", "Switch Character"));
                 lines.add(menuItem("5", "Exit Game"));
-                // Option 6: always visible — "Choose Career" if jobless, "Work" if employed
-                boolean jobless = player.getCareer().getCurrentCareer() == CareerList.JOBLESS;
-                lines.add(menuItem("6", jobless ? "Choose Career" : "Work"));
             }
 
             case INTERACTABLES -> {
@@ -330,9 +315,9 @@ public class Renderer {
             case INTERACTABLE_ACTION -> {
                 Furniture f = PlayController.getSelectedFurniture();
                 lines.add(menuTitle(f.getName()));
-                List<String> actions = new ArrayList<>(f.getActionNames());
-                for (int i = 0; i < actions.size(); i++) {
-                    lines.add(menuItem(String.valueOf(i + 1), actions.get(i)));
+                List<String> acts = new ArrayList<>(f.getActionNames());
+                for (int i = 0; i < acts.size(); i++) {
+                    lines.add(menuItem(String.valueOf(i + 1), acts.get(i)));
                 }
                 lines.add(backItem());
             }
@@ -341,13 +326,13 @@ public class Renderer {
                 lines.add(menuTitle("Socialise"));
                 List<models.Character> chars = PlayController.charsAt(loc, state, world);
                 if (chars.isEmpty()) {
-                    lines.add(GRAY + "Nobody here." + RESET);
+                    lines.add(MUTED + "Nobody here." + RESET);
                 } else {
                     for (int i = 0; i < chars.size(); i++) {
                         models.Character c = chars.get(i);
                         String status = state.getRelationshipService().getStatus(player, c);
                         lines.add(menuItem(String.valueOf(i + 1),
-                                c.getName() + " " + GRAY + "[" + status + "]" + RESET));
+                                c.getName() + " " + MUTED + "[" + status + "]" + RESET));
                     }
                 }
                 lines.add(backItem());
@@ -369,7 +354,7 @@ public class Renderer {
                 for (int i = 0; i < locs.size(); i++) {
                     boolean here = locs.get(i).equals(loc);
                     String label = locs.get(i).getLocationName()
-                            + (here ? " " + YELLOW + "(here)" + RESET : "");
+                            + (here ? " " + BRIGHT_CYAN + "← here" + RESET : "");
                     lines.add(menuItem(String.valueOf(i + 1), label));
                 }
                 lines.add(backItem());
@@ -381,49 +366,21 @@ public class Renderer {
                 for (int i = 0; i < sims.size(); i++) {
                     boolean active = sims.get(i).equals(player);
                     String label = sims.get(i).getName()
-                            + (active ? " " + YELLOW + "(active)" + RESET : "");
+                            + (active ? " " + BRIGHT_GREEN + "← active" + RESET : "");
                     lines.add(menuItem(String.valueOf(i + 1), label));
-                }
-                lines.add(backItem());
-            }
-
-            case WORK -> {
-                lines.add(menuTitle("Work"));
-                models.Career career = player.getCareer();
-                boolean jobless = career.getCurrentCareer() == CareerList.JOBLESS;
-                if (jobless) {
-                    lines.add(RED + "No career assigned." + RESET);
-                    lines.add(GRAY + "Find a job first." + RESET);
-                } else {
-                    int shiftEnd = services.WorkService.SHIFT_START_HOUR + (int) career.getWorkingHours();
-                    int curHour = state.getGameClock().getHours();
-                    boolean inShift = curHour >= services.WorkService.SHIFT_START_HOUR
-                            && curHour < shiftEnd;
-                    lines.add(GRAY + "Job:   " + RESET + WHITE + career.getTitle() + RESET);
-                    lines.add(GRAY + "Shift: " + RESET + WHITE
-                            + String.format("%02d:00 – %02d:00",
-                                    services.WorkService.SHIFT_START_HOUR, shiftEnd) + RESET);
-                    lines.add(GRAY + "Pay:   " + RESET + YELLOW
-                            + String.format("$%.2f / day", career.getSalary()) + RESET);
-                    lines.add("");
-                    if (inShift) {
-                        lines.add(menuItem("1", "Start shift"));
-                    } else {
-                        lines.add(GRAY + "Not working hours." + RESET);
-                    }
                 }
                 lines.add(backItem());
             }
 
             case PICK_CAREER -> {
                 lines.add(menuTitle("Choose Career"));
-                List<Types.CareerList> careers = PlayController.getAvailableCareers();
+                List<CareerList> careers = PlayController.getAvailableCareers();
                 for (int i = 0; i < careers.size(); i++) {
-                    Types.CareerList c = careers.get(i);
-                    String label = c.getTitle()
-                            + GRAY + "  $" + String.format("%.0f", c.getBaseSalary())
+                    CareerList c = careers.get(i);
+                    String label = BRIGHT_WHITE + c.getTitle() + RESET
+                            + MUTED + "  $" + String.format("%.0f", c.getBaseSalary())
                             + "/day  " + String.format("%.0f", c.getWorkingHours()) + "h" + RESET;
-                    lines.add(menuItem(String.valueOf(i + 1), label));
+                    lines.add(BRIGHT_YELLOW + (i + 1) + ". " + RESET + label);
                 }
                 lines.add(backItem());
             }
@@ -432,35 +389,22 @@ public class Renderer {
         return lines;
     }
 
-    /**
-     * Builds the skills panel: one compact progress bar per skill.
-     *
-     * <p>
-     * Format per line: {@code "Cooking  L3 [####------] 40"} where the bar width
-     * is scaled to fit {@link #SKILLS_W}.
-     */
     private static List<String> buildSkillsPanel(SimCharacter player) {
         List<String> lines = new ArrayList<>();
-        lines.add(BOLD + CYAN + "Skills" + RESET);
-
+        lines.add(menuTitle("Skills"));
         for (Map.Entry<String, models.Skills> e : player.getAllSkills().entrySet()) {
             lines.add(skillBar(e.getValue()));
         }
-
         return lines;
     }
 
-    /**
-     * Builds the notifications panel: all live notifications colour-coded by
-     * severity and word-wrapped to fit {@link #NOTIF_W}.
-     */
     private static List<String> buildNotificationsPanel(SimCharacter player) {
         List<String> lines = new ArrayList<>();
-        lines.add(BOLD + CYAN + "Notifications" + RESET);
+        lines.add(menuTitle("Notifications"));
 
         List<String> notes = player.getNotifications();
         if (notes.isEmpty()) {
-            lines.add(GRAY + "None." + RESET);
+            lines.add(MUTED + "None." + RESET);
             return lines;
         }
 
@@ -478,7 +422,6 @@ public class Renderer {
             lines.add("");
         }
 
-        // Remove trailing blank
         while (!lines.isEmpty() && stripAnsi(lines.get(lines.size() - 1)).isBlank()) {
             lines.remove(lines.size() - 1);
         }
@@ -487,174 +430,110 @@ public class Renderer {
     }
 
     // ── Notification classifier ───────────────────────────────────────────────
-    /**
-     * Returns the ANSI colour code appropriate for a notification string by
-     * scanning it for known keywords.
-     *
-     * <ul>
-     * <li>{@code GREEN} — positive outcome: improved, unlocked, gained,
-     * promoted</li>
-     * <li>{@code RED} — critical / failure: failed, worsened, critically, not
-     * enough</li>
-     * <li>{@code YELLOW} — warning: low, warning, unchanged, cost</li>
-     * <li>{@code WHITE} — neutral / informational (default)</li>
-     * </ul>
-     *
-     * @param note the raw notification string (may contain ANSI codes)
-     * @return one of the ANSI colour constants defined in this class
-     */
     private static String classifyNotification(String note) {
         String lower = note.toLowerCase();
-
-        if (lower.contains("improved") || lower.contains("unlocked")
-                || lower.contains("gained") || lower.contains("level up")
-                || lower.contains("promoted")) {
-            return GREEN;
+        if (lower.contains("levelled up") || lower.contains("improved")
+                || lower.contains("unlocked") || lower.contains("gained")
+                || lower.contains("promoted") || lower.contains("earned")
+                || lower.contains("started career")) {
+            return BRIGHT_GREEN;
         }
         if (lower.contains("failed") || lower.contains("worsened")
+                || lower.contains("starving") || lower.contains("exhausted")
                 || lower.contains("critically") || lower.contains("can't")
                 || lower.contains("cannot") || lower.contains("not enough")) {
-            return RED;
+            return BRIGHT_RED;
         }
         if (lower.contains("warning") || lower.contains("low")
+                || lower.contains("late") || lower.contains("lonely")
+                || lower.contains("bored") || lower.contains("dirty")
                 || lower.contains("unchanged") || lower.contains("cost")) {
-            return YELLOW;
+            return BRIGHT_YELLOW;
         }
-
-        return WHITE;
+        return BRIGHT_WHITE;
     }
 
-    // ── Need bar ──────────────────────────────────────────────────────────────
-    /**
-     * Renders a single need as a coloured progress bar.
-     *
-     * <p>
-     * Format: {@code "Social   [#######---] 70"}
-     * <ul>
-     * <li>Label — 8 visible chars, GRAY</li>
-     * <li>Bar — 12 visible chars ({@code [} + 10 + {@code ]})</li>
-     * <li>Value — 3 visible chars, colour-coded</li>
-     * </ul>
-     * Total visible width: 8+1+12+1+3 = 25, fits within {@code COL_W = 30}.
-     *
-     * <p>
-     * Bar colour thresholds:
-     * <ul>
-     * <li>≥ 70 → GREEN</li>
-     * <li>≥ 40 → YELLOW</li>
-     * <li>&lt; 40 → RED</li>
-     * </ul>
-     *
-     * @param need the need to render
-     * @return a formatted, coloured string safe to pass to {@link #padColoured}
-     */
+    // ── Need bar ─────────────────────────────────────────────────────────────
     private static String needBar(Need need) {
         int val = (int) need.getValue();
         int filled = val * BAR_WIDTH / 100;
         int empty = BAR_WIDTH - filled;
+        String colour = val >= 70 ? BRIGHT_GREEN : val >= 40 ? BRIGHT_YELLOW : BRIGHT_RED;
 
-        String barColour = val >= 70 ? GREEN : val >= 40 ? YELLOW : RED;
-
-        // Longest need name is "Hygiene" (7 chars) — pad to 8 for alignment
-        String label = GRAY + String.format("%-8s", need.getNeedName()) + RESET;
-        String bar = GRAY + "[" + RESET
-                + barColour + repeat("#", filled) + RESET
-                + GRAY + repeat("-", empty) + RESET
-                + GRAY + "]" + RESET;
-        String valueStr = barColour + String.format("%3d", val) + RESET;
+        String label = LABEL + String.format("%-8s", need.getNeedName()) + RESET;
+        String bar = MUTED + "[" + RESET
+                + colour + repeat("#", filled) + RESET
+                + MUTED + repeat("-", empty) + RESET
+                + MUTED + "]" + RESET;
+        String valueStr = colour + String.format("%3d", val) + RESET;
 
         return label + " " + bar + " " + valueStr;
     }
 
-    /**
-     * Renders a single skill as a progress bar styled in GRAY.
-     *
-     * <p>
-     * Format: {@code "Programming L3 [##########]"}
-     * <ul>
-     * <li>Name — 11 visible chars (padded to longest name "Programming"),
-     * GRAY</li>
-     * <li>Level — 3 visible chars ({@code L} + level number), GRAY</li>
-     * <li>Bar — 12 visible chars ({@code [} + 10 + {@code ]}), fill
-     * colour-coded</li>
-     * </ul>
-     * Total: 11+1+3+1+12 = 28, fits within {@code COL_W = 30}. No percentage
-     * shown — progress is communicated by level and bar fill.
-     */
+    // ── Skill bar ─────────────────────────────────────────────────────────────
     private static String skillBar(models.Skills skill) {
         int pct = (int) Math.min(100, (skill.getProgress() / skill.getRequiredXP()) * 100);
         int filled = pct * BAR_WIDTH / 100;
         int empty = BAR_WIDTH - filled;
+        String colour = pct >= 70 ? BRIGHT_GREEN : pct >= 40 ? BRIGHT_YELLOW : BRIGHT_BLUE;
 
-        String barColour = pct >= 70 ? GREEN : pct >= 40 ? YELLOW : RED;
+        // Skills use BLUE at the low end instead of RED — not being bad at a skill
+        // is different from a need being critically low.
+        String label = LABEL + String.format("%-11s", skill.getSkillName()) + RESET;
+        String bar = MUTED + "[" + RESET
+                + colour + repeat("#", filled) + RESET
+                + MUTED + repeat("-", empty) + RESET
+                + MUTED + "]" + RESET;
+        String level = MUTED + "Level: " + (int) skill.getProgress() + RESET;
 
-        // label=11, bar=12, xp e.g. "40/100"
-        String label = GRAY + String.format("%-11s", skill.getSkillName()) + RESET;
-        String bar = GRAY + "[" + RESET
-                + barColour + repeat("#", filled) + RESET
-                + GRAY + repeat("-", empty) + RESET
-                + GRAY + "]" + RESET;
-        String xp = GRAY + (int) skill.getProgress() + "/" + (int) skill.getRequiredXP() + RESET;
-
-        return label + " " + bar + " " + xp;
+        return label + " " + bar + " " + level;
     }
 
-    // ── Box-drawing primitives ────────────────────────────────────────────────
-    /**
-     * Prints one body row of the four-column box. Each cell is padded to its
-     * column width using {@link #padColoured} so ANSI codes don't corrupt
-     * alignment.
-     */
-    private static void printRow(String l, String m, String s, String n) {
-        System.out.println(
-                GRAY + "│" + RESET + " " + padColoured(l, LEFT_W)
-                + " " + GRAY + "│" + RESET + " " + padColoured(m, MID_W)
-                + " " + GRAY + "│" + RESET + " " + padColoured(s, SKILLS_W)
-                + " " + GRAY + "│" + RESET + " " + padColoured(n, NOTIF_W)
-                + " " + GRAY + "│" + RESET
-        );
-    }
-
-    // ── Menu item helpers ─────────────────────────────────────────────────────
-    /**
-     * Returns a bold cyan section title for the middle panel.
-     *
-     * @param title the title text
-     * @return coloured string
-     */
+    // ── Menu helpers ──────────────────────────────────────────────────────────
     private static String menuTitle(String title) {
-        return BOLD + CYAN + title + RESET;
+        return TITLE + title + RESET;
     }
 
-    /**
-     * Returns a formatted menu item: number in YELLOW, label in WHITE. Example:
-     * {@code "1. Interact Objects"}
-     *
-     * @param num the option number as a string
-     * @param label the descriptive text
-     * @return coloured string
-     */
     private static String menuItem(String num, String label) {
-        return YELLOW + num + ". " + RESET + WHITE + label + RESET;
+        return BRIGHT_YELLOW + num + "." + RESET + " " + WHITE + label + RESET;
     }
 
-    /**
-     * Returns the standard "0. Back" back-navigation item in GRAY.
-     *
-     * @return coloured string
-     */
     private static String backItem() {
-        return GRAY + "0. Back" + RESET;
+        return MUTED + "0. Back" + RESET;
     }
 
-    // ── ANSI-aware string utilities ───────────────────────────────────────────
-    /**
-     * Removes all ANSI escape sequences from a string, leaving only printable
-     * characters.
-     *
-     * @param s the input string (may be null)
-     * @return the plain string with no escape codes
-     */
+    // ── Clock & banner ────────────────────────────────────────────────────────
+    private static String formatClock(GameState state) {
+        return CLOCK + "DAY " + state.getGameClock().getDays()
+                + "  ─  " + String.format("%02d:%02d",
+                        state.getGameClock().getHours(),
+                        state.getGameClock().getMinutes()) + RESET;
+    }
+
+    private static void printBanner(String title) {
+        System.out.println(BORDER + "┌" + repeat("─", INNER_W) + "┐" + RESET);
+        System.out.println(BORDER + "│" + RESET + CLOCK + center(title, INNER_W) + RESET + BORDER + "│" + RESET);
+        System.out.println(BORDER + "└" + repeat("─", INNER_W) + "┘" + RESET);
+    }
+
+    // ── Sim label ─────────────────────────────────────────────────────────────
+    private static String simLabel(String name, String age, String gender) {
+        return BRIGHT_WHITE + name + RESET
+                + MUTED + " (" + age + gender.charAt(0) + ")" + RESET;
+    }
+
+    private static void showCommitted(List<String[]> committed) {
+        if (committed.isEmpty()) {
+            return;
+        }
+        System.out.println("  " + MUTED + "Sims added so far:" + RESET);
+        for (String[] d : committed) {
+            System.out.println("    " + BRIGHT_BLACK + "•" + RESET + " " + simLabel(d[0], d[1], d[2]));
+        }
+        System.out.println();
+    }
+
+    // ── ANSI string utilities ─────────────────────────────────────────────────
     private static String stripAnsi(String s) {
         if (s == null) {
             return "";
@@ -662,31 +541,10 @@ public class Renderer {
         return s.replaceAll("\u001B\\[[;\\d]*m", "");
     }
 
-    /**
-     * Returns the number of visible terminal columns occupied by a string,
-     * ignoring any ANSI escape codes it contains.
-     *
-     * @param s the string to measure
-     * @return visible character count
-     */
     private static int visibleLength(String s) {
         return stripAnsi(s).length();
     }
 
-    /**
-     * Pads a string that may contain ANSI codes to exactly {@code width}
-     * visible characters by appending trailing spaces after the raw string
-     * (including its colour codes). This ensures the box border character that
-     * follows is never accidentally coloured.
-     *
-     * <p>
-     * If the visible content already exceeds {@code width}, colour is stripped
-     * and the plain text is hard-truncated to preserve column alignment.
-     *
-     * @param s the string to pad (may be null)
-     * @param width the desired visible width
-     * @return a string whose visible length equals {@code width}
-     */
     private static String padColoured(String s, int width) {
         if (s == null) {
             s = "";
@@ -698,14 +556,6 @@ public class Renderer {
         return s + repeat(" ", width - plain.length());
     }
 
-    /**
-     * Centers a possibly-coloured string within {@code width} visible
-     * characters, padding with spaces on both sides.
-     *
-     * @param s the string to center
-     * @param width the total visible width to fill
-     * @return a string whose visible length equals {@code width}
-     */
     private static String centerColoured(String s, int width) {
         int vlen = visibleLength(s);
         if (vlen >= width) {
@@ -716,14 +566,6 @@ public class Renderer {
         return repeat(" ", lpad) + s + repeat(" ", total - lpad);
     }
 
-    /**
-     * Pads or truncates a plain (no ANSI) string to exactly {@code width}
-     * characters.
-     *
-     * @param s the string to pad (may be null)
-     * @param width the desired width
-     * @return left-aligned string of exactly {@code width} characters
-     */
     private static String pad(String s, int width) {
         if (s == null) {
             s = "";
@@ -734,13 +576,6 @@ public class Renderer {
         return String.format("%-" + width + "s", s);
     }
 
-    /**
-     * Centers a plain (no ANSI) string within {@code width} characters.
-     *
-     * @param s the string to center
-     * @param width the total width to fill
-     * @return centered string of exactly {@code width} characters
-     */
     private static String center(String s, int width) {
         if (s.length() >= width) {
             return pad(s, width);
@@ -750,13 +585,6 @@ public class Renderer {
         return repeat(" ", lpad) + s + repeat(" ", total - lpad);
     }
 
-    /**
-     * Returns a string consisting of {@code ch} repeated {@code n} times.
-     *
-     * @param ch the character or string to repeat
-     * @param n the number of repetitions (0 or negative returns empty string)
-     * @return the repeated string
-     */
     private static String repeat(String ch, int n) {
         if (n <= 0) {
             return "";
@@ -768,26 +596,12 @@ public class Renderer {
         return sb.toString();
     }
 
-    // ── Word wrap ─────────────────────────────────────────────────────────────
-    /**
-     * Splits a plain string into lines of at most {@code width} characters,
-     * breaking at word boundaries where possible and hard-breaking at
-     * {@code width} if no space is found.
-     *
-     * <p>
-     * Input must not contain ANSI escape codes — strip them first if needed.
-     *
-     * @param s the plain text to wrap
-     * @param width the maximum line length in characters
-     * @return a list of lines, each no longer than {@code width} characters
-     */
     private static List<String> wordWrap(String s, int width) {
         List<String> result = new ArrayList<>();
         while (s.length() > width) {
             int cut = s.lastIndexOf(' ', width);
             if (cut <= 0) {
-                cut = width; // no space found — hard cut
-
+                cut = width;
             }
             result.add(s.substring(0, cut));
             s = s.substring(cut).stripLeading();
@@ -798,69 +612,6 @@ public class Renderer {
         return result;
     }
 
-    // ── Miscellaneous helpers ─────────────────────────────────────────────────
-    /**
-     * Prints a full-width single-row banner box, used for the create-sim screen
-     * header.
-     *
-     * @param title the text to display centered in the banner
-     */
-    private static void printBanner(String title) {
-        System.out.println(GRAY + "┌" + repeat("─", INNER_W) + "┐" + RESET);
-        System.out.println(GRAY + "│" + RESET + center(title, INNER_W) + GRAY + "│" + RESET);
-        System.out.println(GRAY + "└" + repeat("─", INNER_W) + "┘" + RESET);
-    }
-
-    /**
-     * Returns a formatted clock string for the game header, e.g.
-     * {@code "DAY 1 - 08:17"}, styled in bold cyan.
-     *
-     * @param state the current game state
-     * @return coloured clock string
-     */
-    private static String formatClock(GameState state) {
-        return BOLD + CYAN
-                + "DAY " + state.getGameClock().getDays()
-                + " - " + String.format("%02d:%02d",
-                        state.getGameClock().getHours(),
-                        state.getGameClock().getMinutes())
-                + RESET;
-    }
-
-    /**
-     * Formats a sim's name, age, and gender into a compact display label.
-     * Example: {@code "nicholas (21M)"}
-     *
-     * @param name the sim's name
-     * @param age the sim's age as a string
-     * @param gender the sim's gender string (only the first character is used)
-     * @return formatted label string
-     */
-    private static String simLabel(String name, String age, String gender) {
-        return name + " (" + age + gender.charAt(0) + ")";
-    }
-
-    /**
-     * Prints the list of sims committed so far during the creation wizard, used
-     * as context while the player is entering subsequent sims.
-     *
-     * @param committed list of {@code [name, age, gender]} string arrays
-     */
-    private static void showCommitted(List<String[]> committed) {
-        if (committed.isEmpty()) {
-            return;
-        }
-        System.out.println("  Sims added so far:");
-        for (String[] d : committed) {
-            System.out.println("    • " + simLabel(d[0], d[1], d[2]));
-        }
-        System.out.println();
-    }
-
-    /**
-     * Clears the terminal using the ANSI escape sequence {@code ESC[H ESC[2J}.
-     * Works on any real terminal (Linux, macOS, Windows Terminal).
-     */
     private static void clearScreen() {
         System.out.print("\033[H\033[2J");
         System.out.flush();

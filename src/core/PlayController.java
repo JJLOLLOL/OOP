@@ -38,8 +38,7 @@ public class PlayController {
         SOCIALISE, SOCIALISE_ACTION,
         CHANGE_LOCATION,
         SWITCH_CHARACTER,
-        WORK, // Work confirmation screen (employed sims)
-        PICK_CAREER    // Career selection screen (jobless sims)
+        PICK_CAREER    // Career selection — triggered by interacting with the Work Desk
     }
 
     // ── Session state ─────────────────────────────────────────────────────────
@@ -77,7 +76,7 @@ public class PlayController {
             case INTERACTABLES ->
                 handleInteractables(input, loc);
             case INTERACTABLE_ACTION ->
-                handleInteractableAction(input, player);
+                handleInteractableAction(input, player, state);
             case SOCIALISE ->
                 handleSocialise(input, loc, state, world);
             case SOCIALISE_ACTION ->
@@ -86,8 +85,6 @@ public class PlayController {
                 handleChangeLocation(input, player, world);
             case SWITCH_CHARACTER ->
                 handleSwitchCharacter(input, state);
-            case WORK ->
-                handleWork(input, player, state);
             case PICK_CAREER ->
                 handlePickCareer(input, player);
         };
@@ -98,11 +95,11 @@ public class PlayController {
      * Main menu: options 1–5 always shown; option 6 (Work) shown only at the
      * Office.
      */
+    /**
+     * Main menu: options 1–5. Work is accessed via the Work Desk in
+     * Interactables.
+     */
     private static boolean handleMain(String input, GameState state) {
-        SimCharacter player = state.getActivePlayer();
-        boolean atOffice = "Office".equals(player.getLocation().getLocationName());
-        boolean jobless = player.getCareer().getCurrentCareer() == CareerList.JOBLESS;
-
         switch (input) {
             case "1" ->
                 setStep(Step.INTERACTABLES);
@@ -114,19 +111,8 @@ public class PlayController {
                 setStep(Step.SWITCH_CHARACTER);
             case "5" ->
                 state.setPhase(GameState.Phase.QUIT);
-            case "6" -> {
-                if (jobless) {
-                    // Always allow career selection regardless of location
-                    setStep(Step.PICK_CAREER);
-                } else if (!atOffice) {
-                    Renderer.showError("Go to the Office to work.");
-                    return false;
-                } else {
-                    setStep(Step.WORK);
-                }
-            }
             default -> {
-                Renderer.showError("Invalid choice. Enter 1-6.");
+                Renderer.showError("Invalid choice. Enter 1-5.");
                 return false;
             }
         }
@@ -137,6 +123,11 @@ public class PlayController {
      * Career picker: shown when the sim is jobless and tries to work. Lists all
      * careers from {@link CareerList} (excluding JOBLESS). Input {@code "0"}
      * cancels back to main.
+     */
+    /**
+     * Career picker: triggered when a jobless sim interacts with the Work Desk.
+     * Selecting a career immediately starts the shift via {@link WorkService}.
+     * Input {@code "0"} cancels back to main.
      */
     private static boolean handlePickCareer(String input, SimCharacter player) {
         if (input.equals("0")) {
@@ -150,29 +141,6 @@ public class PlayController {
                     + ". Head to the Office to work!");
             setStep(Step.MAIN);
         });
-    }
-
-    /**
-     * Work confirmation: shown when an employed sim is at the Office. Input
-     * {@code "1"} starts the shift; {@code "0"} cancels.
-     */
-    private static boolean handleWork(String input, SimCharacter player, GameState state) {
-        switch (input) {
-            case "0" -> {
-                setStep(Step.MAIN);
-                return true;
-            }
-            case "1" -> {
-                String result = WorkService.work(player, state.getGameClock());
-                player.addNotification(result);
-                setStep(Step.MAIN);
-                return true;
-            }
-            default -> {
-                Renderer.showError("Enter 1 to start shift or 0 to cancel.");
-                return false;
-            }
-        }
     }
 
     /**
@@ -192,7 +160,19 @@ public class PlayController {
     /**
      * Furniture action: perform chosen action. {@code "0"} → interactables.
      */
-    private static boolean handleInteractableAction(String input, SimCharacter player) {
+    /**
+     * Furniture action: performs the chosen action on the selected furniture.
+     *
+     * <p>
+     * Special case — the Work Desk "Work" action is intercepted here:
+     * <ul>
+     * <li>Jobless sim → routes to {@link Step#PICK_CAREER}</li>
+     * <li>Employed sim → calls {@link WorkService#work} directly</li>
+     * </ul>
+     * Input {@code "0"} goes back to the furniture list.
+     */
+    private static boolean handleInteractableAction(String input, SimCharacter player,
+            GameState state) {
         if (input.equals("0")) {
             selectedFurniture = null;
             setStep(Step.INTERACTABLES);
@@ -200,12 +180,30 @@ public class PlayController {
         }
         List<String> actions = new ArrayList<>(selectedFurniture.getActionNames());
         return pickFromList(input, actions, idx -> {
-            boolean ok = selectedFurniture.performAction(actions.get(idx), player);
-            if (!ok) {
-                player.addNotification("Action failed: not enough money or needs too low.");
+            String actionName = actions.get(idx);
+
+            // Intercept the Work Desk action
+            if ("Work Desk".equals(selectedFurniture.getName()) && "Work".equals(actionName)) {
+                if (player.getCareer().getCurrentCareer() == CareerList.JOBLESS) {
+                    // No job yet — route to career picker
+                    setStep(Step.PICK_CAREER);
+                } else {
+                    // Has a job — run the shift
+                    String result = WorkService.work(player, state.getGameClock());
+                    player.addNotification(result);
+                    setStep(Step.MAIN);
+                }
+            } else {
+                // Pass the clock so timeRequired advances in-game time
+                models.actions.FurnitureAction action = selectedFurniture.getAction(actionName);
+                boolean ok = (action != null)
+                        && action.perform(player, state.getGameClock());
+                if (!ok) {
+                    player.addNotification("Action failed: not enough money or needs too low.");
+                }
+                setStep(Step.MAIN);
             }
             selectedFurniture = null;
-            setStep(Step.MAIN);
         });
     }
 
