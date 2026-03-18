@@ -9,7 +9,7 @@ import models.NPCCharacter;
 import models.Relationship;
 import models.SimCharacter;
 
-public class RelationshipManager {
+public class RelationshipService {
 
     private Map<Character, Map<Character, Relationship>> relationships = new HashMap<>();
 

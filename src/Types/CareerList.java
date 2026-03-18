@@ -1,4 +1,4 @@
-package models;
+package Types;
 
 public enum CareerList {
   SOFTWARE_DEVELOPER("Software Developer", 225.0, 8.0,  new String[]{"Programming", "Logic", "Creativity"}),

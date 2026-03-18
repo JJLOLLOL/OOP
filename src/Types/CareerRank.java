@@ -1,4 +1,4 @@
-package models;
+package Types;
 
 public class CareerRank {
   public static final Object[][] RANK = {

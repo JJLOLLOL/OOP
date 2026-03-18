@@ -1,4 +1,4 @@
-package models;
+package Types;
 
 public enum AchievementType {
     // Career-based achievements

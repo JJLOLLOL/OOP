@@ -1,5 +1,8 @@
 package models;
 
+import Types.CareerList;
+import Types.CareerRank;
+
 public class Career implements ProgressBar {
     private CareerList currentCareer;
     private int currentRank;

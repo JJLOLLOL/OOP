@@ -4,11 +4,13 @@ import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import models.AchievementType;
-import models.CareerList;
+
 import models.Location;
 import models.SimCharacter;
 import org.junit.Test;
+
+import Types.AchievementType;
+import Types.CareerList;
 import services.AchievementService;
 
 public class AchievementServiceTest {

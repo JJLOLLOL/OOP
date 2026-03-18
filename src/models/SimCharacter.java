@@ -1,5 +1,7 @@
 package models;
 
+import Types.AchievementType;
+import Types.CareerList;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -14,7 +16,6 @@ import models.needs.*;
 
 public class SimCharacter extends Character {
 
-    private boolean currentlyPlaying;
     private double money;
     private House house;
     private Map<String, Need> needs = new HashMap<>();

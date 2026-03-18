@@ -4,6 +4,7 @@ package models.Testing;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
+import Types.CareerList;
 import models.Location;
 import models.House;
 import models.Activity;
@@ -12,7 +13,6 @@ import models.needs.Need;
 import models.Skills;
 import models.SimCharacter;
 import models.Career;
-import models.CareerList;
 
 import java.util.ArrayList;
 

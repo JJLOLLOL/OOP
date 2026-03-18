@@ -1,5 +1,8 @@
 package services;
 
+import Types.AchievementType;
+import Types.CareerList;
+import Types.CareerRank;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -7,10 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
-
-import models.AchievementType;
-import models.CareerList;
-import models.CareerRank;
 import models.Character;
 import models.SimCharacter;
 
@@ -119,7 +118,7 @@ public class AchievementService {
     public List<AchievementType> evaluateSocialAchievements(
             SimCharacter sim,
             List<? extends Character> allCharacters,
-            RelationshipManager relationshipManager) {
+            RelationshipService relationshipManager) {
 
         List<AchievementType> newlyUnlocked = new ArrayList<>();
         List<Character> others = getOtherCharacters(sim, allCharacters);
