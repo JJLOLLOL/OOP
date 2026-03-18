@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import models.actions.Furniture;
+import models.debuffs.DebuffRegistry;
 import models.needs.*;
 
 public class SimCharacter extends Character {
@@ -72,11 +73,7 @@ public class SimCharacter extends Character {
 
     //skills methods
     public String updateSkill(String skillName, double amount) {
-        Skills skill = skillsList.getSkill(skillName);
-        if (skill == null) {
-            return "Skill " + skillName + " not found!";
-        }
-        return skill.addProgress(amount);
+        return addSkillProgress(skillName, amount);
     }
 
     public String displaySkills() {
@@ -101,18 +98,20 @@ public class SimCharacter extends Character {
     }
 
     public void adjustNeed(String needName, double amount) {
+        double modifiedAmount = DebuffRegistry.applyNeedModifiers(this, needName, amount);
         Need need = needs.get(needName);
         if (need != null) {
-            need.adjustNeed(amount);
+            need.adjustNeed(modifiedAmount);
         }
     }
 
     public String addSkillProgress(String skillName, double amount) {
+        double modifiedAmount = DebuffRegistry.applySkillModifiers(this, skillName, amount);
         Skills skill = skillsList.getSkill(skillName);
         if (skill == null) {
             return "Skill " + skillName + " not found!";
         }
-        return skill.addProgress(amount);
+        return skill.addProgress(modifiedAmount);
     }
 
     public boolean performFurnitureActivity(Furniture furniture, String actionName) {
@@ -172,6 +171,8 @@ public class SimCharacter extends Character {
 
     public void updateNeed(double deltaTime) {
         for (Need need : needs.values()) {
+            double modifiedDecay = DebuffRegistry.applyDecayModifiers(this, need.getNeedName(), need.getBaseDecayRate());
+            need.setDecayRate(modifiedDecay);
             need.decay(deltaTime);
             if (need.isCriticallyLow()) {
                 if (!need.isCriticallyLowNotified()) {

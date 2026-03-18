@@ -7,6 +7,7 @@ public abstract class Need {
     private final String needName;
     private double value; // 0 to 100
     private double decayRate; // How much it decreases per tick
+    private final double baseDecayRate;
     private static final double CRITICAL_THRESHOLD = 20.0; // Below this, the need is critically low
     private boolean criticallyLowNotified = false;
 
@@ -18,6 +19,7 @@ public abstract class Need {
             throw new IllegalArgumentException("Decay rate cannot be negative.");
         }
         this.decayRate = decayRate;
+        this.baseDecayRate = decayRate;
     }
 
     // Each tick, the need decays by its decay rate
@@ -49,6 +51,10 @@ public abstract class Need {
 
     public double getDecayRate() {
         return decayRate;
+    }
+
+    public double getBaseDecayRate() {
+        return baseDecayRate;
     }
 
     public boolean isCriticallyLowNotified() {
