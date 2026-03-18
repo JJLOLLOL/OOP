@@ -32,12 +32,6 @@ public class GameEngine {
      */
     private static final double NS_PER_UPDATE = 1_000_000_000.0 / UPDATES_PER_SECOND;
 
-    /**
-     * Nanoseconds between periodic screen redraws during gameplay (1 per
-     * second).
-     */
-    private static final long NS_PER_RENDER = 1_000_000_000L;
-
     // ── Fields ────────────────────────────────────────────────────────────────
     private final GameState state;
     private final WorldRegistry world;
@@ -72,7 +66,6 @@ public class GameEngine {
     // ── Game loop ─────────────────────────────────────────────────────────────
     private void run() {
         long lastTime = System.nanoTime();
-        long lastRenderTime = System.nanoTime();
         double unprocessed = 0;
 
         Renderer.render(state, world); // show the initial create-sim screen
@@ -91,11 +84,6 @@ public class GameEngine {
             String input = inputQueue.poll();
             if (input != null) {
                 handleInput(input.trim());
-                lastRenderTime = now; // reset so we don't immediately double-draw
-            } else if (state.getPhase() == GameState.Phase.PLAYING
-                    && (now - lastRenderTime) >= NS_PER_RENDER) {
-                Renderer.render(state, world);
-                lastRenderTime = now;
             }
 
             try {
