@@ -564,4 +564,21 @@ public class FurnitureFactory {
         return danceFloor;
     }
 
+    public static Furniture createWorkDesk() {
+        Furniture workDesk = new Furniture("Work Desk", "Your workstation for the day.");
+        workDesk.addAction(new FurnitureAction(
+                "Work",
+                "Put in a full day's work.",
+                Map.of(
+                        "Hunger", -50.0,
+                        "Energy", -70.0,
+                        "Hygiene", -30.0,
+                        "Fun", -30.0,
+                        "Social", 20.0
+                ),
+                Map.of(),
+                0.0,
+                8.0));
+        return workDesk;
+    }
 }

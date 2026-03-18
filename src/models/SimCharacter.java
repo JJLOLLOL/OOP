@@ -59,18 +59,15 @@ public class SimCharacter extends Character {
         return career.toString();
     }
 
-    public void joinCareer(CareerList newCareer) {
-        this.career = new Career(newCareer);
+    /**
+     * Returns the sim's current {@link Career}.
+     */
+    public Career getCareer() {
+        return career;
     }
 
-    //NOT FINALISED WORK METHOD, just added to test if the addProgress and updateSkills are working
-    //please remove if needed during merge
-    public String work() {
-        String careerResult = career.addProgress(10.0);
-        for (String skill : career.getCurrentCareer().getRelatedSkills()) {
-            updateSkill(skill, 5.0);
-        }
-        return careerResult;
+    public void joinCareer(CareerList newCareer) {
+        this.career = new Career(newCareer);
     }
 
     //skills methods

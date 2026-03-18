@@ -1,5 +1,6 @@
 package ui;
 
+import Types.CareerList;
 import Types.InteractionType;
 import core.CreateSimController;
 import core.GameState;
@@ -312,6 +313,9 @@ public class Renderer {
                 lines.add(menuItem("3", "Change Location"));
                 lines.add(menuItem("4", "Switch Character"));
                 lines.add(menuItem("5", "Exit Game"));
+                // Option 6: always visible — "Choose Career" if jobless, "Work" if employed
+                boolean jobless = player.getCareer().getCurrentCareer() == CareerList.JOBLESS;
+                lines.add(menuItem("6", jobless ? "Choose Career" : "Work"));
             }
 
             case INTERACTABLES -> {
@@ -378,6 +382,47 @@ public class Renderer {
                     boolean active = sims.get(i).equals(player);
                     String label = sims.get(i).getName()
                             + (active ? " " + YELLOW + "(active)" + RESET : "");
+                    lines.add(menuItem(String.valueOf(i + 1), label));
+                }
+                lines.add(backItem());
+            }
+
+            case WORK -> {
+                lines.add(menuTitle("Work"));
+                models.Career career = player.getCareer();
+                boolean jobless = career.getCurrentCareer() == CareerList.JOBLESS;
+                if (jobless) {
+                    lines.add(RED + "No career assigned." + RESET);
+                    lines.add(GRAY + "Find a job first." + RESET);
+                } else {
+                    int shiftEnd = services.WorkService.SHIFT_START_HOUR + (int) career.getWorkingHours();
+                    int curHour = state.getGameClock().getHours();
+                    boolean inShift = curHour >= services.WorkService.SHIFT_START_HOUR
+                            && curHour < shiftEnd;
+                    lines.add(GRAY + "Job:   " + RESET + WHITE + career.getTitle() + RESET);
+                    lines.add(GRAY + "Shift: " + RESET + WHITE
+                            + String.format("%02d:00 – %02d:00",
+                                    services.WorkService.SHIFT_START_HOUR, shiftEnd) + RESET);
+                    lines.add(GRAY + "Pay:   " + RESET + YELLOW
+                            + String.format("$%.2f / day", career.getSalary()) + RESET);
+                    lines.add("");
+                    if (inShift) {
+                        lines.add(menuItem("1", "Start shift"));
+                    } else {
+                        lines.add(GRAY + "Not working hours." + RESET);
+                    }
+                }
+                lines.add(backItem());
+            }
+
+            case PICK_CAREER -> {
+                lines.add(menuTitle("Choose Career"));
+                List<Types.CareerList> careers = PlayController.getAvailableCareers();
+                for (int i = 0; i < careers.size(); i++) {
+                    Types.CareerList c = careers.get(i);
+                    String label = c.getTitle()
+                            + GRAY + "  $" + String.format("%.0f", c.getBaseSalary())
+                            + "/day  " + String.format("%.0f", c.getWorkingHours()) + "h" + RESET;
                     lines.add(menuItem(String.valueOf(i + 1), label));
                 }
                 lines.add(backItem());
@@ -543,15 +588,15 @@ public class Renderer {
 
         String barColour = pct >= 70 ? GREEN : pct >= 40 ? YELLOW : RED;
 
-        // Pad to 11 — the longest skill name is "Programming"
+        // label=11, bar=12, xp e.g. "40/100"
         String label = GRAY + String.format("%-11s", skill.getSkillName()) + RESET;
-        String level = GRAY + String.format("L%-2d", skill.getLevel()) + RESET;
         String bar = GRAY + "[" + RESET
                 + barColour + repeat("#", filled) + RESET
                 + GRAY + repeat("-", empty) + RESET
                 + GRAY + "]" + RESET;
+        String xp = GRAY + (int) skill.getProgress() + "/" + (int) skill.getRequiredXP() + RESET;
 
-        return label + " " + level + " " + bar;
+        return label + " " + bar + " " + xp;
     }
 
     // ── Box-drawing primitives ────────────────────────────────────────────────
@@ -743,7 +788,8 @@ public class Renderer {
             if (cut <= 0) {
                 cut = width; // no space found — hard cut
 
-                        }result.add(s.substring(0, cut));
+            }
+            result.add(s.substring(0, cut));
             s = s.substring(cut).stripLeading();
         }
         if (!s.isEmpty()) {

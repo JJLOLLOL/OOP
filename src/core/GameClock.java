@@ -84,6 +84,31 @@ public class GameClock {
      *
      * @return formatted time string
      */
+    /**
+     * Advances the clock by the given number of in-game hours. Used by
+     * {@link services.WorkService} to skip time after a work shift.
+     *
+     * @param hours fractional in-game hours to advance (e.g. 6.5 = 6 h 30 m)
+     */
+    /**
+     * Advances the clock by the given number of in-game hours. Used by
+     * {@link services.WorkService} to skip time after a work shift.
+     *
+     * @param hoursToAdd fractional in-game hours to advance (e.g. 6.5 = 6 h 30
+     * m)
+     */
+    public void advanceHours(double hoursToAdd) {
+        int totalMinutes = (int) Math.round(hoursToAdd * 60);
+        minutes += totalMinutes;
+        while (minutes >= 60) {
+            minutes -= 60;
+            if (++hours >= 24) {
+                hours = 0;
+                days++;
+            }
+        }
+    }
+
     public String getTimeString() {
         return String.format("Day %d - %02d:%02d", days, hours, minutes);
     }

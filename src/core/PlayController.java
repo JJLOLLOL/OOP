@@ -1,11 +1,15 @@
 package core;
 
+import Types.CareerList;
 import Types.InteractionType;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import models.Location;
 import models.SimCharacter;
 import models.actions.Furniture;
+import services.WorkService;
 import ui.Renderer;
 
 /**
@@ -17,9 +21,6 @@ import ui.Renderer;
  * input is interpreted.
  *
  * <p>
- * State is held in static fields because only one play session exists per run.
- *
- * <p>
  * {@link #handleInput} returns {@code true} when the step changed so
  * {@link GameEngine} knows to trigger a redraw, and {@code false} when an
  * inline error was shown instead (so the error stays visible).
@@ -29,20 +30,29 @@ public class PlayController {
     // ── Step enum ─────────────────────────────────────────────────────────────
     /**
      * The active sub-menu within the playing phase. {@link ui.Renderer}
-     * switches on this to display the correct action list.
+     * switches on this to display the correct panel.
      */
     public enum Step {
         MAIN,
         INTERACTABLES, INTERACTABLE_ACTION,
         SOCIALISE, SOCIALISE_ACTION,
         CHANGE_LOCATION,
-        SWITCH_CHARACTER
+        SWITCH_CHARACTER,
+        WORK, // Work confirmation screen (employed sims)
+        PICK_CAREER    // Career selection screen (jobless sims)
     }
 
     // ── Session state ─────────────────────────────────────────────────────────
     private static Step step = Step.MAIN;
     private static Furniture selectedFurniture = null;
     private static models.Character selectedCharacter = null;
+
+    /**
+     * Available careers shown in the PICK_CAREER screen (excludes JOBLESS).
+     */
+    private static final List<CareerList> AVAILABLE_CAREERS = Arrays.stream(CareerList.values())
+            .filter(c -> c != CareerList.JOBLESS)
+            .collect(Collectors.toList());
 
     // ── Entry point ───────────────────────────────────────────────────────────
     /**
@@ -52,10 +62,12 @@ public class PlayController {
      * @param state the live game state
      * @param world the world registry
      * @return {@code true} if the step changed and the screen should redraw;
-     * {@code false} if an inline error was shown and the screen should remain
-     * as-is so the player can read it
+     * {@code false} if an inline error was shown
      */
     public static boolean handleInput(String input, GameState state, WorldRegistry world) {
+        // Advance notification timer on every player action
+        state.getActivePlayer().tickNotifications();
+
         SimCharacter player = state.getActivePlayer();
         Location loc = player.getLocation();
 
@@ -74,15 +86,23 @@ public class PlayController {
                 handleChangeLocation(input, player, world);
             case SWITCH_CHARACTER ->
                 handleSwitchCharacter(input, state);
+            case WORK ->
+                handleWork(input, player, state);
+            case PICK_CAREER ->
+                handlePickCareer(input, player);
         };
     }
 
     // ── Sub-handlers ──────────────────────────────────────────────────────────
     /**
-     * Main menu: routes to the chosen sub-menu or quits. Options 1–5 map to
-     * Interactables, Socialise, Change Location, Switch Character, and Exit.
+     * Main menu: options 1–5 always shown; option 6 (Work) shown only at the
+     * Office.
      */
     private static boolean handleMain(String input, GameState state) {
+        SimCharacter player = state.getActivePlayer();
+        boolean atOffice = "Office".equals(player.getLocation().getLocationName());
+        boolean jobless = player.getCareer().getCurrentCareer() == CareerList.JOBLESS;
+
         switch (input) {
             case "1" ->
                 setStep(Step.INTERACTABLES);
@@ -94,8 +114,19 @@ public class PlayController {
                 setStep(Step.SWITCH_CHARACTER);
             case "5" ->
                 state.setPhase(GameState.Phase.QUIT);
+            case "6" -> {
+                if (jobless) {
+                    // Always allow career selection regardless of location
+                    setStep(Step.PICK_CAREER);
+                } else if (!atOffice) {
+                    Renderer.showError("Go to the Office to work.");
+                    return false;
+                } else {
+                    setStep(Step.WORK);
+                }
+            }
             default -> {
-                Renderer.showError("Invalid choice. Enter 1-5.");
+                Renderer.showError("Invalid choice. Enter 1-6.");
                 return false;
             }
         }
@@ -103,8 +134,49 @@ public class PlayController {
     }
 
     /**
-     * Interactables list: selects a piece of furniture by number. Input
-     * {@code "0"} returns to the main menu.
+     * Career picker: shown when the sim is jobless and tries to work. Lists all
+     * careers from {@link CareerList} (excluding JOBLESS). Input {@code "0"}
+     * cancels back to main.
+     */
+    private static boolean handlePickCareer(String input, SimCharacter player) {
+        if (input.equals("0")) {
+            setStep(Step.MAIN);
+            return true;
+        }
+        return pickFromList(input, AVAILABLE_CAREERS, idx -> {
+            CareerList chosen = AVAILABLE_CAREERS.get(idx);
+            player.joinCareer(chosen);
+            player.addNotification("Career started: " + chosen.getTitle()
+                    + ". Head to the Office to work!");
+            setStep(Step.MAIN);
+        });
+    }
+
+    /**
+     * Work confirmation: shown when an employed sim is at the Office. Input
+     * {@code "1"} starts the shift; {@code "0"} cancels.
+     */
+    private static boolean handleWork(String input, SimCharacter player, GameState state) {
+        switch (input) {
+            case "0" -> {
+                setStep(Step.MAIN);
+                return true;
+            }
+            case "1" -> {
+                String result = WorkService.work(player, state.getGameClock());
+                player.addNotification(result);
+                setStep(Step.MAIN);
+                return true;
+            }
+            default -> {
+                Renderer.showError("Enter 1 to start shift or 0 to cancel.");
+                return false;
+            }
+        }
+    }
+
+    /**
+     * Interactables list: select furniture by number. {@code "0"} → main.
      */
     private static boolean handleInteractables(String input, Location loc) {
         if (input.equals("0")) {
@@ -118,9 +190,7 @@ public class PlayController {
     }
 
     /**
-     * Furniture action: performs the chosen action on the selected furniture.
-     * Notifies the player if the action fails (but still returns to main menu).
-     * Input {@code "0"} goes back to the furniture list.
+     * Furniture action: perform chosen action. {@code "0"} → interactables.
      */
     private static boolean handleInteractableAction(String input, SimCharacter player) {
         if (input.equals("0")) {
@@ -140,8 +210,7 @@ public class PlayController {
     }
 
     /**
-     * Socialise list: selects a nearby character to interact with. Input
-     * {@code "0"} returns to the main menu.
+     * Socialise list: select a nearby character. {@code "0"} → main.
      */
     private static boolean handleSocialise(String input, Location loc,
             GameState state, WorldRegistry world) {
@@ -157,9 +226,7 @@ public class PlayController {
     }
 
     /**
-     * Socialise action: applies the chosen {@link InteractionType} to the
-     * selected character. Adjusts the Social need and adds a notification.
-     * Input {@code "0"} goes back to the character list.
+     * Socialise action: apply chosen interaction. {@code "0"} → socialise.
      */
     private static boolean handleSocialiseAction(String input, SimCharacter player,
             GameState state) {
@@ -180,8 +247,7 @@ public class PlayController {
     }
 
     /**
-     * Change location: moves the player to the chosen location. Input
-     * {@code "0"} returns to the main menu.
+     * Change location: move player to chosen location. {@code "0"} → main.
      */
     private static boolean handleChangeLocation(String input, SimCharacter player,
             WorldRegistry world) {
@@ -197,8 +263,7 @@ public class PlayController {
     }
 
     /**
-     * Switch character: changes the active player to the chosen sim. Input
-     * {@code "0"} returns to the main menu.
+     * Switch character: change active player. {@code "0"} → main.
      */
     private static boolean handleSwitchCharacter(String input, GameState state) {
         if (input.equals("0")) {
@@ -215,14 +280,7 @@ public class PlayController {
     // ── Shared input helper ───────────────────────────────────────────────────
     /**
      * Parses {@code input} as a 1-based index into {@code list}, calls
-     * {@code action} with the resolved 0-based index on success, and shows an
-     * inline error on failure.
-     *
-     * @param input the raw player input
-     * @param list the list being indexed (used for bounds checking)
-     * @param action called with the valid 0-based index
-     * @return {@code true} if the index was valid and {@code action} ran;
-     * {@code false} if the input was invalid and an error was shown
+     * {@code action} on success, shows an inline error on failure.
      */
     private static boolean pickFromList(String input, List<?> list, IndexAction action) {
         try {
@@ -238,10 +296,6 @@ public class PlayController {
         }
     }
 
-    /**
-     * Functional interface for the index-based callback in
-     * {@link #pickFromList}.
-     */
     @FunctionalInterface
     private interface IndexAction {
 
@@ -257,29 +311,29 @@ public class PlayController {
     }
 
     /**
-     * Returns the furniture selected in the Interactables step, or
-     * {@code null}.
+     * Returns the furniture selected in INTERACTABLE_ACTION, or {@code null}.
      */
     public static Furniture getSelectedFurniture() {
         return selectedFurniture;
     }
 
     /**
-     * Returns the character selected in the Socialise step, or {@code null}.
+     * Returns the character selected in SOCIALISE_ACTION, or {@code null}.
      */
     public static models.Character getSelectedCharacter() {
         return selectedCharacter;
     }
 
     /**
+     * Returns the list of selectable careers (excludes JOBLESS).
+     */
+    public static List<CareerList> getAvailableCareers() {
+        return AVAILABLE_CAREERS;
+    }
+
+    /**
      * Returns all characters present at {@code loc}: other player sims first,
-     * then NPCs. Excludes the active player. Used by both this controller and
-     * the {@link ui.Renderer}.
-     *
-     * @param loc the location to query
-     * @param state the live game state
-     * @param world the world registry
-     * @return characters at the given location, excluding the active player
+     * then NPCs. Excludes the active player.
      */
     public static List<models.Character> charsAt(Location loc, GameState state,
             WorldRegistry world) {

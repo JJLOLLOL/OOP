@@ -125,6 +125,9 @@ public class WorldRegistry {
                 FurnitureFactory.createDanceFloor(),
                 FurnitureFactory.createToilet()
         ));
+        addLocation(map, "Office", List.of(
+                FurnitureFactory.createWorkDesk()
+        ));
 
         return map;
     }
