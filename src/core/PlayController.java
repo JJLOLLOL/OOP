@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import models.Location;
 import models.SimCharacter;
 import models.actions.Furniture;
+import models.debuffs.DebuffRegistry;
 import services.WorkService;
 import ui.Renderer;
 
@@ -236,6 +237,15 @@ public class PlayController {
         InteractionType[] types = InteractionType.values();
         return pickFromList(input, List.of(types), idx -> {
             InteractionType chosen = types[idx];
+
+            String blockReason = DebuffRegistry.getInteractionBlockReason(player, "Socialise");
+            if (blockReason != null) {
+                player.addNotification(selectedCharacter.getName() + " refused to interact! " + blockReason);
+                selectedCharacter = null;
+                setStep(Step.MAIN);
+                return;
+            }
+
             String result = state.getRelationshipService().interact(player, selectedCharacter, chosen);
             player.adjustNeed("Social", chosen.getValue());
             player.addNotification(result);
