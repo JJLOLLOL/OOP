@@ -1,9 +1,11 @@
 package models;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -11,6 +13,7 @@ import models.furnitureactions.Furniture;
 import models.needs.*;
 
 public class SimCharacter extends Character {
+
     private boolean currentlyPlaying;
     private double money;
     private House house;
@@ -18,7 +21,11 @@ public class SimCharacter extends Character {
     private SkillsList skillsList = new SkillsList();
     private Career career;
     private Set<AchievementType> unlockedAchievements = new HashSet<>();
-    private List<String> notifications = new ArrayList<>();
+    // Each notification is stored as (message, tickAdded).
+    // Notifications expire after NOTIFICATION_LIFETIME_TICKS ticks.
+    private static final int NOTIFICATION_LIFETIME_TICKS = 160; // 8 seconds at 20 ticks/sec
+    private final List<Map.Entry<String, Long>> notifications = new ArrayList<>();
+    private long currentTick = 0;
 
     public SimCharacter(String name, int age, String gender, Location defaultLocation) {
         super(name, age, gender, defaultLocation);
@@ -38,7 +45,7 @@ public class SimCharacter extends Character {
 
     //career methods
     public String updateCareer(double amount) {
-        if (career.getTitle().equals("Jobless")){
+        if (career.getTitle().equals("Jobless")) {
             return "Cannot gain career XP while unemployed!";
         }
         return career.addProgress(amount);
@@ -51,7 +58,6 @@ public class SimCharacter extends Character {
     public void joinCareer(CareerList newCareer) {
         this.career = new Career(newCareer);
     }
-
 
     //NOT FINALISED WORK METHOD, just added to test if the addProgress and updateSkills are working
     //please remove if needed during merge
@@ -75,6 +81,7 @@ public class SimCharacter extends Character {
     public String displaySkills() {
         return skillsList.displaySkills();
     }
+
     // getters & setters
     public void setMoney(double amount) {
         money += amount;
@@ -127,14 +134,36 @@ public class SimCharacter extends Character {
     }
 
     public void addNotification(String message) {
-        notifications.add(message);
-        if (notifications.size() > 3) {
-            notifications.remove(0); // keep only last 3 to avoid panel UI overflow
+        notifications.add(new AbstractMap.SimpleEntry<>(message, currentTick));
+        // Cap at 5 so the panel never overflows even with slow expiry
+        if (notifications.size() > 5) {
+            notifications.remove(0);
         }
     }
 
+    /**
+     * Called every game tick so notifications expire after
+     * NOTIFICATION_LIFETIME_TICKS.
+     */
+    public void tickNotifications() {
+        currentTick++;
+        Iterator<Map.Entry<String, Long>> it = notifications.iterator();
+        while (it.hasNext()) {
+            if (currentTick - it.next().getValue() >= NOTIFICATION_LIFETIME_TICKS) {
+                it.remove();
+            }
+        }
+    }
+
+    /**
+     * Returns only the message strings of currently-live notifications.
+     */
     public List<String> getNotifications() {
-        return notifications;
+        List<String> live = new ArrayList<>();
+        for (Map.Entry<String, Long> entry : notifications) {
+            live.add(entry.getKey());
+        }
+        return live;
     }
 
     public void updateNeed(double deltaTime) {

@@ -1,0 +1,38 @@
+package services;
+
+import core.GameClock;
+import core.WorldRegistry;
+import java.util.Map;
+import java.util.TreeMap;
+import models.Location;
+import models.NPCCharacter;
+
+/**
+ * Updates NPC locations every tick according to their daily schedule.
+ */
+public class NpcService {
+
+    private final WorldRegistry world;
+
+    public NpcService(WorldRegistry world) {
+        this.world = world;
+    }
+
+    public void updateNPCLocations(GameClock clock) {
+        int currentTime = clock.getTimeAsHHMM(); // e.g. 1430 for 14:30
+
+        for (NPCCharacter npc : world.getAllNPCs()) {
+            TreeMap<Integer, Location> schedule = npc.getSchedule();
+            if (schedule.isEmpty()) continue;
+
+            // Find the latest scheduled entry that is <= currentTime
+            Map.Entry<Integer, Location> entry = schedule.floorEntry(currentTime);
+            if (entry == null) {
+                // Before the first entry of the day — use the last entry from "yesterday"
+                entry = schedule.lastEntry();
+            }
+
+            npc.setLocation(entry.getValue());
+        }
+    }
+}

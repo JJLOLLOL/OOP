@@ -1,127 +1,129 @@
 package core;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
-import models.SimCharacter;
-import services.RelationshipManager;
-import ui.state.State;
+import services.*;
+import ui.Renderer;
 
+/**
+ * Owns the game loop. Drives ticks, delegates update/render to services and
+ * Renderer.
+ */
 public class GameEngine {
 
-    private final ArrayList<SimCharacter> sims = new ArrayList<>();
-    private SimCharacter activePlayer;
-    private final RelationshipManager relationshipManager = new RelationshipManager();
-    private boolean isRunning;
-    private State<?> activeState;
-    private final GameClock gameClock;
+    private final GameState state;
+    private final WorldRegistry world;
+    private final NpcService npcService;
 
-    // The engine now owns its input pipeline
     private final InputQueue inputQueue;
     private final InputThread inputThread;
     private final Thread inputThreadHandle;
 
     public GameEngine() {
+        this.state = new GameState();
+        this.world = new WorldRegistry();
+        this.npcService = new NpcService(world);
+
         this.inputQueue = new InputQueue();
         this.inputThread = new InputThread(new Scanner(System.in), this.inputQueue);
         this.inputThreadHandle = new Thread(this.inputThread, "Input-Thread");
-        this.inputThreadHandle.setDaemon(true); // The JVM can exit even if this thread is running
-        this.gameClock = new GameClock();
+        this.inputThreadHandle.setDaemon(true);
     }
 
-    public GameClock getGameClock() {
-        return gameClock;
+    public GameState getState() {
+        return state;
     }
 
-    public SimCharacter getActivePlayer() {
-        return activePlayer;
+    public WorldRegistry getWorld() {
+        return world;
     }
 
-    public void setActivePlayer(SimCharacter character) {
-        activePlayer = character;
-    }
-
-    public RelationshipManager getRelationshipManager() {
-        return relationshipManager;
-    }
-
-    public List<SimCharacter> getSims() {
-        return sims;
-    }
-    
-    public void addSim(SimCharacter sim) {
-        sims.add(sim);
-    }
-
-    public void setGameState(State<?> newState) {
-        this.activeState = newState;
-    }
-
-    /**
-     * Allows states to poll for user input in a decoupled way.
-     */
     public String pollInput() {
         return inputQueue.poll();
     }
 
-    public void start(State<?> initialState) {
-        setGameState(initialState);
-        WorldRegistry.getInstance(); // Initialize the world data
+    public void start() {
         inputThreadHandle.start();
         run();
     }
 
+    // ── Game loop ─────────────────────────────────────────────────────────────
     private void run() {
-        isRunning = true;
+        final double UPDATES_PER_SECOND = 20.0;
+        final double NS_PER_UPDATE = 1_000_000_000.0 / UPDATES_PER_SECOND;
 
-        final double NANO_SECONDS_PER_SECOND = 1_000_000_000.0;
-        final double UPDATES_PER_SECOND = 20.0; // Target updates per second for game logic
-        final double NANO_SECONDS_PER_UPDATE = NANO_SECONDS_PER_SECOND / UPDATES_PER_SECOND;
+        // Re-render the playing screen once per real second so the clock visually ticks
+        final long NS_PER_RENDER = 1_000_000_000L;
 
         long lastTime = System.nanoTime();
-        double unprocessedTime = 0;
+        double unprocessed = 0;
+        long lastRenderTime = System.nanoTime();
 
-        while (isRunning) {
+        // Initial render (shows the create-sim prompt)
+        Renderer.render(state, world);
+
+        while (state.isRunning()) {
             long now = System.nanoTime();
-            unprocessedTime += (now - lastTime);
+            unprocessed += (now - lastTime);
             lastTime = now;
 
-            // Process updates in a fixed timestep to ensure deterministic game logic
-            while (unprocessedTime >= NANO_SECONDS_PER_UPDATE) {
-                unprocessedTime -= NANO_SECONDS_PER_UPDATE;
-                
-                double deltaTime = 1.0 / UPDATES_PER_SECOND;
-                gameClock.tick(deltaTime);
-                if (activePlayer != null) {
-                    // Scale deltaTime so decay rates (e.g., 2.0) apply per real minute instead of per real second
-                    // This gives the player plenty of time to explore without constant need interruptions
-                    activePlayer.updateNeed(deltaTime / 60.0);
-                }
-                
-                activeState.update(this, deltaTime);
+            // Fixed-timestep logic ticks
+            while (unprocessed >= NS_PER_UPDATE) {
+                unprocessed -= NS_PER_UPDATE;
+                tick(1.0 / UPDATES_PER_SECOND);
             }
 
-            // Render as fast as possible (or with a frame cap)
-            activeState.render(this);
+            // Check for player input — always re-render after handling it
+            String input = pollInput();
+            if (input != null) {
+                handleInput(input.trim());
+                lastRenderTime = now; // reset cadence to avoid an immediate double-draw
+            } else if (state.getPhase() == GameState.Phase.PLAYING
+                    && (now - lastRenderTime) >= NS_PER_RENDER) {
+                // Periodic redraw during gameplay keeps the clock and needs bar fresh
+                Renderer.render(state, world);
+                lastRenderTime = now;
+            }
 
-            // Yield to other threads to avoid busy-waiting and save CPU
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
-                end(); // Exit gracefully if the main thread is interrupted
+                state.setPhase(GameState.Phase.QUIT);
             }
         }
+
         shutdown();
     }
 
-    public void end() {
-        isRunning = false;
+    // ── Per-tick logic ────────────────────────────────────────────────────────
+    private void tick(double dt) {
+        state.getGameClock().tick(dt);
+
+        // Update every sim's needs and expire old notifications
+        for (models.SimCharacter sim : state.getSims()) {
+            sim.updateNeed(dt / 60.0); // /60 so decay is per real-minute not per real-second
+            sim.tickNotifications();   // expire notifications older than 8 real seconds
+        }
+
+        // Move NPCs to wherever their schedule says they should be right now
+        npcService.updateNPCLocations(state.getGameClock());
     }
 
+    // ── Input routing ─────────────────────────────────────────────────────────
+    private void handleInput(String input) {
+        switch (state.getPhase()) {
+            case CREATE_SIM ->
+                CreateSimService.handleInput(input, state, world);
+            case PLAYING ->
+                PlayService.handleInput(input, state, world);
+            default -> {
+            }
+        }
+    }
+
+    // ── Shutdown ──────────────────────────────────────────────────────────────
     private void shutdown() {
-        System.out.println("Shutting down...\n");
+        System.out.println("\nGame over. Thanks for playing!");
         inputThread.stop();
-        // No need to close System.in scanner, let the JVM handle it.
     }
 }
