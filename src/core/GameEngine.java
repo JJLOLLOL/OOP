@@ -111,8 +111,6 @@ public class GameEngine {
         for (models.SimCharacter sim : state.getSims()) {
             // Divide by 60 so need decay rates are expressed per real-minute
             sim.updateNeed(dt / 60.0);
-            // Remove notifications that have been on screen for a period of time
-            sim.tickNotifications();
         }
 
         npcService.updateNPCLocations(state.getGameClock());

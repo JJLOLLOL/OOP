@@ -27,7 +27,7 @@ public class SimCharacter extends Character {
     /**
      * Notifications expire after this many player actions.
      */
-    private static final int NOTIFICATION_LIFETIME_TICKS = 160;
+    private static final int NOTIFICATION_LIFETIME_TICKS = 10;
 
     private final List<Map.Entry<String, Long>> notifications = new ArrayList<>();
     private long currentTick = 0;
