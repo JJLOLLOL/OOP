@@ -2,6 +2,7 @@ package models;
 
 import Types.AchievementType;
 import Types.CareerList;
+import Types.SkillsList;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,7 +12,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import models.furnitureactions.Furniture;
+import models.actions.Furniture;
 import models.needs.*;
 
 public class SimCharacter extends Character {
@@ -22,9 +23,11 @@ public class SimCharacter extends Character {
     private SkillsList skillsList = new SkillsList();
     private Career career;
     private Set<AchievementType> unlockedAchievements = new HashSet<>();
-    // Each notification is stored as (message, tickAdded).
-    // Notifications expire after NOTIFICATION_LIFETIME_TICKS ticks.
-    private static final int NOTIFICATION_LIFETIME_TICKS = 160; // 8 seconds at 20 ticks/sec
+    /**
+     * Notifications expire after this many player actions.
+     */
+    private static final int NOTIFICATION_LIFETIME_TICKS = 160;
+
     private final List<Map.Entry<String, Long>> notifications = new ArrayList<>();
     private long currentTick = 0;
 
@@ -134,17 +137,20 @@ public class SimCharacter extends Character {
         return Collections.unmodifiableSet(unlockedAchievements);
     }
 
+    /**
+     * Adds a notification. Capped at 5 entries; oldest is dropped if exceeded.
+     * Expires after {@value #NOTIFICATION_LIFETIME_TICKS} player actions.
+     */
     public void addNotification(String message) {
         notifications.add(new AbstractMap.SimpleEntry<>(message, currentTick));
-        // Cap at 5 so the panel never overflows even with slow expiry
         if (notifications.size() > 5) {
             notifications.remove(0);
         }
     }
 
     /**
-     * Called every game tick so notifications expire after
-     * NOTIFICATION_LIFETIME_TICKS.
+     * Called once per player action from {@link core.PlayController}.
+     * Increments the action counter and removes expired notifications.
      */
     public void tickNotifications() {
         currentTick++;
@@ -157,12 +163,12 @@ public class SimCharacter extends Character {
     }
 
     /**
-     * Returns only the message strings of currently-live notifications.
+     * Returns the message strings of all currently-live notifications.
      */
     public List<String> getNotifications() {
         List<String> live = new ArrayList<>();
-        for (Map.Entry<String, Long> entry : notifications) {
-            live.add(entry.getKey());
+        for (Map.Entry<String, Long> e : notifications) {
+            live.add(e.getKey());
         }
         return live;
     }

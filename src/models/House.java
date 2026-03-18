@@ -1,7 +1,8 @@
 package models;
 
 import java.util.ArrayList;
-import models.furnitureactions.Furniture;
+
+import models.actions.Furniture;
 
 public class House extends Location {
     //add 3 max furnitures only.

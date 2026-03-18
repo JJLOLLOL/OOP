@@ -4,8 +4,8 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import models.House;
-import models.furnitureactions.Furniture;
 import models.NPCCharacter;
+import models.actions.Furniture;
 
 import java.util.ArrayList;
 

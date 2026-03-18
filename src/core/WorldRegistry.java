@@ -10,8 +10,8 @@ import java.util.TreeMap;
 import models.House;
 import models.Location;
 import models.NPCCharacter;
-import models.furnitureactions.Furniture;
-import models.furnitureactions.FurnitureFactory;
+import models.actions.Furniture;
+import models.actions.FurnitureFactory;
 
 /**
  * Holds all static world data — locations and NPCs — built once at startup.

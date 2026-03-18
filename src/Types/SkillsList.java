@@ -1,6 +1,8 @@
-package models;
+package Types;
 
 import java.util.HashMap;
+
+import models.Skills;
 
 public class SkillsList {
     private HashMap<String, Skills> skills = new HashMap<>();

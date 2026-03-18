@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 import models.Location;
 import models.SimCharacter;
-import models.furnitureactions.Furniture;
+import models.actions.Furniture;
 import models.needs.Need;
 
 /**
@@ -23,11 +23,11 @@ import models.needs.Need;
  *
  * <h3>Layout (playing screen)</h3>
  * <pre>
- * ┌─────────────── DAY 1 - 08:17 ───────────────┐
- * ├──────────────┬───────────────┬───────────────┤
- * │ Left panel   │ Middle panel  │ Right panel   │
- * │ (char stats) │ (actions)     │ (notifs)      │
- * └──────────────┴───────────────┴───────────────┘
+ * ┌─────────────────────────── DAY 1 - 08:17 ───────────────────────────────────┐
+ * ├────────────┬──────────────┬──────────────┬────────────────────────────────┤
+ * │ Left       │ Middle       │ Skills       │ Notifications                   │
+ * │ (stats)    │ (actions)    │ (skill bars) │ (gameplay + achievements)       │
+ * └────────────┴──────────────┴──────────────┴────────────────────────────────┘
  * </pre>
  *
  * <h3>ANSI alignment rule</h3>
@@ -55,27 +55,25 @@ public class Renderer {
 
     // ── Column widths (visible characters, excluding border chars) ────────────
     /**
-     * Inner content width of the left panel.
+     * All four columns share the same inner content width. Total box width = 4
+     * × (COL_W + 2) + 3 dividers + 2 outer borders = 4 × 32 + 3 + 2 = 133
+     * visible chars.
      */
-    private static final int LEFT_W = 26;
+    private static final int COL_W = 30;
 
     /**
-     * Inner content width of the middle panel.
+     * Aliases so existing code stays readable.
      */
-    private static final int MID_W = 26;
+    private static final int LEFT_W = COL_W;
+    private static final int MID_W = COL_W;
+    private static final int SKILLS_W = COL_W;
+    private static final int NOTIF_W = COL_W;
 
     /**
-     * Inner content width of the right panel.
+     * Total inner width of the box (between ┌ and ┐), used for the clock
+     * header. Formula: 4 × (COL_W + 2) + 3 inner dividers = 4 × 32 + 3 = 131.
      */
-    private static final int RIGHT_W = 22;
-
-    /**
-     * Total inner width of the box, used for the full-width clock header row.
-     * Formula: (LEFT_W + 2) + 1 + (MID_W + 2) + 1 + (RIGHT_W + 2) = 82. The
-     * {@code + 2} accounts for the space either side of content inside each
-     * column; the {@code + 1} accounts for each inner vertical divider.
-     */
-    private static final int INNER_W = (LEFT_W + 2) + 1 + (MID_W + 2) + 1 + (RIGHT_W + 2);
+    private static final int INNER_W = 4 * (COL_W + 2) + 3;
 
     /**
      * Number of {@code #}/{@code -} characters in a need progress bar.
@@ -188,13 +186,14 @@ public class Renderer {
         Location loc = player.getLocation();
         PlayController.Step step = PlayController.getStep();
 
-        List<String> left = buildLeftPanel(player, loc, state, world);
-        List<String> mid = buildMiddlePanel(step, loc, player, state, world);
-        List<String> right = buildRightPanel(player);
+        List<String> stats = buildStatsPanel(player, loc, state, world);
+        List<String> actions = buildActionsPanel(step, loc, player, state, world);
+        List<String> skills = buildSkillsPanel(player);
+        List<String> notifs = buildNotificationsPanel(player);
 
         printBoxTop(formatClock(state));
         printColumnSeparator();
-        printBodyRows(left, mid, right);
+        printBodyRows(stats, skills, actions, notifs);
         printBoxBottom();
 
         System.out.print("\n> ");
@@ -210,37 +209,42 @@ public class Renderer {
     }
 
     /**
-     * Prints the horizontal separator that splits the header from the three
+     * Prints the horizontal separator that splits the header from the four
      * columns.
      */
     private static void printColumnSeparator() {
         System.out.println(GRAY + "├" + repeat("─", LEFT_W + 2)
                 + "┬" + repeat("─", MID_W + 2)
-                + "┬" + repeat("─", RIGHT_W + 2) + "┤" + RESET);
+                + "┬" + repeat("─", SKILLS_W + 2)
+                + "┬" + repeat("─", NOTIF_W + 2) + "┤" + RESET);
     }
 
     /**
      * Prints all body rows, padding shorter columns with empty lines so all
-     * three columns reach the same height.
+     * four columns reach the same height.
      */
-    private static void printBodyRows(List<String> left, List<String> mid, List<String> right) {
-        int rows = Math.max(left.size(), Math.max(mid.size(), right.size()));
+    private static void printBodyRows(List<String> left, List<String> mid,
+            List<String> skills, List<String> notifs) {
+        int rows = Math.max(Math.max(left.size(), mid.size()),
+                Math.max(skills.size(), notifs.size()));
         for (int i = 0; i < rows; i++) {
             printRow(
                     i < left.size() ? left.get(i) : "",
                     i < mid.size() ? mid.get(i) : "",
-                    i < right.size() ? right.get(i) : ""
+                    i < skills.size() ? skills.get(i) : "",
+                    i < notifs.size() ? notifs.get(i) : ""
             );
         }
     }
 
     /**
-     * Prints the bottom border of the three-column box.
+     * Prints the bottom border of the four-column box.
      */
     private static void printBoxBottom() {
         System.out.println(GRAY + "└" + repeat("─", LEFT_W + 2)
                 + "┴" + repeat("─", MID_W + 2)
-                + "┴" + repeat("─", RIGHT_W + 2) + "┘" + RESET);
+                + "┴" + repeat("─", SKILLS_W + 2)
+                + "┴" + repeat("─", NOTIF_W + 2) + "┘" + RESET);
     }
 
     // ── Panel builders ────────────────────────────────────────────────────────
@@ -248,7 +252,7 @@ public class Renderer {
      * Builds the left panel lines: character name, need bars, money, location,
      * and nearby characters with relationship status.
      */
-    private static List<String> buildLeftPanel(SimCharacter player, Location loc,
+    private static List<String> buildStatsPanel(SimCharacter player, Location loc,
             GameState state, WorldRegistry world) {
         List<String> lines = new ArrayList<>();
 
@@ -294,7 +298,7 @@ public class Renderer {
      * {@link PlayController.Step}. Each step renders a different numbered menu
      * or list.
      */
-    private static List<String> buildMiddlePanel(PlayController.Step step, Location loc,
+    private static List<String> buildActionsPanel(PlayController.Step step, Location loc,
             SimCharacter player, GameState state,
             WorldRegistry world) {
         List<String> lines = new ArrayList<>();
@@ -303,7 +307,7 @@ public class Renderer {
 
             case MAIN -> {
                 lines.add(menuTitle("Actions"));
-                lines.add(menuItem("1", "Interactables"));
+                lines.add(menuItem("1", "Interact Objects"));
                 lines.add(menuItem("2", "Socialise"));
                 lines.add(menuItem("3", "Change Location"));
                 lines.add(menuItem("4", "Switch Character"));
@@ -311,7 +315,7 @@ public class Renderer {
             }
 
             case INTERACTABLES -> {
-                lines.add(menuTitle("Interactables"));
+                lines.add(menuTitle("Interact Objects"));
                 List<Furniture> flist = loc.getFurnitures();
                 for (int i = 0; i < flist.size(); i++) {
                     lines.add(menuItem(String.valueOf(i + 1), flist.get(i).getName()));
@@ -384,11 +388,28 @@ public class Renderer {
     }
 
     /**
-     * Builds the right panel lines: the notifications title followed by each
-     * live notification, colour-coded by severity and word-wrapped to fit the
-     * column width.
+     * Builds the skills panel: one compact progress bar per skill.
+     *
+     * <p>
+     * Format per line: {@code "Cooking  L3 [####------] 40"} where the bar width
+     * is scaled to fit {@link #SKILLS_W}.
      */
-    private static List<String> buildRightPanel(SimCharacter player) {
+    private static List<String> buildSkillsPanel(SimCharacter player) {
+        List<String> lines = new ArrayList<>();
+        lines.add(BOLD + CYAN + "Skills" + RESET);
+
+        for (Map.Entry<String, models.Skills> e : player.getAllSkills().entrySet()) {
+            lines.add(skillBar(e.getValue()));
+        }
+
+        return lines;
+    }
+
+    /**
+     * Builds the notifications panel: all live notifications colour-coded by
+     * severity and word-wrapped to fit {@link #NOTIF_W}.
+     */
+    private static List<String> buildNotificationsPanel(SimCharacter player) {
         List<String> lines = new ArrayList<>();
         lines.add(BOLD + CYAN + "Notifications" + RESET);
 
@@ -400,23 +421,20 @@ public class Renderer {
 
         for (String note : notes) {
             String colour = classifyNotification(note);
-
-            // Notifications from RelationshipService may contain embedded '\n' —
-            // split them first so word-wrap operates on single-line segments.
             for (String segment : note.split("\n")) {
                 String clean = segment.trim();
                 if (clean.isEmpty()) {
                     continue;
                 }
-                for (String line : wordWrap(clean, RIGHT_W)) {
+                for (String line : wordWrap(clean, NOTIF_W)) {
                     lines.add(colour + line + RESET);
                 }
             }
-            lines.add(""); // blank line between separate notifications
+            lines.add("");
         }
 
-        // Remove the trailing blank line left by the loop above
-        if (!lines.isEmpty() && stripAnsi(lines.get(lines.size() - 1)).isBlank()) {
+        // Remove trailing blank
+        while (!lines.isEmpty() && stripAnsi(lines.get(lines.size() - 1)).isBlank()) {
             lines.remove(lines.size() - 1);
         }
 
@@ -470,9 +488,9 @@ public class Renderer {
      * <ul>
      * <li>Label — 8 visible chars, GRAY</li>
      * <li>Bar — 12 visible chars ({@code [} + 10 + {@code ]})</li>
-     * <li>Value — 3 visible chars, right-aligned</li>
+     * <li>Value — 3 visible chars, colour-coded</li>
      * </ul>
-     * Total visible width: 25, which fits within {@code LEFT_W = 26}.
+     * Total visible width: 8+1+12+1+3 = 25, fits within {@code COL_W = 30}.
      *
      * <p>
      * Bar colour thresholds:
@@ -492,6 +510,7 @@ public class Renderer {
 
         String barColour = val >= 70 ? GREEN : val >= 40 ? YELLOW : RED;
 
+        // Longest need name is "Hygiene" (7 chars) — pad to 8 for alignment
         String label = GRAY + String.format("%-8s", need.getNeedName()) + RESET;
         String bar = GRAY + "[" + RESET
                 + barColour + repeat("#", filled) + RESET
@@ -502,17 +521,51 @@ public class Renderer {
         return label + " " + bar + " " + valueStr;
     }
 
+    /**
+     * Renders a single skill as a progress bar styled in GRAY.
+     *
+     * <p>
+     * Format: {@code "Programming L3 [##########]"}
+     * <ul>
+     * <li>Name — 11 visible chars (padded to longest name "Programming"),
+     * GRAY</li>
+     * <li>Level — 3 visible chars ({@code L} + level number), GRAY</li>
+     * <li>Bar — 12 visible chars ({@code [} + 10 + {@code ]}), fill
+     * colour-coded</li>
+     * </ul>
+     * Total: 11+1+3+1+12 = 28, fits within {@code COL_W = 30}. No percentage
+     * shown — progress is communicated by level and bar fill.
+     */
+    private static String skillBar(models.Skills skill) {
+        int pct = (int) Math.min(100, (skill.getProgress() / skill.getRequiredXP()) * 100);
+        int filled = pct * BAR_WIDTH / 100;
+        int empty = BAR_WIDTH - filled;
+
+        String barColour = pct >= 70 ? GREEN : pct >= 40 ? YELLOW : RED;
+
+        // Pad to 11 — the longest skill name is "Programming"
+        String label = GRAY + String.format("%-11s", skill.getSkillName()) + RESET;
+        String level = GRAY + String.format("L%-2d", skill.getLevel()) + RESET;
+        String bar = GRAY + "[" + RESET
+                + barColour + repeat("#", filled) + RESET
+                + GRAY + repeat("-", empty) + RESET
+                + GRAY + "]" + RESET;
+
+        return label + " " + level + " " + bar;
+    }
+
     // ── Box-drawing primitives ────────────────────────────────────────────────
     /**
-     * Prints one body row of the three-column box. Each cell is padded to its
+     * Prints one body row of the four-column box. Each cell is padded to its
      * column width using {@link #padColoured} so ANSI codes don't corrupt
      * alignment.
      */
-    private static void printRow(String l, String m, String r) {
+    private static void printRow(String l, String m, String s, String n) {
         System.out.println(
                 GRAY + "│" + RESET + " " + padColoured(l, LEFT_W)
                 + " " + GRAY + "│" + RESET + " " + padColoured(m, MID_W)
-                + " " + GRAY + "│" + RESET + " " + padColoured(r, RIGHT_W)
+                + " " + GRAY + "│" + RESET + " " + padColoured(s, SKILLS_W)
+                + " " + GRAY + "│" + RESET + " " + padColoured(n, NOTIF_W)
                 + " " + GRAY + "│" + RESET
         );
     }
@@ -530,7 +583,7 @@ public class Renderer {
 
     /**
      * Returns a formatted menu item: number in YELLOW, label in WHITE. Example:
-     * {@code "1. Interactables"}
+     * {@code "1. Interact Objects"}
      *
      * @param num the option number as a string
      * @param label the descriptive text

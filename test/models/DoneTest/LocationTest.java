@@ -5,7 +5,7 @@ import static org.junit.Assert.*;
 
 import models.Location;
 import models.NPCCharacter;
-import models.furnitureactions.Furniture;
+import models.actions.Furniture;
 
 import java.util.ArrayList;
 

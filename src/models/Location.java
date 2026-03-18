@@ -2,7 +2,7 @@ package models;
 
 import java.util.ArrayList;
 import java.util.List;
-import models.furnitureactions.Furniture;
+import models.actions.Furniture;
 
 public class Location {
 

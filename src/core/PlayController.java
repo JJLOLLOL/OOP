@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import models.Location;
 import models.SimCharacter;
-import models.furnitureactions.Furniture;
+import models.actions.Furniture;
 import ui.Renderer;
 
 /**
