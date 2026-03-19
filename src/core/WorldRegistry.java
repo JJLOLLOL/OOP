@@ -148,17 +148,85 @@ public class WorldRegistry {
     private static List<NPCCharacter> buildNPCs(Map<String, Location> locs) {
         List<NPCCharacter> npcs = new ArrayList<>();
 
-        // Nicholas: park mornings, gym afternoons, cafe evenings
+        // ── Existing NPCs ─────────────────────────────────────────────────────────
         npcs.add(new NPCCharacter("Nicholas", 30, "Male", "A friendly local.",
-                schedule(locs, 900, "Park", 1500, "Gym", 2100, "Cafe")));
+                schedule(locs, 0, "Park", 900, "Park", 1500, "Gym", 2100, "Cafe")));
 
-        // Jia Jing: library mornings, cafe lunch, gym evenings
         npcs.add(new NPCCharacter("Jia Jing", 25, "Female", "A busy student.",
-                schedule(locs, 800, "Library", 1200, "Cafe", 1800, "Gym")));
+                schedule(locs, 0, "Library", 800, "Library", 1200, "Cafe", 1800, "Gym")));
 
-        // Mahesha: gym early, library afternoon, park late night
         npcs.add(new NPCCharacter("Mahesha", 40, "Male", "A frequent gym-goer.",
-                schedule(locs, 600, "Gym", 1400, "Library", 2200, "Park")));
+                schedule(locs, 0, "Gym", 600, "Gym", 1400, "Library", 2200, "Park")));
+
+        // ── Restaurant ────────────────────────────────────────────────────────────
+        npcs.add(new NPCCharacter("Priya", 34, "Female", "A marketing executive who lunches late.",
+                schedule(locs, 0, "Restaurant", 800, "Cafe", 1000, "Office", 1900, "Restaurant")));
+
+        npcs.add(new NPCCharacter("Damien", 28, "Male", "A personal trainer who eats big.",
+                schedule(locs, 0, "Restaurant", 700, "Gym", 1300, "Restaurant", 2200, "Club")));
+
+        npcs.add(new NPCCharacter("Soo-Yeon", 31, "Female", "A food blogger with a love of reading.",
+                schedule(locs, 0, "Restaurant", 900, "Park", 1200, "Restaurant", 1600, "Library")));
+
+        // ── Gym ───────────────────────────────────────────────────────────────────
+        npcs.add(new NPCCharacter("Tariq", 27, "Male", "A disciplined software engineer.",
+                schedule(locs, 0, "Gym", 600, "Gym", 900, "Office", 1800, "Park")));
+
+        npcs.add(new NPCCharacter("Ingrid", 22, "Female", "A fitness influencer between shoots.",
+                schedule(locs, 0, "Gym", 800, "Cafe", 1400, "Gym", 2000, "Restaurant")));
+
+        npcs.add(new NPCCharacter("Bayo", 35, "Male", "An amateur boxer who reads philosophy.",
+                schedule(locs, 0, "Gym", 700, "Gym", 1500, "Library", 2300, "Club")));
+
+        // ── Park ──────────────────────────────────────────────────────────────────
+        npcs.add(new NPCCharacter("Clara", 29, "Female", "A freelance illustrator who sketches outdoors.",
+                schedule(locs, 0, "Park", 730, "Park", 1100, "Cafe", 1700, "Library")));
+
+        npcs.add(new NPCCharacter("Reuben", 45, "Male", "A retired teacher who stays active.",
+                schedule(locs, 0, "Park", 800, "Park", 1200, "Restaurant", 1500, "Gym")));
+
+        npcs.add(new NPCCharacter("Min-Ji", 23, "Female", "A night-owl dancer who jogs to wake up.",
+                schedule(locs, 0, "Club", 1400, "Park", 1900, "Cafe", 2200, "Club")));
+
+        // ── Cafe ──────────────────────────────────────────────────────────────────
+        npcs.add(new NPCCharacter("Oliver", 38, "Male", "A remote consultant glued to his laptop.",
+                schedule(locs, 0, "Cafe", 830, "Cafe", 1500, "Park", 1930, "Restaurant")));
+
+        npcs.add(new NPCCharacter("Fatima", 26, "Female", "A PhD candidate fuelled entirely by espresso.",
+                schedule(locs, 0, "Cafe", 900, "Cafe", 1300, "Library", 1900, "Cafe")));
+
+        npcs.add(new NPCCharacter("Leon", 24, "Male", "A musician who works on lyrics over coffee.",
+                schedule(locs, 0, "Cafe", 800, "Gym", 1300, "Cafe", 2100, "Club")));
+
+        // ── Library ───────────────────────────────────────────────────────────────
+        npcs.add(new NPCCharacter("Amara", 33, "Female", "A novelist working on her second book.",
+                schedule(locs, 0, "Library", 900, "Library", 1300, "Restaurant", 1500, "Library")));
+
+        npcs.add(new NPCCharacter("Henrik", 52, "Male", "A retired professor who can't stop researching.",
+                schedule(locs, 0, "Library", 800, "Cafe", 1200, "Library", 1800, "Park")));
+
+        npcs.add(new NPCCharacter("Yuki", 20, "Female", "A quiet university student.",
+                schedule(locs, 0, "Library", 900, "Library", 1500, "Gym", 2000, "Cafe")));
+
+        // ── Club ──────────────────────────────────────────────────────────────────
+        npcs.add(new NPCCharacter("Marco", 26, "Male", "A bartender on his nights off.",
+                schedule(locs, 0, "Club", 1100, "Cafe", 1800, "Restaurant", 2200, "Club")));
+
+        npcs.add(new NPCCharacter("Zara", 21, "Female", "A university student who lives for weekends.",
+                schedule(locs, 0, "Club", 1400, "Gym", 1900, "Cafe", 2300, "Club")));
+
+        npcs.add(new NPCCharacter("Desmond", 30, "Male", "An accountant who unwinds hard.",
+                schedule(locs, 0, "Club", 800, "Park", 1000, "Office", 2100, "Club")));
+
+        // ── Office ────────────────────────────────────────────────────────────────
+        npcs.add(new NPCCharacter("Nadia", 37, "Female", "A project manager always on deadline.",
+                schedule(locs, 0, "Office", 800, "Cafe", 1000, "Office", 1900, "Restaurant")));
+
+        npcs.add(new NPCCharacter("Kwame", 41, "Male", "A senior analyst who mentors junior staff.",
+                schedule(locs, 0, "Office", 630, "Gym", 900, "Office", 1800, "Library")));
+
+        npcs.add(new NPCCharacter("Sophie", 32, "Female", "A UX designer who needs fresh air to think.",
+                schedule(locs, 0, "Office", 900, "Office", 1200, "Restaurant", 1600, "Park")));
 
         return npcs;
     }
