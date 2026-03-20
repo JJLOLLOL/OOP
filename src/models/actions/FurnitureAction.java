@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 import models.SimCharacter;
 import models.needs.Need;
+import services.NeedService;
+import services.NotificationService;
 
 /**
  * Represents a single action that can be performed on a {@link Furniture}.
@@ -124,13 +126,13 @@ public class FurnitureAction implements ActivityInterface {
         character.setMoney(-activityCost);
 
         for (Map.Entry<String, Double> effect : affectedNeedsMap.entrySet()) {
-            character.adjustNeed(effect.getKey(), effect.getValue());
+            NeedService.adjustNeed(character, effect.getKey(), effect.getValue());
         }
 
         for (Map.Entry<String, Double> effect : affectedSkillsMap.entrySet()) {
-            String result = character.addSkillProgress(effect.getKey(), effect.getValue());
+            String result = NeedService.addSkillProgress(character, effect.getKey(), effect.getValue());
             if (result != null && result.contains("levelled up")) {
-                character.addNotification(result);
+                NotificationService.add(character, result);
             }
         }
 

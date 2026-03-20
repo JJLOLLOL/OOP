@@ -14,6 +14,7 @@ import models.SimCharacter;
 import models.actions.Furniture;
 import models.actions.FurnitureAction;
 import models.needs.Need;
+import services.NotificationService;
 
 /**
  * Single source of truth for all terminal output in the game.
@@ -278,33 +279,33 @@ public class Renderer {
         }
 
         lines.add(""); // breathing room
-        
+
         // Need bars
         for (Map.Entry<String, Need> e : player.getNeeds().entrySet()) {
             lines.add(needBar(e.getValue()));
         }
-        
+
         // Money
         lines.add("");
         lines.add(BRIGHT_YELLOW + "Money: $" + String.format("%.2f", player.getMoney()) + RESET);
-        
+
         // Divider
         lines.add(BORDER + repeat("─", LEFT_W) + RESET);
-        
+
         // Location
-        lines.add(LABEL + "At " + RESET + BRIGHT_CYAN + BOLD + loc.getLocationName() + RESET);
-        lines.add("");
+        lines.add(LABEL + "At " + RESET + BRIGHT_CYAN + loc.getLocationName() + RESET);
 
         // Nearby characters
         List<models.Character> chars = PlayController.charsAt(loc, state, world);
         if (chars.isEmpty()) {
             lines.add(MUTED + "No one nearby." + RESET);
         } else {
+            lines.add(LABEL + "nearby:" + RESET);
             for (models.Character c : chars) {
                 String status = state.getRelationshipService().getStatus(player, c);
                 int score = state.getRelationshipService().getScore(player, c);
                 String scoreColour = score > 0 ? BRIGHT_GREEN : score < 0 ? BRIGHT_RED : BRIGHT_YELLOW;
-                lines.add(BRIGHT_WHITE + BOLD + c.getName() + RESET
+                lines.add(WHITE + c.getName() + RESET
                         + MUTED + " [" + status + "] " + RESET
                         + scoreColour + score + RESET);
                 // Show NPC description if available
@@ -459,24 +460,21 @@ public class Renderer {
                         + "    " + pad("Career", TITLE_W)
                         + "  " + pad("Salary", SALARY_W)
                         + "  " + pad("Hours", HOURS_W)
-                        + "  Skills"
                         + RESET);
                 lines.add(MUTED + "    " + repeat("─", TITLE_W + SALARY_W + HOURS_W + 20) + RESET);
 
                 for (int i = 0; i < careers.size(); i++) {
                     CareerList c = careers.get(i);
                     String title = pad(c.getTitle(), TITLE_W);
-                    String salary = pad(String.format("$%.0f/d", c.getBaseSalary()), SALARY_W);
+                    String salary = pad(String.format("$%.0f/day", c.getBaseSalary()), SALARY_W);
                     String hours = c.getWorkingHours() > 0
                             ? pad(String.format("%dh", (int) c.getWorkingHours()), HOURS_W)
                             : pad("", HOURS_W);
-                    String skills = String.join(", ", c.getRelatedSkills());
 
                     lines.add(BRIGHT_YELLOW + (i + 1) + ". " + RESET
                             + BRIGHT_WHITE + title + RESET
                             + "  " + MUTED + salary + RESET
-                            + "  " + MUTED + hours + RESET
-                            + "  " + BRIGHT_BLACK + skills + RESET);
+                            + "  " + MUTED + hours + RESET);
                 }
                 lines.add("");
                 lines.add(backItem());
@@ -499,7 +497,7 @@ public class Renderer {
         List<String> lines = new ArrayList<>();
         lines.add(menuTitle("Notifications"));
 
-        List<String> notes = player.getNotifications();
+        List<String> notes = NotificationService.get(player);
         if (notes.isEmpty()) {
             lines.add(MUTED + "None." + RESET);
             return lines;

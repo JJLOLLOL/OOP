@@ -1,6 +1,7 @@
 package core;
 
 import java.util.Scanner;
+import services.NeedService;
 import services.NpcService;
 import ui.Renderer;
 
@@ -110,8 +111,7 @@ public class GameEngine {
             state.getGameClock().tick(dt);
 
             for (models.SimCharacter sim : state.getSims()) {
-                // Divide by 60 so need decay rates are expressed per real-minute
-                sim.updateNeed(dt / 60.0);
+                NeedService.updateNeeds(sim, dt / 60.0);
             }
 
             npcService.updateNPCLocations(state.getGameClock());

@@ -1,6 +1,7 @@
 package models.needs;
 
 import models.SimCharacter;
+import services.NotificationService;
 
 public class Fun extends Need {
 
@@ -10,7 +11,7 @@ public class Fun extends Need {
 
     @Override
     public void onCriticallyLow(SimCharacter character) {
-        character.addNotification(character.getName() + " is bored! Find something fun to do soon!");
+        NotificationService.add(character, character.getName() + " is bored! Find something fun to do soon!");
     }
 
 }

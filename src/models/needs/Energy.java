@@ -1,6 +1,7 @@
 package models.needs;
 
 import models.SimCharacter;
+import services.NotificationService;
 
 public class Energy extends Need {
 
@@ -10,7 +11,7 @@ public class Energy extends Need {
 
     @Override
     public void onCriticallyLow(SimCharacter character) {
-        character.addNotification(character.getName() + " is exhausted! Find a place to rest soon!");
+        NotificationService.add(character, character.getName() + " is exhausted! Find a place to rest soon!");
     }
 
 }

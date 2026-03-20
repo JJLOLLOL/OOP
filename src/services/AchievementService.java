@@ -15,11 +15,34 @@ import models.SimCharacter;
 
 public class AchievementService {
 
-    // Keep first-time skill tracking isolated in achievement layer.
-    // WeakHashMap prevents retaining Sims forever if they are no longer referenced.
-    private static final Map<SimCharacter, Set<String>> firstTimeSkillTracker =
-            Collections.synchronizedMap(new WeakHashMap<>());
+    // Per-sim unlocked achievements — WeakHashMap so sims can be GC'd freely
+    private static final Map<SimCharacter, Set<AchievementType>> unlockedAchievements
+            = Collections.synchronizedMap(new WeakHashMap<>());
 
+    // Per-sim first-time skill tracking
+    private static final Map<SimCharacter, Set<String>> firstTimeSkillTracker
+            = Collections.synchronizedMap(new WeakHashMap<>());
+
+    // ── Achievement access ────────────────────────────────────────────────────
+    public boolean unlockAchievement(SimCharacter sim, AchievementType achievement) {
+        Set<AchievementType> unlocked = unlockedAchievements
+                .computeIfAbsent(sim, k -> new HashSet<>());
+        return unlocked.add(achievement);
+    }
+
+    public boolean hasAchievement(SimCharacter sim, AchievementType achievement) {
+        Set<AchievementType> unlocked = unlockedAchievements.get(sim);
+        return unlocked != null && unlocked.contains(achievement);
+    }
+
+    public Set<AchievementType> getUnlockedAchievements(SimCharacter sim) {
+        Set<AchievementType> unlocked = unlockedAchievements.get(sim);
+        return unlocked == null
+                ? Collections.emptySet()
+                : Collections.unmodifiableSet(unlocked);
+    }
+
+    // ── Evaluators ────────────────────────────────────────────────────────────
     public List<AchievementType> evaluateFirstTimeSkillAchievement(SimCharacter sim, String skillName) {
         List<AchievementType> newlyUnlocked = new ArrayList<>();
         if (sim == null || skillName == null || skillName.trim().isEmpty()) {
@@ -32,19 +55,15 @@ public class AchievementService {
             return newlyUnlocked;
         }
 
-        if (!markSkillUsedFirstTime(sim, normalizedSkill)) {
+        Set<String> usedSkills = firstTimeSkillTracker.computeIfAbsent(sim, k -> new HashSet<>());
+        if (!usedSkills.add(normalizedSkill)) {
             return newlyUnlocked;
         }
 
-        if (sim.unlockAchievement(achievement)) {
+        if (unlockAchievement(sim, achievement)) {
             newlyUnlocked.add(achievement);
         }
         return newlyUnlocked;
-    }
-
-    private boolean markSkillUsedFirstTime(SimCharacter sim, String normalizedSkill) {
-        Set<String> usedSkills = firstTimeSkillTracker.computeIfAbsent(sim, k -> new HashSet<>());
-        return usedSkills.add(normalizedSkill);
     }
 
     public List<AchievementType> evaluateCareerAchievements(SimCharacter sim) {
@@ -54,65 +73,31 @@ public class AchievementService {
         }
 
         CareerList careerType = resolveCareerType(sim);
-
         if (careerType == null || careerType == CareerList.JOBLESS) {
             return newlyUnlocked;
         }
 
-        if (isFirstJob(sim, careerType) && sim.unlockAchievement(AchievementType.FIRST_JOB)) {
+        if (!hasAchievement(sim, AchievementType.FIRST_JOB)
+                && unlockAchievement(sim, AchievementType.FIRST_JOB)) {
             newlyUnlocked.add(AchievementType.FIRST_JOB);
         }
 
         AchievementType careerAchievement = getCareerTypeAchievement(careerType);
-        if (careerAchievement != null && sim.unlockAchievement(careerAchievement)) {
+        if (careerAchievement != null && unlockAchievement(sim, careerAchievement)) {
             newlyUnlocked.add(careerAchievement);
         }
 
         int rank = resolveCareerRank(sim);
-        if (rank >= 2 && sim.unlockAchievement(AchievementType.FIRST_PROMOTION)) {
+        if (rank >= 2 && unlockAchievement(sim, AchievementType.FIRST_PROMOTION)) {
             newlyUnlocked.add(AchievementType.FIRST_PROMOTION);
         }
-        if (rank >= 4 && sim.unlockAchievement(AchievementType.SENIOR_STAFF)) {
+        if (rank >= 4 && unlockAchievement(sim, AchievementType.SENIOR_STAFF)) {
             newlyUnlocked.add(AchievementType.SENIOR_STAFF);
         }
-        if (rank >= 7 && sim.unlockAchievement(AchievementType.CORPORATE_EXECUTIVE)) {
+        if (rank >= 7 && unlockAchievement(sim, AchievementType.CORPORATE_EXECUTIVE)) {
             newlyUnlocked.add(AchievementType.CORPORATE_EXECUTIVE);
         }
         return newlyUnlocked;
-    }
-
-    private boolean isFirstJob(SimCharacter sim, CareerList careerType) {
-        return careerType != CareerList.JOBLESS && !sim.hasAchievement(AchievementType.FIRST_JOB);
-    }
-
-    private CareerList resolveCareerType(SimCharacter sim) {
-        String careerInfo = sim.displayCareer();
-        if (careerInfo == null || careerInfo.isBlank()) {
-            return null;
-        }
-
-        for (CareerList career : CareerList.values()) {
-            String titleLine = "Title:         " + career.getTitle();
-            if (careerInfo.contains(titleLine)) {
-                return career;
-            }
-        }
-        return null;
-    }
-
-    private int resolveCareerRank(SimCharacter sim) {
-        String careerInfo = sim.displayCareer();
-        if (careerInfo == null || careerInfo.isBlank()) {
-            return 0;
-        }
-
-        for (int rank = 1; rank <= CareerRank.RANK.length; rank++) {
-            String rankLine = "Rank:          " + CareerRank.getTitle(rank);
-            if (careerInfo.contains(rankLine)) {
-                return rank;
-            }
-        }
-        return 0;
     }
 
     public List<AchievementType> evaluateSocialAchievements(
@@ -122,7 +107,6 @@ public class AchievementService {
 
         List<AchievementType> newlyUnlocked = new ArrayList<>();
         List<Character> others = getOtherCharacters(sim, allCharacters);
-
         if (others.isEmpty()) {
             return newlyUnlocked;
         }
@@ -132,88 +116,93 @@ public class AchievementService {
 
         for (Character other : others) {
             String status = relationshipManager.getStatus(sim, other);
-
             if (!"Friend".equals(status) && !"Best Friend".equals(status)) {
                 allFriends = false;
             }
-
             if (!"Enemy".equals(status)) {
                 allEnemies = false;
             }
-
             if (!allFriends && !allEnemies) {
                 break;
             }
         }
 
-        if (allFriends && sim.unlockAchievement(AchievementType.FRIENDLY)) {
+        if (allFriends && unlockAchievement(sim, AchievementType.FRIENDLY)) {
             newlyUnlocked.add(AchievementType.FRIENDLY);
         }
-
-        if (allEnemies && sim.unlockAchievement(AchievementType.EVIL)) {
+        if (allEnemies && unlockAchievement(sim, AchievementType.EVIL)) {
             newlyUnlocked.add(AchievementType.EVIL);
         }
-
         return newlyUnlocked;
     }
 
-    private List<Character> getOtherCharacters(SimCharacter sim, List<? extends Character> allCharacters) {
+    // ── Helpers ───────────────────────────────────────────────────────────────
+    private List<Character> getOtherCharacters(SimCharacter sim, List<? extends Character> all) {
         List<Character> others = new ArrayList<>();
-        for (Character character : allCharacters) {
-            if (character != sim) {
-                others.add(character);
+        for (Character c : all) {
+            if (c != sim) {
+                others.add(c);
             }
         }
         return others;
     }
 
-    private AchievementType getFirstTimeSkillAchievement(String normalizedSkill) {
-        switch (normalizedSkill) {
-            case "cooking":
-                return AchievementType.FIRST_COOKING;
-            case "fitness":
-                return AchievementType.FIRST_FITNESS;
-            case "programming":
-                return AchievementType.FIRST_PROGRAMMING;
-            case "charisma":
-                return AchievementType.FIRST_CHARISMA;
-            case "creativity":
-                return AchievementType.FIRST_CREATIVITY;
-            case "logic":
-                return AchievementType.FIRST_LOGIC;
-            case "gardening":
-                return AchievementType.FIRST_GARDENING;
-            case "music":
-                return AchievementType.FIRST_MUSIC;
-            case "writing":
-                return AchievementType.FIRST_WRITING;
-            case "painting":
-                return AchievementType.FIRST_PAINTING;
-            default:
-                return null;
+    private CareerList resolveCareerType(SimCharacter sim) {
+        return sim.getCareer().getCurrentCareer();
+    }
+
+    private int resolveCareerRank(SimCharacter sim) {
+        // Career.currentRank is 1-based; we read it via the rank title lookup
+        String rankTitle = sim.getCareer().getRank();
+        for (int rank = 1; rank <= CareerRank.RANK.length; rank++) {
+            if (CareerRank.getTitle(rank).equals(rankTitle)) {
+                return rank;
+            }
         }
+        return 0;
+    }
+
+    private AchievementType getFirstTimeSkillAchievement(String normalizedSkill) {
+        return switch (normalizedSkill) {
+            case "cooking" ->
+                AchievementType.FIRST_COOKING;
+            case "fitness" ->
+                AchievementType.FIRST_FITNESS;
+            case "programming" ->
+                AchievementType.FIRST_PROGRAMMING;
+            case "charisma" ->
+                AchievementType.FIRST_CHARISMA;
+            case "creativity" ->
+                AchievementType.FIRST_CREATIVITY;
+            case "logic" ->
+                AchievementType.FIRST_LOGIC;
+            case "gardening" ->
+                AchievementType.FIRST_GARDENING;
+            case "music" ->
+                AchievementType.FIRST_MUSIC;
+            case "writing" ->
+                AchievementType.FIRST_WRITING;
+            case "painting" ->
+                AchievementType.FIRST_PAINTING;
+            default ->
+                null;
+        };
     }
 
     private AchievementType getCareerTypeAchievement(CareerList careerType) {
-        switch (careerType) {
-            case SOFTWARE_DEVELOPER:
-            case ENGINEER:
-                return AchievementType.TECH_TRAILBLAZER;
-            case DOCTOR:
-                return AchievementType.HEALING_HANDS;
-            case TEACHER:
-            case POLICE_OFFICER:
-                return AchievementType.PUBLIC_SERVICE;
-            case LAWYER:
-            case ACCOUNTANT:
-            case BUSINESS_MANAGER:
-                return AchievementType.BUSINESS_MINDED;
-            case ARTIST:
-            case MUSICIAN:
-            case WRITER:
-                return AchievementType.CREATIVE_SOUL;
-            default:
-                return null;
-        }
+        return switch (careerType) {
+            case SOFTWARE_DEVELOPER, ENGINEER ->
+                AchievementType.TECH_TRAILBLAZER;
+            case DOCTOR ->
+                AchievementType.HEALING_HANDS;
+            case TEACHER, POLICE_OFFICER ->
+                AchievementType.PUBLIC_SERVICE;
+            case LAWYER, ACCOUNTANT, BUSINESS_MANAGER ->
+                AchievementType.BUSINESS_MINDED;
+            case ARTIST, MUSICIAN, WRITER ->
+                AchievementType.CREATIVE_SOUL;
+            default ->
+                null;
+        };
     }
 }

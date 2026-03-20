@@ -2,12 +2,11 @@ package services;
 
 import Types.CareerList;
 import core.GameClock;
+import java.util.Map;
 import models.SimCharacter;
 import models.actions.Furniture;
 import models.actions.FurnitureAction;
 import models.actions.FurnitureFactory;
-
-import java.util.Map;
 
 /**
  * Handles the Work action for a {@link SimCharacter}.
@@ -71,7 +70,6 @@ public class WorkService {
         if (player.getCareer().getCurrentCareer() == CareerList.JOBLESS) {
             return "You need a job before you can work!";
         }
-
         double fullShift = player.getCareer().getWorkingHours();
         int shiftEndH = SHIFT_START_HOUR + (int) fullShift;
         double currentTime = clock.getHours() + clock.getMinutes() / 60.0;
@@ -100,16 +98,16 @@ public class WorkService {
         player.setMoney(earned);
 
         // ── Career XP ─────────────────────────────────────────────────────────
-        String careerResult = player.updateCareer(CAREER_XP_PER_SHIFT * payFraction);
+        String careerResult = player.getCareer().addProgress(CAREER_XP_PER_SHIFT * payFraction);
         if (careerResult.contains("Promoted")) {
-            player.addNotification(careerResult);
+            NotificationService.add(player, careerResult);
         }
 
         // ── Related skill XP ──────────────────────────────────────────────────
         for (String skillName : player.getCareer().getCurrentCareer().getRelatedSkills()) {
-            String skillResult = player.addSkillProgress(skillName, SKILL_XP_PER_HOUR * hoursWorked);
+            String skillResult = NeedService.addSkillProgress(player, skillName, SKILL_XP_PER_HOUR * hoursWorked);
             if (skillResult != null && skillResult.contains("levelled up")) {
-                player.addNotification(skillResult);
+                NotificationService.add(player, skillResult);
             }
         }
 
@@ -133,7 +131,7 @@ public class WorkService {
      */
     private static void applyNeedEffects(SimCharacter player, double payFraction) {
         for (Map.Entry<String, Double> effect : WORK_ACTION.affectedNeedsByActionMap().entrySet()) {
-            player.adjustNeed(effect.getKey(), effect.getValue() * payFraction);
+            NeedService.adjustNeed(player, effect.getKey(), effect.getValue() * payFraction);
         }
     }
 }

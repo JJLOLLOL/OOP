@@ -1,36 +1,17 @@
 package models;
 
-import Types.AchievementType;
 import Types.CareerList;
 import Types.SkillsList;
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import models.actions.Furniture;
-import models.debuffs.DebuffRegistry;
 import models.needs.*;
 
 public class SimCharacter extends Character {
 
     private double money;
-    private House house;
-    private Map<String, Need> needs = new HashMap<>();
-    private SkillsList skillsList = new SkillsList();
+    private final Map<String, Need> needs = new HashMap<>();
+    private final SkillsList skillsList = new SkillsList();
     private Career career;
-    private Set<AchievementType> unlockedAchievements = new HashSet<>();
-    /**
-     * Notifications expire after this many player actions.
-     */
-    private static final int NOTIFICATION_LIFETIME_TICKS = 10;
-
-    private final List<Map.Entry<String, Long>> notifications = new ArrayList<>();
-    private long currentTick = 0;
 
     public SimCharacter(String name, int age, String gender, Location defaultLocation) {
         super(name, age, gender, defaultLocation);
@@ -48,21 +29,7 @@ public class SimCharacter extends Character {
         needs.put("Social", new Social());
     }
 
-    //career methods
-    public String updateCareer(double amount) {
-        if (career.getTitle().equals("Jobless")) {
-            return "Cannot gain career XP while unemployed!";
-        }
-        return career.addProgress(amount);
-    }
-
-    public String displayCareer() {
-        return career.toString();
-    }
-
-    /**
-     * Returns the sim's current {@link Career}.
-     */
+    // ── Career ────────────────────────────────────────────────────────────────
     public Career getCareer() {
         return career;
     }
@@ -71,16 +38,17 @@ public class SimCharacter extends Character {
         this.career = new Career(newCareer);
     }
 
-    //skills methods
-    public String updateSkill(String skillName, double amount) {
-        return addSkillProgress(skillName, amount);
+    // ── Skills ────────────────────────────────────────────────────────────────
+    public HashMap<String, Skills> getAllSkills() {
+        return skillsList.getAllSkills();
     }
 
-    public String displaySkills() {
-        return skillsList.displaySkills();
+    // ── Needs ─────────────────────────────────────────────────────────────────
+    public Map<String, Need> getNeeds() {
+        return needs;
     }
 
-    // getters & setters
+    // ── Money ─────────────────────────────────────────────────────────────────
     public void setMoney(double amount) {
         money += amount;
     }
@@ -88,101 +56,4 @@ public class SimCharacter extends Character {
     public double getMoney() {
         return money;
     }
-
-    public Map<String, Need> getNeeds() {
-        return needs;
-    }
-
-    public HashMap<String, Skills> getAllSkills() {
-        return skillsList.getAllSkills();
-    }
-
-    public void adjustNeed(String needName, double amount) {
-        double modifiedAmount = DebuffRegistry.applyNeedModifiers(this, needName, amount);
-        Need need = needs.get(needName);
-        if (need != null) {
-            need.adjustNeed(modifiedAmount);
-        }
-    }
-
-    public String addSkillProgress(String skillName, double amount) {
-        double modifiedAmount = DebuffRegistry.applySkillModifiers(this, skillName, amount);
-        Skills skill = skillsList.getSkill(skillName);
-        if (skill == null) {
-            return "Skill " + skillName + " not found!";
-        }
-        return skill.addProgress(modifiedAmount);
-    }
-
-    public boolean performFurnitureActivity(Furniture furniture, String actionName) {
-        if (furniture == null || actionName == null || actionName.isBlank()) {
-            return false;
-        }
-        return furniture.performAction(actionName, this);
-    }
-
-    public boolean unlockAchievement(AchievementType achievement) {
-        return unlockedAchievements.add(achievement);
-    }
-
-    public boolean hasAchievement(AchievementType achievement) {
-        return unlockedAchievements.contains(achievement);
-    }
-
-    public Set<AchievementType> getUnlockedAchievements() {
-        return Collections.unmodifiableSet(unlockedAchievements);
-    }
-
-    /**
-     * Adds a notification. Capped at 5 entries; oldest is dropped if exceeded.
-     * Expires after {@value #NOTIFICATION_LIFETIME_TICKS} player actions.
-     */
-    public void addNotification(String message) {
-        notifications.add(new AbstractMap.SimpleEntry<>(message, currentTick));
-        if (notifications.size() > 5) {
-            notifications.remove(0);
-        }
-    }
-
-    /**
-     * Called once per player action from {@link core.PlayController}.
-     * Increments the action counter and removes expired notifications.
-     */
-    public void tickNotifications() {
-        currentTick++;
-        Iterator<Map.Entry<String, Long>> it = notifications.iterator();
-        while (it.hasNext()) {
-            if (currentTick - it.next().getValue() >= NOTIFICATION_LIFETIME_TICKS) {
-                it.remove();
-            }
-        }
-    }
-
-    /**
-     * Returns the message strings of all currently-live notifications.
-     */
-    public List<String> getNotifications() {
-        List<String> live = new ArrayList<>();
-        for (Map.Entry<String, Long> e : notifications) {
-            live.add(e.getKey());
-        }
-        return live;
-    }
-
-    public void updateNeed(double deltaTime) {
-        for (Need need : needs.values()) {
-            double modifiedDecay = DebuffRegistry.applyDecayModifiers(this, need.getNeedName(), need.getBaseDecayRate());
-            need.setDecayRate(modifiedDecay);
-            need.decay(deltaTime);
-            if (need.isCriticallyLow()) {
-                if (!need.isCriticallyLowNotified()) {
-                    need.onCriticallyLow(this);
-                    need.setCriticallyLowNotified(true);
-                }
-            } else {
-                need.setCriticallyLowNotified(false);
-            }
-        }
-    }
-
 }

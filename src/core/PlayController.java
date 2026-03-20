@@ -10,6 +10,8 @@ import models.Location;
 import models.SimCharacter;
 import models.actions.Furniture;
 import models.debuffs.DebuffRegistry;
+import services.NeedService;
+import services.NotificationService;
 import services.WorkService;
 import ui.Renderer;
 
@@ -66,7 +68,7 @@ public class PlayController {
      */
     public static boolean handleInput(String input, GameState state, WorldRegistry world) {
         // Advance notification timer on every player action
-        state.getActivePlayer().tickNotifications();
+        NotificationService.tick(state.getActivePlayer());
 
         SimCharacter player = state.getActivePlayer();
         Location loc = player.getLocation();
@@ -138,7 +140,7 @@ public class PlayController {
         return pickFromList(input, AVAILABLE_CAREERS, idx -> {
             CareerList chosen = AVAILABLE_CAREERS.get(idx);
             player.joinCareer(chosen);
-            player.addNotification("Career started: " + chosen.getTitle()
+            NotificationService.add(player, "Career started: " + chosen.getTitle()
                     + ". Head to the Office to work!");
             setStep(Step.MAIN);
         });
@@ -192,7 +194,7 @@ public class PlayController {
                 } else {
                     // Has a job — run the shift
                     String result = WorkService.work(player, state.getGameClock());
-                    player.addNotification(result);
+                    NotificationService.add(player, result);
                     setStep(Step.MAIN);
                 }
             } else {
@@ -201,7 +203,7 @@ public class PlayController {
                 boolean ok = (action != null)
                         && action.perform(player, state.getGameClock());
                 if (!ok) {
-                    player.addNotification("Action failed: not enough money or needs too low.");
+                    NotificationService.add(player, "Action failed: not enough money or needs too low.");
                 }
                 setStep(Step.MAIN);
             }
@@ -241,15 +243,15 @@ public class PlayController {
 
             String blockReason = DebuffRegistry.getInteractionBlockReason(player, "Socialise");
             if (blockReason != null) {
-                player.addNotification(selectedCharacter.getName() + " refused to interact! " + blockReason);
+                NotificationService.add(player, selectedCharacter.getName() + " refused to interact! " + blockReason);
                 selectedCharacter = null;
                 setStep(Step.MAIN);
                 return;
             }
 
             String result = state.getRelationshipService().interact(player, selectedCharacter, chosen);
-            player.adjustNeed("Social", chosen.getValue());
-            player.addNotification(result);
+            NeedService.adjustNeed(player, "Social", chosen.getValue());
+            NotificationService.add(player, result);
             selectedCharacter = null;
             setStep(Step.MAIN);
         });
