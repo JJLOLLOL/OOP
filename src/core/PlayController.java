@@ -1,8 +1,8 @@
 package core;
 
-import Types.AchievementType;
+import Types.AchievementList;
 import Types.CareerList;
-import Types.InteractionType;
+import Types.InteractionList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -244,9 +244,9 @@ public class PlayController {
             setStep(Step.SOCIALISE);
             return true;
         }
-        InteractionType[] types = InteractionType.values();
+        InteractionList[] types = InteractionList.values();
         return pickFromList(input, List.of(types), idx -> {
-            InteractionType chosen = types[idx];
+            InteractionList chosen = types[idx];
 
             String blockReason = DebuffRegistry.getInteractionBlockReason(player, "Socialise");
             if (blockReason != null) {
@@ -257,7 +257,7 @@ public class PlayController {
             }
 
             String result = state.getRelationshipService().interact(player, selectedCharacter, chosen);
-            NeedService.adjustNeed(player, "Social", chosen.getValue());
+            NeedService.adjustNeed(player, "Social", chosen.getEffect());
             addAchievementNotifications(
                     player,
                     state.getAchievementService().evaluateSocialAchievements(
@@ -288,8 +288,8 @@ public class PlayController {
 
     private static void addAchievementNotifications(
             SimCharacter player,
-            List<AchievementType> unlockedAchievements) {
-        for (AchievementType achievement : unlockedAchievements) {
+            List<AchievementList> unlockedAchievements) {
+        for (AchievementList achievement : unlockedAchievements) {
             NotificationService.add(player, "Achievement unlocked: " + achievement.getTitle());
         }
     }

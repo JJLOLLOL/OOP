@@ -5,9 +5,9 @@ import static org.junit.Assert.*;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
-import Types.AchievementType;
+import Types.AchievementList;
 import Types.CareerList;
-import Types.InteractionType;
+import Types.InteractionList;
 import core.GameState;
 import core.GameClock;
 import core.PlayController;
@@ -33,10 +33,10 @@ public class AchievementServiceTest {
         SimCharacter sim = createSim();
         AchievementService achievementService = new AchievementService();
 
-        List<AchievementType> unlocked = achievementService.evaluateCareerAchievements(sim);
+        List<AchievementList> unlocked = achievementService.evaluateCareerAchievements(sim);
 
         assertTrue(unlocked.isEmpty());
-        assertFalse(achievementService.hasAchievement(sim, AchievementType.FIRST_JOB));
+        assertFalse(achievementService.hasAchievement(sim, AchievementList.FIRST_JOB));
     }
 
     @Test
@@ -45,10 +45,10 @@ public class AchievementServiceTest {
         AchievementService achievementService = new AchievementService();
         sim.joinCareer(CareerList.SOFTWARE_DEVELOPER);
 
-        List<AchievementType> unlocked = achievementService.evaluateCareerAchievements(sim);
+        List<AchievementList> unlocked = achievementService.evaluateCareerAchievements(sim);
 
-        assertTrue(unlocked.contains(AchievementType.FIRST_JOB));
-        assertTrue(unlocked.contains(AchievementType.TECH_TRAILBLAZER));
+        assertTrue(unlocked.contains(AchievementList.FIRST_JOB));
+        assertTrue(unlocked.contains(AchievementList.TECH_TRAILBLAZER));
     }
 
     @Test
@@ -57,10 +57,10 @@ public class AchievementServiceTest {
         AchievementService achievementService = new AchievementService();
         sim.joinCareer(CareerList.DOCTOR);
 
-        List<AchievementType> unlocked = achievementService.evaluateCareerAchievements(sim);
+        List<AchievementList> unlocked = achievementService.evaluateCareerAchievements(sim);
 
-        assertTrue(unlocked.contains(AchievementType.FIRST_JOB));
-        assertTrue(unlocked.contains(AchievementType.HEALING_HANDS));
+        assertTrue(unlocked.contains(AchievementList.FIRST_JOB));
+        assertTrue(unlocked.contains(AchievementList.HEALING_HANDS));
     }
 
     @Test
@@ -69,11 +69,11 @@ public class AchievementServiceTest {
         AchievementService achievementService = new AchievementService();
         sim.joinCareer(CareerList.TEACHER);
 
-        List<AchievementType> firstUnlock = achievementService.evaluateCareerAchievements(sim);
-        List<AchievementType> secondUnlock = achievementService.evaluateCareerAchievements(sim);
+        List<AchievementList> firstUnlock = achievementService.evaluateCareerAchievements(sim);
+        List<AchievementList> secondUnlock = achievementService.evaluateCareerAchievements(sim);
 
-        assertTrue(firstUnlock.contains(AchievementType.FIRST_JOB));
-        assertFalse(secondUnlock.contains(AchievementType.FIRST_JOB));
+        assertTrue(firstUnlock.contains(AchievementList.FIRST_JOB));
+        assertFalse(secondUnlock.contains(AchievementList.FIRST_JOB));
     }
 
     @Test
@@ -85,19 +85,19 @@ public class AchievementServiceTest {
         achievementService.evaluateCareerAchievements(sim);
 
         sim.getCareer().addProgress(100000.0);
-        List<AchievementType> rank2Unlock = achievementService.evaluateCareerAchievements(sim);
-        assertTrue(rank2Unlock.contains(AchievementType.FIRST_PROMOTION));
+        List<AchievementList> rank2Unlock = achievementService.evaluateCareerAchievements(sim);
+        assertTrue(rank2Unlock.contains(AchievementList.FIRST_PROMOTION));
 
         sim.getCareer().addProgress(100000.0);
         sim.getCareer().addProgress(100000.0);
-        List<AchievementType> rank4Unlock = achievementService.evaluateCareerAchievements(sim);
-        assertTrue(rank4Unlock.contains(AchievementType.SENIOR_STAFF));
+        List<AchievementList> rank4Unlock = achievementService.evaluateCareerAchievements(sim);
+        assertTrue(rank4Unlock.contains(AchievementList.SENIOR_STAFF));
 
         sim.getCareer().addProgress(100000.0);
         sim.getCareer().addProgress(100000.0);
         sim.getCareer().addProgress(100000.0);
-        List<AchievementType> rank7Unlock = achievementService.evaluateCareerAchievements(sim);
-        assertTrue(rank7Unlock.contains(AchievementType.CORPORATE_EXECUTIVE));
+        List<AchievementList> rank7Unlock = achievementService.evaluateCareerAchievements(sim);
+        assertTrue(rank7Unlock.contains(AchievementList.CORPORATE_EXECUTIVE));
     }
 
     @Test
@@ -106,7 +106,7 @@ public class AchievementServiceTest {
         AchievementService achievementService = new AchievementService();
         sim.joinCareer(CareerList.SOFTWARE_DEVELOPER);
 
-        List<AchievementType> unlocked = achievementService.evaluateCareerAchievements(sim);
+        List<AchievementList> unlocked = achievementService.evaluateCareerAchievements(sim);
         addAchievementNotifications(sim, unlocked);
 
         List<String> notifications = NotificationService.get(sim);
@@ -170,14 +170,14 @@ public class AchievementServiceTest {
         makeFriends(relationshipService, sim, bob);
         makeFriends(relationshipService, sim, clara);
 
-        List<AchievementType> unlocked = achievementService.evaluateSocialAchievements(
+        List<AchievementList> unlocked = achievementService.evaluateSocialAchievements(
                 sim,
                 List.of(sim, bob, clara),
                 relationshipService);
         addAchievementNotifications(sim, unlocked);
 
-        assertTrue(unlocked.contains(AchievementType.FRIENDLY));
-        assertTrue(achievementService.hasAchievement(sim, AchievementType.FRIENDLY));
+        assertTrue(unlocked.contains(AchievementList.FRIENDLY));
+        assertTrue(achievementService.hasAchievement(sim, AchievementList.FRIENDLY));
         assertTrue(NotificationService.get(sim).contains("Achievement unlocked: Friendly"));
     }
 
@@ -192,14 +192,14 @@ public class AchievementServiceTest {
         makeEnemies(relationshipService, sim, bob);
         makeEnemies(relationshipService, sim, clara);
 
-        List<AchievementType> unlocked = achievementService.evaluateSocialAchievements(
+        List<AchievementList> unlocked = achievementService.evaluateSocialAchievements(
                 sim,
                 List.of(sim, bob, clara),
                 relationshipService);
         addAchievementNotifications(sim, unlocked);
 
-        assertTrue(unlocked.contains(AchievementType.EVIL));
-        assertTrue(achievementService.hasAchievement(sim, AchievementType.EVIL));
+        assertTrue(unlocked.contains(AchievementList.EVIL));
+        assertTrue(achievementService.hasAchievement(sim, AchievementList.EVIL));
         assertTrue(NotificationService.get(sim).contains("Achievement unlocked: Evil"));
     }
 
@@ -221,7 +221,7 @@ public class AchievementServiceTest {
             performSocialInteraction("2", "2", state, world);
         }
 
-        assertTrue(state.getAchievementService().hasAchievement(sim, AchievementType.FRIENDLY));
+        assertTrue(state.getAchievementService().hasAchievement(sim, AchievementList.FRIENDLY));
         assertTrue(NotificationService.get(sim).contains("Achievement unlocked: Friendly"));
         assertEquals(PlayController.Step.MAIN, PlayController.getStep());
     }
@@ -244,13 +244,13 @@ public class AchievementServiceTest {
             performSocialInteraction("2", "4", state, world);
         }
 
-        assertTrue(state.getAchievementService().hasAchievement(sim, AchievementType.EVIL));
+        assertTrue(state.getAchievementService().hasAchievement(sim, AchievementList.EVIL));
         assertTrue(NotificationService.get(sim).contains("Achievement unlocked: Evil"));
         assertEquals(PlayController.Step.MAIN, PlayController.getStep());
     }
 
-    private void addAchievementNotifications(SimCharacter sim, List<AchievementType> unlockedAchievements) {
-        for (AchievementType achievement : unlockedAchievements) {
+    private void addAchievementNotifications(SimCharacter sim, List<AchievementList> unlockedAchievements) {
+        for (AchievementList achievement : unlockedAchievements) {
             NotificationService.add(sim, "Achievement unlocked: " + achievement.getTitle());
         }
     }
@@ -299,13 +299,13 @@ public class AchievementServiceTest {
 
     private void makeFriends(RelationshipService relationshipService, SimCharacter from, SimCharacter to) {
         for (int i = 0; i < 5; i++) {
-            relationshipService.interact(from, to, InteractionType.COMPLIMENT);
+            relationshipService.interact(from, to, InteractionList.COMPLIMENT);
         }
     }
 
     private void makeEnemies(RelationshipService relationshipService, SimCharacter from, SimCharacter to) {
         for (int i = 0; i < 4; i++) {
-            relationshipService.interact(from, to, InteractionType.INSULT);
+            relationshipService.interact(from, to, InteractionList.INSULT);
         }
     }
 
