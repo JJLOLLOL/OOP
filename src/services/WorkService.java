@@ -1,7 +1,9 @@
 package services;
 
+import Types.AchievementType;
 import Types.CareerList;
 import core.GameClock;
+import java.util.List;
 import java.util.Map;
 import models.SimCharacter;
 import models.actions.Furniture;
@@ -64,9 +66,13 @@ public class WorkService {
      *
      * @param player the sim attempting to work
      * @param clock the current game clock (time will be advanced on success)
+     * @param achievementService the achievement evaluator for unlock checks
      * @return a message describing the outcome, suitable for a notification
      */
-    public static String work(SimCharacter player, GameClock clock) {
+    public static String work(
+            SimCharacter player,
+            GameClock clock,
+            AchievementService achievementService) {
         if (player.getCareer().getCurrentCareer() == CareerList.JOBLESS) {
             return "You need a job before you can work!";
         }
@@ -102,6 +108,9 @@ public class WorkService {
         if (careerResult.contains("Promoted")) {
             NotificationService.add(player, careerResult);
         }
+        addAchievementNotifications(
+                player,
+                achievementService.evaluateCareerAchievements(player));
 
         // ── Related skill XP ──────────────────────────────────────────────────
         for (String skillName : player.getCareer().getCurrentCareer().getRelatedSkills()) {
@@ -109,6 +118,9 @@ public class WorkService {
             if (skillResult != null && skillResult.contains("levelled up")) {
                 NotificationService.add(player, skillResult);
             }
+            addAchievementNotifications(
+                    player,
+                    achievementService.evaluateFirstTimeSkillAchievement(player, skillName));
         }
 
         // ── Result message ─────────────────────────────────────────────────────
@@ -132,6 +144,14 @@ public class WorkService {
     private static void applyNeedEffects(SimCharacter player, double payFraction) {
         for (Map.Entry<String, Double> effect : WORK_ACTION.affectedNeedsByActionMap().entrySet()) {
             NeedService.adjustNeed(player, effect.getKey(), effect.getValue() * payFraction);
+        }
+    }
+
+    private static void addAchievementNotifications(
+            SimCharacter player,
+            List<AchievementType> unlockedAchievements) {
+        for (AchievementType achievement : unlockedAchievements) {
+            NotificationService.add(player, "Achievement unlocked: " + achievement.getTitle());
         }
     }
 }

@@ -69,10 +69,17 @@ public class NotificationService {
         if (list == null) {
             return List.of();
         }
+        List<String> priority = new ArrayList<>();
         List<String> messages = new ArrayList<>();
         for (Map.Entry<String, Long> e : list) {
-            messages.add(e.getKey());
+            String message = e.getKey();
+            if (message != null && message.startsWith("Achievement unlocked:")) {
+                priority.add(message);
+            } else {
+                messages.add(message);
+            }
         }
-        return messages;
+        priority.addAll(messages);
+        return priority;
     }
 }

@@ -1,5 +1,6 @@
 package core;
 
+import Types.AchievementType;
 import Types.CareerList;
 import Types.InteractionType;
 import java.util.ArrayList;
@@ -83,13 +84,13 @@ public class PlayController {
             case SOCIALISE ->
                 handleSocialise(input, loc, state, world);
             case SOCIALISE_ACTION ->
-                handleSocialiseAction(input, player, state);
+                handleSocialiseAction(input, player, state, world);
             case CHANGE_LOCATION ->
                 handleChangeLocation(input, player, world);
             case SWITCH_CHARACTER ->
                 handleSwitchCharacter(input, state);
             case PICK_CAREER ->
-                handlePickCareer(input, player);
+                handlePickCareer(input, player, state);
         };
     }
 
@@ -132,7 +133,7 @@ public class PlayController {
      * Selecting a career immediately starts the shift via {@link WorkService}.
      * Input {@code "0"} cancels back to main.
      */
-    private static boolean handlePickCareer(String input, SimCharacter player) {
+    private static boolean handlePickCareer(String input, SimCharacter player, GameState state) {
         if (input.equals("0")) {
             setStep(Step.MAIN);
             return true;
@@ -140,6 +141,9 @@ public class PlayController {
         return pickFromList(input, AVAILABLE_CAREERS, idx -> {
             CareerList chosen = AVAILABLE_CAREERS.get(idx);
             player.joinCareer(chosen);
+            addAchievementNotifications(
+                player,
+                state.getAchievementService().evaluateCareerAchievements(player));
             NotificationService.add(player, "Career started: " + chosen.getTitle()
                     + ". Head to the Office to work!");
             setStep(Step.MAIN);
@@ -193,8 +197,11 @@ public class PlayController {
                     setStep(Step.PICK_CAREER);
                 } else {
                     // Has a job — run the shift
-                    String result = WorkService.work(player, state.getGameClock());
-                    NotificationService.add(player, result);
+                    String result = WorkService.work(
+                            player,
+                            state.getGameClock(),
+                            state.getAchievementService());
+                        NotificationService.add(player, result);
                     setStep(Step.MAIN);
                 }
             } else {
@@ -231,7 +238,7 @@ public class PlayController {
      * Socialise action: apply chosen interaction. {@code "0"} → socialise.
      */
     private static boolean handleSocialiseAction(String input, SimCharacter player,
-            GameState state) {
+            GameState state, WorldRegistry world) {
         if (input.equals("0")) {
             selectedCharacter = null;
             setStep(Step.SOCIALISE);
@@ -251,6 +258,12 @@ public class PlayController {
 
             String result = state.getRelationshipService().interact(player, selectedCharacter, chosen);
             NeedService.adjustNeed(player, "Social", chosen.getValue());
+            addAchievementNotifications(
+                    player,
+                    state.getAchievementService().evaluateSocialAchievements(
+                            player,
+                            getAllCharacters(state, world),
+                            state.getRelationshipService()));
             NotificationService.add(player, result);
             selectedCharacter = null;
             setStep(Step.MAIN);
@@ -271,6 +284,21 @@ public class PlayController {
             player.setLocation(locs.get(idx));
             setStep(Step.MAIN);
         });
+    }
+
+    private static void addAchievementNotifications(
+            SimCharacter player,
+            List<AchievementType> unlockedAchievements) {
+        for (AchievementType achievement : unlockedAchievements) {
+            NotificationService.add(player, "Achievement unlocked: " + achievement.getTitle());
+        }
+    }
+
+    private static List<models.Character> getAllCharacters(GameState state, WorldRegistry world) {
+        List<models.Character> characters = new ArrayList<>();
+        characters.addAll(state.getSims());
+        characters.addAll(world.getAllNPCs());
+        return characters;
     }
 
     /**
