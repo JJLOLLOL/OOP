@@ -9,8 +9,9 @@ public class Furniture {
     private final String name;
     private final String description;
 
-    // Map containing actions that can be performed on this furniture, action name as key and FurnitureAction as value
-    private final Map<String, FurnitureAction> availableActionsMap; 
+    // Map containing actions that can be performed on this furniture, action name
+    // as key and FurnitureAction as value
+    private final Map<String, FurnitureAction> availableActionsMap;
 
     // Constructor
     public Furniture(String name, String description) {
@@ -25,15 +26,18 @@ public class Furniture {
         }
     }
 
-    // Retrieves a FurnitureAction by its name. Returns null if no such action exists.
+    // Retrieves a FurnitureAction by its name. Returns null if no such action
+    // exists.
     public FurnitureAction getAction(String actionName) {
         return availableActionsMap.get(actionName);
     }
+
     public List<FurnitureAction> getActions() {
         return new ArrayList<>(availableActionsMap.values());
     }
 
-    // Performs the specified action on the given character. Returns true if the action was successfully performed, false otherwise.
+    // Performs the specified action on the given character. Returns true if the
+    // action was successfully performed, false otherwise.
     public boolean performAction(String actionName, models.SimCharacter character) {
         FurnitureAction action = availableActionsMap.get(actionName);
         if (action == null) {
