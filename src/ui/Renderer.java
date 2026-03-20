@@ -711,7 +711,7 @@ public class Renderer {
             return BRIGHT_GREEN;
         }
         if (l.contains("failed") || l.contains("starving") || l.contains("exhausted")
-                || l.contains("cannot") || l.contains("not enough")) {
+                || l.contains("cannot") || l.contains("not enough") || l.contains("worsened")) {
             return BRIGHT_RED;
         }
         if (l.contains("warning") || l.contains("low") || l.contains("lonely")
