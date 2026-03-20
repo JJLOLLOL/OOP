@@ -142,3 +142,4 @@ replay_pid*
 .DS_Store
 bin/
 .vscode/settings.json
+docs/
