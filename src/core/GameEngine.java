@@ -106,14 +106,16 @@ public class GameEngine {
      * {@code 1.0 / UPDATES_PER_SECOND})
      */
     private void tick(double dt) {
-        state.getGameClock().tick(dt);
+        if (state.getPhase() == GameState.Phase.PLAYING) {
+            state.getGameClock().tick(dt);
 
-        for (models.SimCharacter sim : state.getSims()) {
-            // Divide by 60 so need decay rates are expressed per real-minute
-            sim.updateNeed(dt / 60.0);
+            for (models.SimCharacter sim : state.getSims()) {
+                // Divide by 60 so need decay rates are expressed per real-minute
+                sim.updateNeed(dt / 60.0);
+            }
+
+            npcService.updateNPCLocations(state.getGameClock());
         }
-
-        npcService.updateNPCLocations(state.getGameClock());
     }
 
     // ── Input routing ─────────────────────────────────────────────────────────
