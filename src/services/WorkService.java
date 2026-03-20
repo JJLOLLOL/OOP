@@ -19,11 +19,6 @@ public class WorkService {
     private static final FurnitureAction WORK_ACTION
             = FurnitureFactory.createWorkDesk().getAction("Work");
 
-    private static FurnitureAction loadWorkAction() {
-        Furniture desk = FurnitureFactory.createWorkDesk();
-        return desk.getAction("Work");
-    }
-
     // ── Public entry point ────────────────────────────────────────────────────
     /**
      * Attempts to make the player work one shift.
@@ -87,22 +82,6 @@ public class WorkService {
                 ? String.format("Arrived late. Worked %.1f / %.0f hours.", hoursWorked, fullShift)
                 : String.format("Full shift complete (%.0f hours).", fullShift);
         return String.format("%s Earned $%.2f.", timeMsg, earned);
-    }
-
-    // ── Helpers ───────────────────────────────────────────────────────────────
-    /**
-     * Applies the Work Desk action's need effects to the player, scaled by
-     * {@code payFraction}. Uses the same need map defined in
-     * {@link FurnitureFactory#createWorkDesk()} so work effects stay consistent
-     * with all other activities.
-     *
-     * @param player the sim to affect
-     * @param payFraction 1.0 for a full shift, less if the player arrived late
-     */
-    private static void applyNeedEffects(SimCharacter player, double payFraction) {
-        for (Map.Entry<String, Double> effect : WORK_ACTION.affectedNeedsByActionMap().entrySet()) {
-            NeedService.adjustNeed(player, effect.getKey(), effect.getValue() * payFraction);
-        }
     }
 
     private static void addAchievementNotifications(
