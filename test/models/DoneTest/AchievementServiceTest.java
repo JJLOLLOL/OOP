@@ -9,7 +9,7 @@ import models.Location;
 import models.SimCharacter;
 import org.junit.Test;
 
-import Types.AchievementType;
+import Types.AchievementList;
 import Types.CareerList;
 import services.AchievementService;
 
@@ -25,10 +25,10 @@ public class AchievementServiceTest {
         SimCharacter sim = createSim();
         AchievementService achievementService = new AchievementService();
 
-        List<AchievementType> unlocked = achievementService.evaluateCareerAchievements(sim);
+        List<AchievementList> unlocked = achievementService.evaluateCareerAchievements(sim);
 
         assertTrue(unlocked.isEmpty());
-        assertFalse(sim.hasAchievement(AchievementType.FIRST_JOB));
+        assertFalse(sim.hasAchievement(AchievementList.FIRST_JOB));
     }
 
     @Test
@@ -37,10 +37,10 @@ public class AchievementServiceTest {
         AchievementService achievementService = new AchievementService();
         sim.joinCareer(CareerList.SOFTWARE_DEVELOPER);
 
-        List<AchievementType> unlocked = achievementService.evaluateCareerAchievements(sim);
+        List<AchievementList> unlocked = achievementService.evaluateCareerAchievements(sim);
 
-        assertTrue(unlocked.contains(AchievementType.FIRST_JOB));
-        assertTrue(unlocked.contains(AchievementType.TECH_TRAILBLAZER));
+        assertTrue(unlocked.contains(AchievementList.FIRST_JOB));
+        assertTrue(unlocked.contains(AchievementList.TECH_TRAILBLAZER));
     }
 
     @Test
@@ -49,10 +49,10 @@ public class AchievementServiceTest {
         AchievementService achievementService = new AchievementService();
         sim.joinCareer(CareerList.DOCTOR);
 
-        List<AchievementType> unlocked = achievementService.evaluateCareerAchievements(sim);
+        List<AchievementList> unlocked = achievementService.evaluateCareerAchievements(sim);
 
-        assertTrue(unlocked.contains(AchievementType.FIRST_JOB));
-        assertTrue(unlocked.contains(AchievementType.HEALING_HANDS));
+        assertTrue(unlocked.contains(AchievementList.FIRST_JOB));
+        assertTrue(unlocked.contains(AchievementList.HEALING_HANDS));
     }
 
     @Test
@@ -61,11 +61,11 @@ public class AchievementServiceTest {
         AchievementService achievementService = new AchievementService();
         sim.joinCareer(CareerList.TEACHER);
 
-        List<AchievementType> firstUnlock = achievementService.evaluateCareerAchievements(sim);
-        List<AchievementType> secondUnlock = achievementService.evaluateCareerAchievements(sim);
+        List<AchievementList> firstUnlock = achievementService.evaluateCareerAchievements(sim);
+        List<AchievementList> secondUnlock = achievementService.evaluateCareerAchievements(sim);
 
-        assertTrue(firstUnlock.contains(AchievementType.FIRST_JOB));
-        assertFalse(secondUnlock.contains(AchievementType.FIRST_JOB));
+        assertTrue(firstUnlock.contains(AchievementList.FIRST_JOB));
+        assertFalse(secondUnlock.contains(AchievementList.FIRST_JOB));
     }
 
     @Test
@@ -77,18 +77,18 @@ public class AchievementServiceTest {
         achievementService.evaluateCareerAchievements(sim);
 
         sim.updateCareer(100000.0);
-        List<AchievementType> rank2Unlock = achievementService.evaluateCareerAchievements(sim);
-        assertTrue(rank2Unlock.contains(AchievementType.FIRST_PROMOTION));
+        List<AchievementList> rank2Unlock = achievementService.evaluateCareerAchievements(sim);
+        assertTrue(rank2Unlock.contains(AchievementList.FIRST_PROMOTION));
 
         sim.updateCareer(100000.0);
         sim.updateCareer(100000.0);
-        List<AchievementType> rank4Unlock = achievementService.evaluateCareerAchievements(sim);
-        assertTrue(rank4Unlock.contains(AchievementType.SENIOR_STAFF));
+        List<AchievementList> rank4Unlock = achievementService.evaluateCareerAchievements(sim);
+        assertTrue(rank4Unlock.contains(AchievementList.SENIOR_STAFF));
 
         sim.updateCareer(100000.0);
         sim.updateCareer(100000.0);
         sim.updateCareer(100000.0);
-        List<AchievementType> rank7Unlock = achievementService.evaluateCareerAchievements(sim);
-        assertTrue(rank7Unlock.contains(AchievementType.CORPORATE_EXECUTIVE));
+        List<AchievementList> rank7Unlock = achievementService.evaluateCareerAchievements(sim);
+        assertTrue(rank7Unlock.contains(AchievementList.CORPORATE_EXECUTIVE));
     }
 }
