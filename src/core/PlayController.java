@@ -180,6 +180,7 @@ public class PlayController {
             return true;
         }
         List<String> actions = new ArrayList<>(selectedFurniture.getActionNames());
+        actions.sort(String::compareTo);
         return pickFromList(input, actions, idx -> {
             String actionName = actions.get(idx);
 

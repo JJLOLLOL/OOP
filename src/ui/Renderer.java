@@ -12,6 +12,7 @@ import java.util.Map;
 import models.Location;
 import models.SimCharacter;
 import models.actions.Furniture;
+import models.actions.FurnitureAction;
 import models.needs.Need;
 
 /**
@@ -77,14 +78,38 @@ public class Renderer {
     private static final String CLOCK = BOLD + BRIGHT_WHITE; // clock header
     private static final String SIM_NAME = BOLD + BRIGHT_WHITE; // sim name
 
-    // ── Column widths ─────────────────────────────────────────────────────────
-    private static final int COL_W = 30;
-    private static final int LEFT_W = COL_W;
-    private static final int MID_W = COL_W;
-    private static final int SKILLS_W = COL_W;
-    private static final int NOTIF_W = COL_W;
-    private static final int INNER_W = 4 * (COL_W + 2) + 3;
+    // ── Column widths (computed dynamically per render pass) ──────────────────
+    private static final int MIN_COL_W = 28;
     private static final int BAR_WIDTH = 10;
+
+    // Mutable per-render widths — set by computeColumnWidths() at render time
+    private static int LEFT_W = MIN_COL_W;
+    private static int MID_W = MIN_COL_W;
+    private static int SKILLS_W = MIN_COL_W;
+    private static int NOTIF_W = MIN_COL_W;
+    private static int INNER_W = 4 * (MIN_COL_W + 2) + 3;
+
+    /**
+     * Computes the minimum width needed for each column so that no content is
+     * clipped, then updates the module-level width variables.
+     */
+    private static void computeColumnWidths(
+            List<String> left, List<String> mid,
+            List<String> skills, List<String> notifs) {
+        LEFT_W = Math.max(MIN_COL_W, maxVisible(left));
+        MID_W = Math.max(MIN_COL_W, maxVisible(mid));
+        SKILLS_W = Math.max(MIN_COL_W, maxVisible(skills));
+        NOTIF_W = Math.max(MIN_COL_W, maxVisible(notifs));
+        INNER_W = (LEFT_W + 2) + (MID_W + 2) + (SKILLS_W + 2) + (NOTIF_W + 2) + 3;
+    }
+
+    private static int maxVisible(List<String> lines) {
+        int max = 0;
+        for (String l : lines) {
+            max = Math.max(max, visibleLength(l));
+        }
+        return max;
+    }
 
     // ══════════════════════════════════════════════════════════════════════════
     //  Public API
@@ -181,6 +206,7 @@ public class Renderer {
         List<String> skills = buildSkillsPanel(player);
         List<String> notifs = buildNotificationsPanel(player);
 
+        computeColumnWidths(stats, actions, skills, notifs);
         printBoxTop(formatClock(state));
         printColumnSeparator();
         printBodyRows(stats, actions, skills, notifs);
@@ -252,35 +278,42 @@ public class Renderer {
         }
 
         lines.add(""); // breathing room
-
+        
         // Need bars
         for (Map.Entry<String, Need> e : player.getNeeds().entrySet()) {
             lines.add(needBar(e.getValue()));
         }
-
+        
         // Money
         lines.add("");
         lines.add(BRIGHT_YELLOW + "Money: $" + String.format("%.2f", player.getMoney()) + RESET);
-
+        
         // Divider
         lines.add(BORDER + repeat("─", LEFT_W) + RESET);
-
+        
         // Location
-        lines.add(LABEL + "At " + RESET + BRIGHT_CYAN + loc.getLocationName() + RESET);
+        lines.add(LABEL + "At " + RESET + BRIGHT_CYAN + BOLD + loc.getLocationName() + RESET);
+        lines.add("");
 
         // Nearby characters
         List<models.Character> chars = PlayController.charsAt(loc, state, world);
         if (chars.isEmpty()) {
             lines.add(MUTED + "No one nearby." + RESET);
         } else {
-            lines.add(LABEL + "nearby:" + RESET);
             for (models.Character c : chars) {
                 String status = state.getRelationshipService().getStatus(player, c);
                 int score = state.getRelationshipService().getScore(player, c);
                 String scoreColour = score > 0 ? BRIGHT_GREEN : score < 0 ? BRIGHT_RED : BRIGHT_YELLOW;
-                lines.add(WHITE + c.getName() + RESET
+                lines.add(BRIGHT_WHITE + BOLD + c.getName() + RESET
                         + MUTED + " [" + status + "] " + RESET
                         + scoreColour + score + RESET);
+                // Show NPC description if available
+                if (c instanceof models.NPCCharacter npc) {
+                    String desc = npc.getDescription();
+                    if (desc != null && !desc.isBlank()) {
+                        lines.add(MUTED + "  " + desc + RESET);
+                    }
+                }
             }
         }
 
@@ -315,9 +348,43 @@ public class Renderer {
             case INTERACTABLE_ACTION -> {
                 Furniture f = PlayController.getSelectedFurniture();
                 lines.add(menuTitle(f.getName()));
-                List<String> acts = new ArrayList<>(f.getActionNames());
+                List<FurnitureAction> acts = new ArrayList<>(f.getActions());
+                // Sort by name for stable ordering
+                acts.sort((a, b) -> a.getName().compareTo(b.getName()));
                 for (int i = 0; i < acts.size(); i++) {
-                    lines.add(menuItem(String.valueOf(i + 1), acts.get(i)));
+                    FurnitureAction act = acts.get(i);
+                    lines.add(menuItem(String.valueOf(i + 1), act.getName()));
+                    // Need effects — one per line
+                    Map<String, Double> needFx = act.affectedNeedsByActionMap();
+                    if (!needFx.isEmpty()) {
+                        boolean first = true;
+                        for (Map.Entry<String, Double> e : new java.util.TreeMap<>(needFx).entrySet()) {
+                            double v = e.getValue().doubleValue();
+                            String colour = v > 0 ? BRIGHT_GREEN : BRIGHT_RED;
+                            String sign = v > 0 ? "+" : "";
+                            String label = first ? MUTED + "  needs: " + RESET : "         ";
+                            lines.add(label + colour + sign + (int) v + " " + e.getKey() + RESET);
+                            first = false;
+                        }
+                    }
+                    // Skill effects — one per line
+                    Map<String, Double> skillFx = act.affectedSkillsByActionMap();
+                    if (!skillFx.isEmpty()) {
+                        boolean first = true;
+                        for (Map.Entry<String, Double> e : new java.util.TreeMap<>(skillFx).entrySet()) {
+                            String label = first ? MUTED + " skills: " + RESET : "         ";
+                            lines.add(label + BRIGHT_CYAN + "+" + (int) e.getValue().doubleValue() + "xp " + e.getKey() + RESET);
+                            first = false;
+                        }
+                    }
+                    // Money cost
+                    if (act.moneyDeducted() > 0) {
+                        lines.add(MUTED + "   cost: " + RESET + BRIGHT_YELLOW + "$" + String.format("%.0f", act.moneyDeducted()) + RESET);
+                    }
+                    // Time required
+                    if (act.getTimeRequired() > 0) {
+                        lines.add(MUTED + "   time: " + RESET + BRIGHT_WHITE + formatHours(act.getTimeRequired()) + RESET);
+                    }
                 }
                 lines.add(backItem());
             }
@@ -374,22 +441,44 @@ public class Renderer {
 
             case PICK_CAREER -> {
                 lines.add(menuTitle("Choose Career"));
+                lines.add("");
 
                 List<CareerList> careers = PlayController.getAvailableCareers();
 
+                // Compute dynamic title column width
+                int maxTitleLen = 0;
+                for (CareerList c : careers) {
+                    maxTitleLen = Math.max(maxTitleLen, c.getTitle().length());
+                }
+                int TITLE_W = maxTitleLen + 2;
+                int SALARY_W = 9;
+                int HOURS_W = 5;
+
+                // Header row
+                lines.add(MUTED
+                        + "    " + pad("Career", TITLE_W)
+                        + "  " + pad("Salary", SALARY_W)
+                        + "  " + pad("Hours", HOURS_W)
+                        + "  Skills"
+                        + RESET);
+                lines.add(MUTED + "    " + repeat("─", TITLE_W + SALARY_W + HOURS_W + 20) + RESET);
+
                 for (int i = 0; i < careers.size(); i++) {
                     CareerList c = careers.get(i);
-                    int TITLE_W = 18;
-                    int SALARY_W = 10;
-                    int HOURS_W = 4;
                     String title = pad(c.getTitle(), TITLE_W);
-                    String salary = String.format("$%.0f/d", c.getBaseSalary());
-                    salary = pad(salary, SALARY_W);
-                    String hours = c.getWorkingHours() > 0 ? String.format("%dh", (int) c.getWorkingHours()): "";
-                    hours = pad(hours, HOURS_W);
-                    String row = BRIGHT_YELLOW + (i + 1) + ". " + RESET + BRIGHT_WHITE + title + RESET + MUTED + " " + salary + " " + hours + RESET;
-                    lines.add(row);
+                    String salary = pad(String.format("$%.0f/d", c.getBaseSalary()), SALARY_W);
+                    String hours = c.getWorkingHours() > 0
+                            ? pad(String.format("%dh", (int) c.getWorkingHours()), HOURS_W)
+                            : pad("", HOURS_W);
+                    String skills = String.join(", ", c.getRelatedSkills());
+
+                    lines.add(BRIGHT_YELLOW + (i + 1) + ". " + RESET
+                            + BRIGHT_WHITE + title + RESET
+                            + "  " + MUTED + salary + RESET
+                            + "  " + MUTED + hours + RESET
+                            + "  " + BRIGHT_BLACK + skills + RESET);
                 }
+                lines.add("");
                 lines.add(backItem());
             }
         }
@@ -473,7 +562,7 @@ public class Renderer {
                 + colour + repeat("#", filled) + RESET
                 + MUTED + repeat("-", empty) + RESET
                 + MUTED + "]" + RESET;
-        String valueStr = colour + String.format("%3d", val) +  "%" + RESET;
+        String valueStr = colour + String.format("%3d", val) + "%" + RESET;
 
         return label + " " + bar + " " + valueStr;
     }
@@ -618,6 +707,16 @@ public class Renderer {
             result.add(s);
         }
         return result;
+    }
+
+    // ── Effect string builders (for action attribute display) ─────────────────
+    private static String formatHours(double h) {
+        if (h < 1.0) {
+            return (int) (h * 60) + "min";
+        }
+        int hrs = (int) h;
+        int mins = (int) Math.round((h - hrs) * 60);
+        return mins > 0 ? hrs + "h " + mins + "min" : hrs + "h";
     }
 
     private static void clearScreen() {
