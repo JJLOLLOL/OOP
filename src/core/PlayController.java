@@ -1,7 +1,7 @@
 package core;
 
 import Types.CareerList;
-import Types.InteractionType;
+import Types.InteractionList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -237,9 +237,9 @@ public class PlayController {
             setStep(Step.SOCIALISE);
             return true;
         }
-        InteractionType[] types = InteractionType.values();
+        InteractionList[] types = InteractionList.values();
         return pickFromList(input, List.of(types), idx -> {
-            InteractionType chosen = types[idx];
+            InteractionList chosen = types[idx];
 
             String blockReason = DebuffRegistry.getInteractionBlockReason(player, "Socialise");
             if (blockReason != null) {
@@ -250,7 +250,7 @@ public class PlayController {
             }
 
             String result = state.getRelationshipService().interact(player, selectedCharacter, chosen);
-            NeedService.adjustNeed(player, "Social", chosen.getValue());
+            NeedService.adjustNeed(player, "Social", chosen.getEffect());
             NotificationService.add(player, result);
             selectedCharacter = null;
             setStep(Step.MAIN);

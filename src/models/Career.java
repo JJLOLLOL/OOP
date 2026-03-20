@@ -1,10 +1,11 @@
 package models;
 
 import Types.CareerList;
-import Types.CareerRank;
+import Types.CareerRankList;
 
-public class Career implements ProgressBar {
-    private CareerList currentCareer;
+public class Career {
+
+    private final CareerList currentCareer;
     private int currentRank;
     private double progress;
     private double requiredXP;
@@ -16,64 +17,49 @@ public class Career implements ProgressBar {
         this.requiredXP = 100.0;
     }
 
-    // Getter and Setter methods
-    public String getTitle() {
-        return currentCareer.getTitle();
-    }
-    public double getSalary() {
-        return currentCareer.getBaseSalary() * CareerRank.getSalaryMultiplier(currentRank);
-    }
-    public double getWorkingHours() {
-        return currentCareer.getWorkingHours();
-    }
-    public String getRank(){
-        return CareerRank.getTitle(currentRank);
-    }
-    public void setRank(int rank) {
-        this.currentRank = rank;
-    }
-    public double getRequiredXP() {
-        return requiredXP;
-    }
-
     public CareerList getCurrentCareer() {
         return currentCareer;
     }
 
-    //increase required XP needed per level
-    private void updateRequiredXP() {
-        requiredXP = 100.0 * Math.pow(1.5, currentRank - 1);
+    public String getTitle() {
+        return currentCareer.getTitle();
     }
 
-    //abstract methods from ProgressBar
-    @Override
+    public double getWorkingHours() {
+        return currentCareer.getWorkingHours();
+    }
+
+    public String getRank() {
+        return CareerRankList.fromRank(currentRank).getTitle();
+    }
+
+    public int getCurrentRank() {
+        return currentRank;
+    }
+
+    public double getSalary() {
+        return currentCareer.getBaseSalary() * CareerRankList.fromRank(currentRank).getSalaryMultiplier();
+    }
+
     public double getProgress() {
         return progress;
     }
 
-    @Override
-    public String addProgress(double amount){
-        if (currentRank >= CareerRank.RANK.length){
-            return "Max rank attained! Cannot gain anymore XP.";
-        }
-        this.progress += amount;
-        if (this.progress >= requiredXP) {
-            this.progress -= requiredXP;
-            currentRank++;
-            updateRequiredXP();
-            return "Promoted to " + getRank()
-                    + " | Next rank requires: " + requiredXP + " XP";
-        }
-        return "Progress: " + progress + " / " + requiredXP + " XP";
+    public double getRequiredXP() {
+        return requiredXP;
     }
 
-    @Override
-    public String toString() {
-        return "=== Career Info ===" +
-                "\nTitle:         " + getTitle() +
-                "\nRank:          " + getRank() +
-                "\nSalary:        " + getSalary() +
-                "\nWorking Hours: " + getWorkingHours() +
-                "\nProgress:      " + progress + " / " + requiredXP + " XP";
+    public String addProgress(double amount) {
+        if (currentRank >= CareerRankList.count()) {
+            return "Max rank attained! Cannot gain anymore XP.";
+        }
+        progress += amount;
+        if (progress >= requiredXP) {
+            progress -= requiredXP;
+            currentRank++;
+            requiredXP = 100.0 * Math.pow(1.5, currentRank - 1);
+            return "Promoted to " + getRank() + " | Next rank requires: " + requiredXP + " XP";
+        }
+        return "Progress: " + progress + " / " + requiredXP + " XP";
     }
 }

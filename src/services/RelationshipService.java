@@ -1,6 +1,7 @@
 package services;
 
-import Types.InteractionType;
+import Types.InteractionList;
+import Types.RelationshipList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,115 +12,61 @@ import models.SimCharacter;
 
 public class RelationshipService {
 
-    private Map<Character, Map<Character, Relationship>> relationships = new HashMap<>();
+    private final Map<Character, Map<Character, Relationship>> relationships = new HashMap<>();
 
-    @FunctionalInterface
-    public interface RelationshipVisitor {
-
-        void visit(Character from, Character to, Relationship relationship);
-    }
-
-    public void register(Character c) {
-        relationships.putIfAbsent(c, new HashMap<>());
-    }
-
-    public void registerNewSim(
-            SimCharacter newSim,
-            List<SimCharacter> sims,
-            List<NPCCharacter> npcs) {
-
-        register(newSim);
-
-        for (NPCCharacter npc : npcs) {
-            register(npc);
-            Relationship r = new Relationship(0);
-
-            relationships
-                    .computeIfAbsent(newSim, k -> new HashMap<>())
-                    .put(npc, r);
-
-            relationships
-                    .computeIfAbsent(npc, k -> new HashMap<>())
-                    .put(newSim, r);
-        }
-
+    public void registerNewSim(SimCharacter newSim, List<SimCharacter> sims, List<NPCCharacter> npcs) {
+        link(newSim, npcs);
         for (SimCharacter sim : sims) {
-            if (sim == newSim) {
-                continue;
+            if (sim != newSim) {
+                link(newSim, sim);
             }
-
-            register(sim);
-            Relationship r = new Relationship(0);
-
-            relationships
-                    .computeIfAbsent(newSim, k -> new HashMap<>())
-                    .put(sim, r);
-
-            relationships
-                    .computeIfAbsent(sim, k -> new HashMap<>())
-                    .put(newSim, r);
         }
     }
 
-    public String interact(Character from, Character to, InteractionType interaction) {
-
-        register(from);
-        register(to);
-
-        Relationship r = relationships
-                .computeIfAbsent(from, k -> new HashMap<>())
-                .computeIfAbsent(to, k -> new Relationship(0));
-
-        relationships
-                .computeIfAbsent(to, k -> new HashMap<>())
-                .putIfAbsent(from, r);
-
-        return r.applyInteraction(interaction, from.getName(), to.getName());
+    public String interact(Character from, Character to, InteractionList type) {
+        Relationship r = getOrCreate(from, to);
+        r.changeScore(type.getEffect());
+        return from.getName() + " " + type.getLabel() + " " + to.getName() + "\n"
+                + to.getName() + type.getReaction() + "\n"
+                + "Relationship with " + to.getName() + " "
+                + (type.getEffect() > 0 ? "improved" : type.getEffect() < 0 ? "worsened" : "unchanged")
+                + " to " + r.getScore();
     }
 
     public int getScore(Character from, Character to) {
-
-        if (!relationships.containsKey(from)) {
+        Map<Character, Relationship> map = relationships.get(from);
+        if (map == null) {
             return 0;
         }
-        Relationship r = relationships.get(from).get(to);
+        Relationship r = map.get(to);
         return r == null ? 0 : r.getScore();
     }
 
-    public String getStatus(Character from, Character to) {
-
-        if (!relationships.containsKey(from)) {
-            return "Stranger";
+    public RelationshipList getStatus(Character from, Character to) {
+        Map<Character, Relationship> map = relationships.get(from);
+        if (map == null) {
+            return RelationshipList.ACQUAINTANCE;
         }
-        Relationship r = relationships.get(from).get(to);
-        return r == null ? "Stranger" : r.getStatus();
+        Relationship r = map.get(to);
+        return r == null ? RelationshipList.ACQUAINTANCE : r.getStatus();
     }
 
-    public Map<Character, Relationship> getRelationshipsOf(Character from) {
-
-        return relationships.getOrDefault(from, new HashMap<>());
+    // ── Helpers ───────────────────────────────────────────────────────────────
+    private Relationship getOrCreate(Character from, Character to) {
+        return relationships
+                .computeIfAbsent(from, k -> new HashMap<>())
+                .computeIfAbsent(to, k -> new Relationship());
     }
 
-    public void decayRelationships() {
-
-        for (Character from : relationships.keySet()) {
-            for (Character to : relationships.get(from).keySet()) {
-                Relationship r = relationships.get(from).get(to);
-                if (r.getScore() > 0) {
-                    r.changeScore(-1);
-                }
-            }
-        }
+    private void link(Character a, Character b) {
+        Relationship r = new Relationship();
+        relationships.computeIfAbsent(a, k -> new HashMap<>()).put(b, r);
+        relationships.computeIfAbsent(b, k -> new HashMap<>()).put(a, r);
     }
 
-    public void forEachRelationship(RelationshipVisitor visitor) {
-
-        for (Map.Entry<Character, Map<Character, Relationship>> fromEntry : relationships.entrySet()) {
-            Character from = fromEntry.getKey();
-
-            for (Map.Entry<Character, Relationship> toEntry : fromEntry.getValue().entrySet()) {
-                visitor.visit(from, toEntry.getKey(), toEntry.getValue());
-            }
+    private void link(Character a, List<? extends Character> others) {
+        for (Character other : others) {
+            link(a, other);
         }
     }
 }

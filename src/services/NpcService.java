@@ -23,7 +23,9 @@ public class NpcService {
 
         for (NPCCharacter npc : world.getAllNPCs()) {
             TreeMap<Integer, Location> schedule = npc.getSchedule();
-            if (schedule.isEmpty()) continue;
+            if (schedule.isEmpty()) {
+                continue;
+            }
 
             // Find the latest scheduled entry that is <= currentTime
             Map.Entry<Integer, Location> entry = schedule.floorEntry(currentTime);

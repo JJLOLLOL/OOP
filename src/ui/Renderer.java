@@ -1,7 +1,8 @@
 package ui;
 
 import Types.CareerList;
-import Types.InteractionType;
+import Types.InteractionList;
+import Types.RelationshipList;
 import core.CreateSimController;
 import core.GameState;
 import core.PlayController;
@@ -302,11 +303,11 @@ public class Renderer {
         } else {
             lines.add(LABEL + "nearby:" + RESET);
             for (models.Character c : chars) {
-                String status = state.getRelationshipService().getStatus(player, c);
+                RelationshipList status = state.getRelationshipService().getStatus(player, c);
                 int score = state.getRelationshipService().getScore(player, c);
                 String scoreColour = score > 0 ? BRIGHT_GREEN : score < 0 ? BRIGHT_RED : BRIGHT_YELLOW;
                 lines.add(WHITE + c.getName() + RESET
-                        + MUTED + " [" + status + "] " + RESET
+                        + MUTED + " [" + status.label + "] " + RESET
                         + scoreColour + score + RESET);
                 // Show NPC description if available
                 if (c instanceof models.NPCCharacter npc) {
@@ -398,9 +399,9 @@ public class Renderer {
                 } else {
                     for (int i = 0; i < chars.size(); i++) {
                         models.Character c = chars.get(i);
-                        String status = state.getRelationshipService().getStatus(player, c);
+                        RelationshipList status = state.getRelationshipService().getStatus(player, c);
                         lines.add(menuItem(String.valueOf(i + 1),
-                                c.getName() + " " + MUTED + "[" + status + "]" + RESET));
+                                c.getName() + " " + MUTED + "[" + status.label + "]" + RESET));
                     }
                 }
                 lines.add(backItem());
@@ -409,7 +410,7 @@ public class Renderer {
             case SOCIALISE_ACTION -> {
                 models.Character target = PlayController.getSelectedCharacter();
                 lines.add(menuTitle("Interact: " + target.getName()));
-                InteractionType[] types = InteractionType.values();
+                InteractionList[] types = InteractionList.values();
                 for (int i = 0; i < types.length; i++) {
                     lines.add(menuItem(String.valueOf(i + 1), types[i].getLabel()));
                 }
@@ -460,21 +461,24 @@ public class Renderer {
                         + "    " + pad("Career", TITLE_W)
                         + "  " + pad("Salary", SALARY_W)
                         + "  " + pad("Hours", HOURS_W)
+                        + "  Skills"
                         + RESET);
                 lines.add(MUTED + "    " + repeat("─", TITLE_W + SALARY_W + HOURS_W + 20) + RESET);
 
                 for (int i = 0; i < careers.size(); i++) {
                     CareerList c = careers.get(i);
                     String title = pad(c.getTitle(), TITLE_W);
-                    String salary = pad(String.format("$%.0f/day", c.getBaseSalary()), SALARY_W);
+                    String salary = pad(String.format("$%.0f/d", c.getBaseSalary()), SALARY_W);
                     String hours = c.getWorkingHours() > 0
                             ? pad(String.format("%dh", (int) c.getWorkingHours()), HOURS_W)
                             : pad("", HOURS_W);
+                    String skills = String.join(", ", c.getRelatedSkills());
 
                     lines.add(BRIGHT_YELLOW + (i + 1) + ". " + RESET
                             + BRIGHT_WHITE + title + RESET
                             + "  " + MUTED + salary + RESET
-                            + "  " + MUTED + hours + RESET);
+                            + "  " + MUTED + hours + RESET
+                            + "  " + BRIGHT_BLACK + skills + RESET);
                 }
                 lines.add("");
                 lines.add(backItem());
