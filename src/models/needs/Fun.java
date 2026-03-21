@@ -11,7 +11,10 @@ public class Fun extends Need {
 
     @Override
     public void onCriticallyLow(SimCharacter character) {
-        NotificationService.add(character, character.getName() + " is bored! Find something fun to do soon!");
+        NotificationService.add(character, character.getName() + " is bored! Find something fun to do soon! Your charisma skills will decrease until fun is restored.");
+
+        // If fun is critically low, reduce charisma
+        character.getAllSkills().get("Charisma").addProgress(-5);
     }
 
 }
