@@ -6,7 +6,7 @@ import services.NotificationService;
 public class Hunger extends Need {
 
     public Hunger() {
-        super("Hunger", 10.0); // Default decay rate for hunger
+        super("Hunger", 8.0); // Default decay rate for hunger
     }
 
     @Override
