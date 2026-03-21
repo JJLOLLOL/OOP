@@ -6,7 +6,7 @@ import services.NotificationService;
 public class Hygiene extends Need {
 
     public Hygiene() {
-        super("Hygiene", 1.0); // Default decay rate for hygiene
+        super("Hygiene", 5.0); // Default decay rate for hygiene
     }
 
     @Override

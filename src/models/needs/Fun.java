@@ -6,7 +6,7 @@ import services.NotificationService;
 public class Fun extends Need {
 
     public Fun() {
-        super("Fun", 1.0); // Default decay rate for fun
+        super("Fun", 5.0); // Default decay rate for fun
     }
 
     @Override

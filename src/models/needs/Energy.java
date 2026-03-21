@@ -6,7 +6,7 @@ import services.NotificationService;
 public class Energy extends Need {
 
     public Energy() {
-        super("Energy", 1.5); // Default decay rate for energy
+        super("Energy", 7.5); // Default decay rate for energy
     }
 
     @Override

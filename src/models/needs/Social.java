@@ -6,7 +6,7 @@ import services.NotificationService;
 public class Social extends Need {
 
     public Social() {
-        super("Social", 1.0); // Default decay rate for social needs
+        super("Social", 5.0); // Default decay rate for social needs
     }
 
     @Override
