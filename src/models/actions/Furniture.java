@@ -8,15 +8,17 @@ import java.util.Map;
 public class Furniture {
     private final String name;
     private final String description;
+    private final double price;
 
     // Map containing actions that can be performed on this furniture, action name
     // as key and FurnitureAction as value
     private final Map<String, FurnitureAction> availableActionsMap;
 
     // Constructor
-    public Furniture(String name, String description) {
+    public Furniture(String name, String description, double price) {
         this.name = name;
         this.description = description;
+        this.price = price;
         this.availableActionsMap = new HashMap<>();
     }
 
@@ -58,4 +60,7 @@ public class Furniture {
         return description;
     }
 
+    public double getPrice() {
+        return price;
+    }
 }
