@@ -13,10 +13,10 @@ public class Hygiene extends Need {
     public void onCriticallyLow(SimCharacter character) {
         NotificationService.add(character, character.getName() + " is very dirty! Take a shower soon!");
 
-        // Decrease Hunger when Hygiene is low (unpleasantness makes you hungrier faster)
-        Need hunger = character.getNeeds().get("Hunger");
-        if (hunger != null) {
-            hunger.adjustNeed(-10);
+        // Decrease Social when Hygiene is low (unpleasantness makes you less social)
+        Need social = character.getNeeds().get("Social");
+        if (social != null) {
+            social.adjustNeed(-10);
         }
     }
 
