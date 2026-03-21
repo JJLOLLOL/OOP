@@ -15,4 +15,16 @@ public class HungerEnergyDebuff implements Debuff {
         }
         return amount;
     }
+
+    @Override
+    public double modifyNeedDecay(SimCharacter sim, String needName, double baseDecay) {
+        // Debuff: Hunger -> Energy decay (low hunger -> energy depletes faster)
+        if ("Energy".equals(needName)) {
+            Need hunger = sim.getNeeds().get("Hunger");
+            if (hunger != null && hunger.isCriticallyLow()) {
+                return baseDecay * 2.0; // Energy decays twice as fast
+            }
+        }
+        return baseDecay;
+    }
 }

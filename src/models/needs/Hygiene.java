@@ -1,6 +1,7 @@
 package models.needs;
 
 import models.SimCharacter;
+import services.NeedService;
 import services.NotificationService;
 
 public class Hygiene extends Need {
@@ -14,10 +15,7 @@ public class Hygiene extends Need {
         NotificationService.add(character, character.getName() + " is very dirty! Take a shower soon!");
 
         // Decrease Social when Hygiene is low (unpleasantness makes you less social)
-        Need social = character.getNeeds().get("Social");
-        if (social != null) {
-            social.adjustNeed(-10);
-        }
+        NeedService.adjustNeed(character, "Social", -10);
     }
 
 }

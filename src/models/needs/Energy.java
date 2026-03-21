@@ -2,6 +2,7 @@ package models.needs;
 
 import models.SimCharacter;
 import services.NotificationService;
+import services.NeedService;
 
 public class Energy extends Need {
 
@@ -14,10 +15,7 @@ public class Energy extends Need {
         NotificationService.add(character, character.getName() + " is exhausted! Find a place to rest soon!");
 
         // Decrease Hunger when Energy is low (exhaustion makes you hungrier faster)
-        Need hunger = character.getNeeds().get("Hunger");
-        if (hunger != null) {
-            hunger.adjustNeed(-5);
-        }
+        NeedService.adjustNeed(character, "Hunger", -5);
 
         // Fatigue decay effects are handled via FatigueDecayDebuff.modifyNeedDecay()
     }

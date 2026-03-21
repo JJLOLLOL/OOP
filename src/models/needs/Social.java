@@ -2,6 +2,7 @@ package models.needs;
 
 import models.SimCharacter;
 import services.NotificationService;
+import services.NeedService;
 
 public class Social extends Need {
 
@@ -14,10 +15,7 @@ public class Social extends Need {
         NotificationService.add(character, character.getName() + " is feeling lonely! Try socializing with others soon!");
 
         // Decrease Energy when Social is low (loneliness makes you less energetic)
-        Need energy = character.getNeeds().get("Energy");
-        if (energy != null) {
-            energy.adjustNeed(-10);
-        }
+        NeedService.adjustNeed(character, "Energy", -10);
     }
 
 }
