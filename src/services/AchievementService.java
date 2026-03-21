@@ -87,6 +87,18 @@ public class AchievementService {
         return gained;
     }
 
+    public List<AchievementList> evaluateWorkAchievements(SimCharacter sim) {
+        List<AchievementList> gained = new ArrayList<>(evaluateCareerAchievements(sim));
+        if (sim == null || sim.getCareer().getCurrentCareer() == CareerList.JOBLESS) {
+            return gained;
+        }
+
+        for (String skill : sim.getCareer().getCurrentCareer().getRelatedSkills()) {
+            gained.addAll(evaluateFirstTimeSkillAchievement(sim, skill));
+        }
+        return gained;
+    }
+
     public List<AchievementList> evaluateSocialAchievements(
             SimCharacter sim,
             List<? extends Character> allCharacters,
