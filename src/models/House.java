@@ -1,7 +1,6 @@
 package models;
 
 import java.util.ArrayList;
-
 import models.actions.Furniture;
 
 public class House extends Location {
@@ -14,7 +13,7 @@ public class House extends Location {
 
     // Constructor for purchasable / higher tier houses
     public House(String locationName, ArrayList<Furniture> furnitures,
-                 double housePrice, double houseRate, int houseTier) {
+            double housePrice, double houseRate, int houseTier) {
 
         super(locationName, furnitures);
 
@@ -51,9 +50,12 @@ public class House extends Location {
         return isOwned;
     }
 
+    public void setOwned(boolean owned) {
+        this.isOwned = owned;
+    }
+
     // Upgrade current house to the next tier
     public void upgradeHouse(House nextTierHouse) {
-
 
         if (nextTierHouse == null) {
             throw new IllegalArgumentException("Next tier house cannot be null.");
@@ -62,7 +64,6 @@ public class House extends Location {
         if (nextTierHouse.houseTier != this.houseTier + 1) {
             throw new IllegalArgumentException("Upgrade must be to the next house tier.");
         }
-
 
         // Transfer ownership
         this.isOwned = false;
