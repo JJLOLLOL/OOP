@@ -578,7 +578,7 @@ public class FurnitureFactory {
                 "Put in a full day's work.",
                 Map.of(
                         "Hunger", -40.0,
-                        "Energy", -55.0,
+                        "Energy", -40.0,
                         "Hygiene", -20.0,
                         "Fun", -25.0,
                         "Social", 20.0),

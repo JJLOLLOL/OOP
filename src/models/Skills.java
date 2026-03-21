@@ -37,11 +37,12 @@ public class Skills implements ProgressBar{
 
     @Override
     public String addProgress(double amount){
-        if (this.level >= MAX_LEVEL) {
-            return skillName + " is already at max level!";
-        }
-        this.progress += amount;
+        this.progress = Math.max(0, this.progress + amount);
         if (this.progress >= requiredXP) {
+            if (this.level >= MAX_LEVEL) {
+                this.progress = 0;
+                return skillName + " is already at max level!";
+            }
             this.progress -= requiredXP;
             this.level++;
             updateRequiredXP();

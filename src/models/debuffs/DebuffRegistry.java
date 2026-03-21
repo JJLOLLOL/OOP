@@ -16,6 +16,7 @@ public class DebuffRegistry {
         DEBUFFS.add(new EnergySkillDebuff());
         DEBUFFS.add(new SocialFunDebuff());
         DEBUFFS.add(new HygieneSocialDebuff());
+        DEBUFFS.add(new FatigueDecayDebuff());
     }
 
     public static double applyNeedModifiers(SimCharacter sim, String needName, double amount) {
