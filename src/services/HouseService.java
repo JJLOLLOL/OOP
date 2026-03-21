@@ -16,8 +16,8 @@ public class HouseService {
         if (buyer.getMoney() < house.getHousePrice()) {
             return false; // Not enough money to purchase
         }
-        buyer.setMoney(house.getHousePrice());
-        house.isOwned();
+        buyer.setMoney(-house.getHousePrice());
+        house.setOwned(true);
 
         return true;
     }

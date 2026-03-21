@@ -265,6 +265,7 @@ public class PlayController {
 
             if (success) {
                 player.setCurrentHouse(house);
+                player.setLocation(house);  // Update location to the new house so Renderer displays correct furniture
                 NotificationService.add(player, HouseService.getPurchaseMessage(player, house, true));
             } else {
                 NotificationService.add(player, HouseService.getPurchaseMessage(player, house, false));
