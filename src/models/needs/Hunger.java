@@ -11,7 +11,13 @@ public class Hunger extends Need {
 
     @Override
     public void onCriticallyLow(SimCharacter character) {
-        NotificationService.add(character, character.getName() + " is starving! Find food soon!");
+        NotificationService.add(character, character.getName() + " is starving! Find food soon! Energy will decrease faster until hunger is restored.");
+
+        // Increase Energy's own decay rate when critically low (doubles the decay rate)
+        Need energy = character.getNeeds().get("Energy");
+        if (energy != null) {
+            energy.setDecayRate(energy.getBaseDecayRate() * 2.0);
+        }
     }
 
 }
