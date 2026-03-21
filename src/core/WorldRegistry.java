@@ -85,7 +85,7 @@ public class WorldRegistry {
         // ── Home ──────────────────────────────────────────────────────────────
         House home = new House("Home", new ArrayList<>(List.of(
                 FurnitureFactory.createCheapMattress(),
-                FurnitureFactory.createOldStove(),
+                FurnitureFactory.createSingleHotplate(),
                 FurnitureFactory.createOldShower(),
                 FurnitureFactory.createToilet(),
                 FurnitureFactory.createOldCRTTV()

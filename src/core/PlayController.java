@@ -3,14 +3,18 @@ package core;
 import Types.AchievementList;
 import Types.CareerList;
 import Types.InteractionList;
+import Types.ShopInventory;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+import models.House;
 import models.Location;
 import models.SimCharacter;
 import models.actions.Furniture;
 import models.debuffs.DebuffRegistry;
+import services.FurnitureService;
+import services.HouseService;
 import services.NeedService;
 import services.NotificationService;
 import services.WorkService;
@@ -42,13 +46,18 @@ public class PlayController {
         SOCIALISE, SOCIALISE_ACTION,
         CHANGE_LOCATION,
         SWITCH_CHARACTER,
-        PICK_CAREER    // Career selection — triggered by interacting with the Work Desk
+        PICK_CAREER, // Career selection — triggered by interacting with the Work Desk
+        SHOP, SHOP_HOUSES, SHOP_FURNITURE, // Shop sub-menus
     }
 
     // ── Session state ─────────────────────────────────────────────────────────
     private static Step step = Step.MAIN;
     private static Furniture selectedFurniture = null;
     private static models.Character selectedCharacter = null;
+    private static List<House> currentHouses = null;
+    private static List<Furniture> currentFurniture = null;
+    private static House selectedHouse = null;
+    private static Furniture selectedFurnitureForPurchase = null;
 
     /**
      * Available careers shown in the PICK_CAREER screen (excludes JOBLESS).
@@ -91,6 +100,12 @@ public class PlayController {
                 handleSwitchCharacter(input, state);
             case PICK_CAREER ->
                 handlePickCareer(input, player, state);
+            case SHOP ->
+                handleShop(input, player, state);
+            case SHOP_HOUSES ->
+                handleShopHouses(input, player, state);
+            case SHOP_FURNITURE ->
+                handleShopFurniture(input, player, state);
         };
     }
 
@@ -114,6 +129,8 @@ public class PlayController {
             case "4" ->
                 setStep(Step.SWITCH_CHARACTER);
             case "5" ->
+                setStep(Step.SHOP);
+            case "6" ->
                 state.setPhase(GameState.Phase.QUIT);
             default -> {
                 Renderer.showError("Invalid choice. Enter 1-5.");
@@ -142,11 +159,92 @@ public class PlayController {
             CareerList chosen = AVAILABLE_CAREERS.get(idx);
             player.joinCareer(chosen);
             addAchievementNotifications(
-                player,
-                state.getAchievementService().evaluateCareerAchievements(player));
+                    player,
+                    state.getAchievementService().evaluateCareerAchievements(player));
             NotificationService.add(player, "Career started: " + chosen.getTitle()
                     + ". Head to the Office to work!");
             setStep(Step.MAIN);
+        });
+    }
+
+    private static boolean handleShop(String input, SimCharacter player, GameState state) {
+        if (input.equals("0")) {
+            setStep(Step.MAIN);
+            return true;
+        }
+
+        switch (input) {
+            case "1" -> {
+                // Houses
+                currentHouses = ShopInventory.getAvailableHouses();
+                currentHouses.removeIf(House::isOwned); // Filter out owned houses
+                if (currentHouses.isEmpty()) {
+                    NotificationService.add(player, "No houses available for purchase.");
+                    return false;
+                }
+                setStep(Step.SHOP_HOUSES);
+                return true;
+            }
+            case "2" -> {
+                if (player.getCurrentHouse() == null) {
+                    NotificationService.add(player, "You must own a house to purchase furniture! Buy a house first.");
+                    return false;
+                }
+                // Furniture
+                currentFurniture = ShopInventory.getAvailableFurniture();
+                setStep(Step.SHOP_FURNITURE);
+                return true;
+            }
+            default -> {
+                Renderer.showError("Enter 1, 2, or 0 to go back.");
+                return false;
+            }
+        }
+    }
+
+    private static boolean handleShopHouses(String input, SimCharacter player, GameState state) {
+        if (input.equals("0")) {
+            currentHouses = null;
+            setStep(Step.SHOP);
+            return true;
+        }
+
+        return pickFromList(input, currentHouses, idx -> {
+            House house = currentHouses.get(idx);
+            boolean success = HouseService.purchaseHouse(player, house);
+
+            if (success) {
+                player.setCurrentHouse(house);
+                NotificationService.add(player, HouseService.getPurchaseMessage(player, house, true));
+            } else {
+                NotificationService.add(player, HouseService.getPurchaseMessage(player, house, false));
+            }
+            setStep(Step.SHOP);
+            currentHouses = null;
+
+        });
+    }
+
+    private static boolean handleShopFurniture(String input, SimCharacter player, GameState state) {
+        if (input.equals("0")) {
+            currentFurniture = null;
+            setStep(Step.SHOP);
+            return true;
+        }
+
+        return pickFromList(input, currentFurniture, idx -> {
+            Furniture furniture = currentFurniture.get(idx);
+            House house = player.getCurrentHouse();
+
+            boolean success = FurnitureService.purchaseFurniture(player, house, furniture);
+
+            if (success) {
+                NotificationService.add(player, FurnitureService.getPurchaseMessage(player, house, furniture, true));
+            } else {
+                NotificationService.add(player, FurnitureService.getPurchaseMessage(player, house, furniture, false));
+            }
+            setStep(Step.SHOP);
+            currentFurniture = null;
         });
     }
 
@@ -386,6 +484,20 @@ public class PlayController {
      */
     public static List<CareerList> getAvailableCareers() {
         return AVAILABLE_CAREERS;
+    }
+
+    /**
+     * Returns the list of houses in the current world.
+     */
+    public static List<House> getCurrentHouses() {
+        return currentHouses;
+    }
+
+    /**
+     * Returns the list of furniture available for purchase in the current world.
+     */
+    public static List<Furniture> getCurrentFurniture() {
+        return currentFurniture;
     }
 
     /**

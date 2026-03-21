@@ -162,6 +162,7 @@ public class CreateSimController {
     /**
      * Converts all committed sim data into {@link SimCharacter} objects,
      * registers their relationships, and adds them to the game state.
+     * All sims are assigned to the shared global Home location from the world.
      * Transitions to {@link Step#PICK_PLAYER} if multiple sims were created, or
      * directly to {@link GameState.Phase#PLAYING} for a single sim.
      */
@@ -172,6 +173,9 @@ public class CreateSimController {
             SimCharacter sim = new SimCharacter(data[0], Integer.parseInt(data[1]), data[2], home);
             state.getRelationshipService().registerNewSim(sim, state.getSims(), world.getAllNPCs());
             state.addSim(sim);
+            
+            // Assign the shared global Home as the player's house
+            sim.setCurrentHouse((models.House) home);
         }
 
         if (state.getSims().size() == 1) {
