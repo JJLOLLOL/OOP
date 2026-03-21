@@ -46,6 +46,19 @@ public class FurnitureService {
         return false;
     }
 
+    /**
+     * Sells a furniture item from the player's house.
+     *
+     * <p>
+     * Validates that the furniture exists in the house, then removes it from the inventory
+     * and refunds the player 50% of the original purchase price via
+     * {@link SimCharacter#setMoney(double)}.
+     *
+     * @param seller the {@link SimCharacter} selling the furniture (receives refund)
+     * @param house the {@link House} where the furniture is located
+     * @param furniture the {@link Furniture} to sell
+     * @return {@code true} if the sale was successful; {@code false} if furniture not found
+     */
     public static boolean sellFurniture(SimCharacter seller, House house, Furniture furniture) {
         // Check if the house contains the furniture
         if (!house.getFurnitures().contains(furniture)) {
@@ -60,6 +73,19 @@ public class FurnitureService {
         return true; // Furniture sold successfully
     }
 
+    /**
+     * Generates a user-friendly message describing the result of a furniture sale.
+     *
+     * <p>
+     * On success, displays the seller's name, furniture name, and refund amount (50% of price).
+     * On failure, displays an error message indicating the furniture was not found in the house.
+     *
+     * @param seller the {@link SimCharacter} who sold the furniture
+     * @param house the {@link House} from which furniture was removed
+     * @param furniture the {@link Furniture} that was sold
+     * @param success whether the sale was successful
+     * @return a formatted message suitable for display to the player
+     */
     public static String getSellMessage(SimCharacter seller, House house, Furniture furniture, boolean success) {
         if (!success) {
             if (!house.getFurnitures().contains(furniture)) {

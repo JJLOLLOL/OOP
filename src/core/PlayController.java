@@ -47,7 +47,12 @@ public class PlayController {
         CHANGE_LOCATION,
         SWITCH_CHARACTER,
         PICK_CAREER, // Career selection — triggered by interacting with the Work Desk
-        SHOP, SHOP_HOUSES, SHOP_FURNITURE, SELL_FURNITURE, // Shop sub-menus
+        SHOP, SHOP_HOUSES, SHOP_FURNITURE, 
+        /**
+         * Furniture selling step: allows player to select furniture from their house to sell.
+         * Routes to {@link #handleSellFurniture}.
+         */
+        SELL_FURNITURE, // Shop sub-menus
     }
 
     // ── Session state ─────────────────────────────────────────────────────────
@@ -56,8 +61,6 @@ public class PlayController {
     private static models.Character selectedCharacter = null;
     private static List<House> currentHouses = null;
     private static List<Furniture> currentFurniture = null;
-    private static House selectedHouse = null;
-    private static Furniture selectedFurnitureForPurchase = null;
 
     /**
      * Available careers shown in the PICK_CAREER screen (excludes JOBLESS).
@@ -113,12 +116,22 @@ public class PlayController {
 
     // ── Sub-handlers ──────────────────────────────────────────────────────────
     /**
-     * Main menu: options 1–5 always shown; option 6 (Work) shown only at the
-     * Office.
-     */
-    /**
-     * Main menu: options 1–5. Work is accessed via the Work Desk in
-     * Interactables.
+     * Main menu: handles top-level player actions.
+     *
+     * <p>
+     * Routes input to the following sub-menus or actions:
+     * <ul>
+     * <li>Option 1 → {@link Step#INTERACTABLES}: interact with location objects.</li>
+     * <li>Option 2 → {@link Step#SOCIALISE}: socialize with nearby characters.</li>
+     * <li>Option 3 → {@link Step#CHANGE_LOCATION}: move to a different location.</li>
+     * <li>Option 4 → {@link Step#SWITCH_CHARACTER}: switch active player Sim.</li>
+     * <li>Option 5 → {@link Step#SHOP}: access the shop menu.</li>
+     * <li>Option 6 → Exits the game via {@link GameState.Phase#QUIT}.</li>
+     * </ul>
+     *
+     * @param input the player's menu selection ("1"-"6")
+     * @param state the {@link GameState}
+     * @return {@code true} if the step changed; {@code false} if input was invalid
      */
     private static boolean handleMain(String input, GameState state) {
         switch (input) {
@@ -143,14 +156,18 @@ public class PlayController {
     }
 
     /**
-     * Career picker: shown when the sim is jobless and tries to work. Lists all
-     * careers from {@link CareerList} (excluding JOBLESS). Input {@code "0"}
-     * cancels back to main.
-     */
-    /**
-     * Career picker: triggered when a jobless sim interacts with the Work Desk.
-     * Selecting a career immediately starts the shift via {@link WorkService}.
-     * Input {@code "0"} cancels back to main.
+     * Career selection menu: shown when a jobless Sim interacts with the Work Desk.
+     *
+     * <p>
+     * Displays all available careers from {@link CareerList} (excluding JOBLESS),
+     * with salary, working hours, and related skills. Selecting a career immediately
+     * joins it via {@link SimCharacter#joinCareer(CareerList)} and triggers achievement
+     * evaluation. Input {@code "0"} cancels back to {@link Step#MAIN}.
+     *
+     * @param input the player's career selection (career number or "0")
+     * @param player the active {@link SimCharacter}}
+     * @param state the {@link GameState}
+     * @return {@code true} if the step changed; {@code false} if input was invalid
      */
     private static boolean handlePickCareer(String input, SimCharacter player, GameState state) {
         if (input.equals("0")) {
@@ -169,6 +186,23 @@ public class PlayController {
         });
     }
 
+    /**
+     * Shop menu: handles house and furniture transactions.
+     *
+     * <p>
+     * Routes player input to the appropriate sub-menu:
+     * <ul>
+     * <li>Option 1 → {@link Step#SHOP_HOUSES}: browse available houses for purchase.</li>
+     * <li>Option 2 → {@link Step#SHOP_FURNITURE}: browse available furniture for purchase.</li>
+     * <li>Option 3 → {@link Step#SELL_FURNITURE}: sell furniture from the player's current house.</li>
+     * <li>Option 0 → {@link Step#MAIN}: return to main menu.</li>
+     * </ul>
+     *
+     * @param input the player's menu selection
+     * @param player the active {@link SimCharacter}
+     * @param state the {@link GameState}
+     * @return {@code true} if the step changed; {@code false} if validation failed
+     */
     private static boolean handleShop(String input, SimCharacter player, GameState state) {
         if (input.equals("0")) {
             setStep(Step.MAIN);
@@ -264,6 +298,20 @@ public class PlayController {
         });
     }
 
+    /**
+     * Furniture seller: handles selling furniture from the player's house.
+     *
+     * <p>
+     * Lists all furniture in the player's current house and allows selection by number.
+     * When a furniture item is selected, {@link FurnitureService#sellFurniture} is called
+     * to process the sale, refunding 50% of the original purchase price. The furniture
+     * is removed from the house inventory. Input {@code "0"} returns to the shop menu.
+     *
+     * @param input the player's selection (furniture number or "0")
+     * @param player the active {@link SimCharacter}
+     * @param state the {@link GameState}
+     * @return {@code true} if the step changed; {@code false} if selection was invalid
+     */
     private static boolean handleSellFurniture(String input, SimCharacter player, GameState state) {
         if (input.equals("0")) {
             currentFurniture = null;
@@ -288,7 +336,17 @@ public class PlayController {
     }
 
     /**
-     * Interactables list: select furniture by number. {@code "0"} → main.
+     * Interactables list: displays all furniture at the player's current location.
+     *
+     * <p>
+     * Lists available {@link Furniture} items that the Sim can interact with.
+     * Selecting an item by number routes to {@link Step#INTERACTABLE_ACTION} where
+     * the player can choose a specific action (e.g., Sleep, Eat, Use). Input {@code "0"}
+     * returns to {@link Step#MAIN}.
+     *
+     * @param input the player's furniture selection (furniture number or "0")
+     * @param loc the {@link Location} where the Sim currently is
+     * @return {@code true} if the step changed; {@code false} if input was invalid
      */
     private static boolean handleInteractables(String input, Location loc) {
         if (input.equals("0")) {
@@ -415,7 +473,18 @@ public class PlayController {
     }
 
     /**
-     * Change location: move player to chosen location. {@code "0"} → main.
+     * Location selection menu: move the Sim to a different location.
+     *
+     * <p>
+     * Displays all available world locations. Selecting a location by number updates
+     * the Sim's location via {@link SimCharacter#setLocation(Location)} and returns to
+     * {@link Step#MAIN}. The current location is highlighted in the menu. Input {@code "0"}
+     * returns to {@link Step#MAIN}.
+     *
+     * @param input the player's location selection (location number or "0")
+     * @param player the active {@link SimCharacter}}
+     * @param world the {@link WorldRegistry} providing the list of all locations
+     * @return {@code true} if the step changed; {@code false} if input was invalid
      */
     private static boolean handleChangeLocation(String input, SimCharacter player,
             WorldRegistry world) {
@@ -430,6 +499,16 @@ public class PlayController {
         });
     }
 
+    /**
+     * Sends achievement unlock notifications to the player.
+     *
+     * <p>
+     * For each newly unlocked {@link AchievementList}, adds a formatted notification
+     * message via {@link NotificationService#add(SimCharacter, String)}.
+     *
+     * @param player the {@link SimCharacter} who unlocked the achievements
+     * @param unlockedAchievements a list of {@link AchievementList} values that were just unlocked
+     */
     private static void addAchievementNotifications(
             SimCharacter player,
             List<AchievementList> unlockedAchievements) {
@@ -438,6 +517,18 @@ public class PlayController {
         }
     }
 
+    /**
+     * Sends achievement notifications for skill milestones triggered by an action.
+     *
+     * <p>
+     * For each skill affected by the {@link models.actions.FurnitureAction},
+     * evaluates whether a first-time skill achievement was unlocked and sends
+     * notifications via {@link #addAchievementNotifications}.
+     *
+     * @param player the {@link SimCharacter} who performed the action
+     * @param action the {@link models.actions.FurnitureAction} that was performed
+     * @param state the {@link GameState} for achievement evaluation
+     */
     private static void addSkillAchievementNotifications(
             SimCharacter player,
             models.actions.FurnitureAction action,
@@ -449,6 +540,13 @@ public class PlayController {
         }
     }
 
+    /**
+     * Returns a combined list of all player Sims and NPCs in the world.
+     *
+     * @param state the {@link GameState} providing player Sims
+     * @param world the {@link WorldRegistry} providing all NPCs
+     * @return a {@link List} containing all {@link SimCharacter}s and {@link models.NPCCharacter}s
+     */
     private static List<models.Character> getAllCharacters(GameState state, WorldRegistry world) {
         List<models.Character> characters = new ArrayList<>();
         characters.addAll(state.getSims());
@@ -457,7 +555,16 @@ public class PlayController {
     }
 
     /**
-     * Switch character: change active player. {@code "0"} → main.
+     * Character switcher: change the active player Sim.
+     *
+     * <p>
+     * Displays all player Sims with the currently active one highlighted.
+     * Selecting a Sim by number updates the active player via {@link GameState#setActivePlayer(SimCharacter)}
+     * and returns to {@link Step#MAIN}. Input {@code "0"} cancels back to {@link Step#MAIN}.
+     *
+     * @param input the player's Sim selection (Sim number or "0")
+     * @param state the {@link GameState}
+     * @return {@code true} if the step changed; {@code false} if input was invalid
      */
     private static boolean handleSwitchCharacter(String input, GameState state) {
         if (input.equals("0")) {
@@ -473,8 +580,18 @@ public class PlayController {
 
     // ── Shared input helper ───────────────────────────────────────────────────
     /**
-     * Parses {@code input} as a 1-based index into {@code list}, calls
-     * {@code action} on success, shows an inline error on failure.
+     * Generic list selection helper: parses user input and executes the specified action.
+     *
+     * <p>
+     * Interprets {@code input} as a 1-based list index, validates it falls within the
+     * list bounds, and executes the {@link IndexAction} callback on the selected index.
+     * If parsing fails or the index is out of bounds, displays an inline error message
+     * via {@link Renderer#showError}.
+     *
+     * @param input the player's selection (1-based list index)
+     * @param list the {@link List} of selectable items
+     * @param action the {@link IndexAction} callback to execute with the selected index
+     * @return {@code true} if selection was successful; {@code false} if input was invalid
      */
     private static boolean pickFromList(String input, List<?> list, IndexAction action) {
         try {
@@ -490,9 +607,20 @@ public class PlayController {
         }
     }
 
+    /**
+     * Functional interface for handling list index selection actions.
+     *
+     * <p>
+     * Implementations define what happens when a user selects an item from a list.
+     * Used by {@link #pickFromList} to decouple list handling from action logic.
+     */
     @FunctionalInterface
     private interface IndexAction {
-
+        /**
+         * Execute the action for the selected list item.
+         *
+         * @param idx the 0-based index of the selected item
+         */
         void run(int idx);
     }
 
@@ -556,6 +684,11 @@ public class PlayController {
         return chars;
     }
 
+    /**
+     * Updates the current menu step and triggers a UI redraw on next render.
+     *
+     * @param next the {@link Step} to transition to
+     */
     private static void setStep(Step next) {
         step = next;
     }
