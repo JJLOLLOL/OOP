@@ -12,6 +12,12 @@ public class Social extends Need {
     @Override
     public void onCriticallyLow(SimCharacter character) {
         NotificationService.add(character, character.getName() + " is feeling lonely! Try socializing with others soon!");
+
+        // Decrease Energy when Social is low (loneliness makes you less energetic)
+        Need energy = character.getNeeds().get("Energy");
+        if (energy != null) {
+            energy.adjustNeed(-10);
+        }
     }
 
 }
