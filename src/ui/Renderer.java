@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-
 import models.House;
 import models.Location;
 import models.SimCharacter;
@@ -549,6 +548,7 @@ public class Renderer {
                 lines.add(menuTitle("Shop"));
                 lines.add(menuItem("1", "Browse Houses"));
                 lines.add(menuItem("2", "Browse Furniture"));
+                lines.add(menuItem("3", "Sell Furniture"));
                 lines.add(menuItem("0", "Back to Main Menu"));
             }
 
@@ -570,6 +570,18 @@ public class Renderer {
                     Furniture f = furniture.get(i);
                     lines.add(menuItem(String.valueOf(i + 1),
                             f.getName() + " - $" + (int) f.getPrice()));
+                }
+                lines.add(menuItem("0", "Back to Shop"));
+            }
+
+            case SELL_FURNITURE -> {
+                List<Furniture> furniture = PlayController.getCurrentFurniture();
+                lines.add(menuTitle("Sell Furniture from Your House"));
+                for (int i = 0; i < furniture.size(); i++) {
+                    Furniture f = furniture.get(i);
+                    double refundAmount = f.getPrice() * 0.5;
+                    lines.add(menuItem(String.valueOf(i + 1),
+                            f.getName() + " - Refund: $" + (int) refundAmount));
                 }
                 lines.add(menuItem("0", "Back to Shop"));
             }

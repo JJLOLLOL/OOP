@@ -47,7 +47,7 @@ public class PlayController {
         CHANGE_LOCATION,
         SWITCH_CHARACTER,
         PICK_CAREER, // Career selection — triggered by interacting with the Work Desk
-        SHOP, SHOP_HOUSES, SHOP_FURNITURE, // Shop sub-menus
+        SHOP, SHOP_HOUSES, SHOP_FURNITURE, SELL_FURNITURE, // Shop sub-menus
     }
 
     // ── Session state ─────────────────────────────────────────────────────────
@@ -106,6 +106,8 @@ public class PlayController {
                 handleShopHouses(input, player, state);
             case SHOP_FURNITURE ->
                 handleShopFurniture(input, player, state);
+            case SELL_FURNITURE ->
+                handleSellFurniture(input, player, state);
         };
     }
 
@@ -195,8 +197,22 @@ public class PlayController {
                 setStep(Step.SHOP_FURNITURE);
                 return true;
             }
+            case "3" -> {
+                // Sell furniture from current house
+                if (player.getCurrentHouse() == null) {
+                    NotificationService.add(player, "You must own a house to sell furniture!");
+                    return false;
+                }
+                currentFurniture = new ArrayList<>(player.getCurrentHouse().getFurnitures());
+                if (currentFurniture.isEmpty()) {
+                    NotificationService.add(player, "Your house has no furniture to sell.");
+                    return false;
+                }
+                setStep(Step.SELL_FURNITURE);
+                return true;
+            }
             default -> {
-                Renderer.showError("Enter 1, 2, or 0 to go back.");
+                Renderer.showError("Enter 1, 2, 3, or 0 to go back.");
                 return false;
             }
         }
@@ -242,6 +258,29 @@ public class PlayController {
                 NotificationService.add(player, FurnitureService.getPurchaseMessage(player, house, furniture, true));
             } else {
                 NotificationService.add(player, FurnitureService.getPurchaseMessage(player, house, furniture, false));
+            }
+            setStep(Step.SHOP);
+            currentFurniture = null;
+        });
+    }
+
+    private static boolean handleSellFurniture(String input, SimCharacter player, GameState state) {
+        if (input.equals("0")) {
+            currentFurniture = null;
+            setStep(Step.SHOP);
+            return true;
+        }
+
+        return pickFromList(input, currentFurniture, idx -> {
+            Furniture furniture = currentFurniture.get(idx);
+            House house = player.getCurrentHouse();
+
+            boolean success = FurnitureService.sellFurniture(player, house, furniture);
+
+            if (success) {
+                NotificationService.add(player, FurnitureService.getSellMessage(player, house, furniture, true));
+            } else {
+                NotificationService.add(player, FurnitureService.getSellMessage(player, house, furniture, false));
             }
             setStep(Step.SHOP);
             currentFurniture = null;

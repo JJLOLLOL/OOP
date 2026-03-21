@@ -45,4 +45,28 @@ public class FurnitureService {
         }
         return false;
     }
+
+    public static boolean sellFurniture(SimCharacter seller, House house, Furniture furniture) {
+        // Check if the house contains the furniture
+        if (!house.getFurnitures().contains(furniture)) {
+            return false; // Furniture not found in the house
+        }
+
+        // Remove furniture from house and refund player (50% of original price)
+        house.getFurnitures().remove(furniture);
+        double refundAmount = furniture.getPrice() * 0.5;
+        seller.setMoney(refundAmount);
+
+        return true; // Furniture sold successfully
+    }
+
+    public static String getSellMessage(SimCharacter seller, House house, Furniture furniture, boolean success) {
+        if (!success) {
+            if (!house.getFurnitures().contains(furniture)) {
+                return "Furniture not found in house!";
+            }
+        }
+        double refundAmount = furniture.getPrice() * 0.5;
+        return seller.getName() + " sold " + furniture.getName() + " for $" + String.format("%.2f", refundAmount);
+    }
 }
