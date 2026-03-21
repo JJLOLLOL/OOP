@@ -15,6 +15,7 @@ import core.WorldRegistry;
 import models.Location;
 import models.NPCCharacter;
 import models.SimCharacter;
+import models.actions.FurnitureFactory;
 import org.junit.Test;
 import services.AchievementService;
 import services.NotificationService;
@@ -135,7 +136,8 @@ public class AchievementServiceTest {
         sim.joinCareer(CareerList.ENGINEER);
         clock.advanceHours(1.0);
 
-        String result = WorkService.work(sim, clock, achievementService);
+        String result = WorkService.work(sim, clock);
+        addAchievementNotifications(sim, achievementService.evaluateWorkAchievements(sim));
         NotificationService.add(sim, result);
 
         List<String> notifications = NotificationService.get(sim);
@@ -145,6 +147,24 @@ public class AchievementServiceTest {
         assertTrue(notifications.contains("Achievement unlocked: First Logic"));
         assertTrue(notifications.contains("Achievement unlocked: First Programming"));
         assertEquals("Achievement unlocked: First Job", notifications.get(0));
+    }
+
+    @Test
+    public void testCookingActionUnlocksFirstCookingAchievementThroughPlayController() throws Exception {
+        resetPlayControllerState();
+
+        Location home = new Location("Home", new ArrayList<>(List.of(FurnitureFactory.createOldStove())));
+        SimCharacter sim = createSim("Alice", home);
+        GameState state = createPlayingState(sim);
+        WorldRegistry world = new EmptyNpcWorldRegistry();
+
+        assertTrue(PlayController.handleInput("1", state, world));
+        assertTrue(PlayController.handleInput("1", state, world));
+        assertTrue(PlayController.handleInput("1", state, world));
+
+        assertTrue(state.getAchievementService().hasAchievement(sim, AchievementList.FIRST_COOKING));
+        assertTrue(NotificationService.get(sim).contains("Achievement unlocked: First Cooking"));
+        assertEquals(PlayController.Step.MAIN, PlayController.getStep());
     }
 
     @Test

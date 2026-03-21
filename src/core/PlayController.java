@@ -199,9 +199,11 @@ public class PlayController {
                     // Has a job — run the shift
                     String result = WorkService.work(
                             player,
-                            state.getGameClock(),
-                            state.getAchievementService());
-                        NotificationService.add(player, result);
+                            state.getGameClock());
+                    addAchievementNotifications(
+                            player,
+                            state.getAchievementService().evaluateWorkAchievements(player));
+                    NotificationService.add(player, result);
                     setStep(Step.MAIN);
                 }
             } else {
@@ -211,6 +213,11 @@ public class PlayController {
                         && action.perform(player, state.getGameClock());
                 if (!ok) {
                     NotificationService.add(player, "Action failed: not enough money or needs too low.");
+                } else if (action != null) {
+                    addSkillAchievementNotifications(
+                            player,
+                            action,
+                            state);
                 }
                 setStep(Step.MAIN);
             }
@@ -291,6 +298,17 @@ public class PlayController {
             List<AchievementList> unlockedAchievements) {
         for (AchievementList achievement : unlockedAchievements) {
             NotificationService.add(player, "Achievement unlocked: " + achievement.getTitle());
+        }
+    }
+
+    private static void addSkillAchievementNotifications(
+            SimCharacter player,
+            models.actions.FurnitureAction action,
+            GameState state) {
+        for (String skill : action.affectedSkillsByActionMap().keySet()) {
+            addAchievementNotifications(
+                    player,
+                    state.getAchievementService().evaluateFirstTimeSkillAchievement(player, skill));
         }
     }
 
