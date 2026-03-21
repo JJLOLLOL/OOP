@@ -53,10 +53,17 @@ public class NotificationService {
         if (queue == null) {
             return List.of();
         }
+        List<String> priority = new ArrayList<>();
         List<String> messages = new ArrayList<>();
         for (Entry e : queue) {
-            messages.add(e.message());
+            String message = e.message();
+            if (message != null && message.startsWith("Achievement unlocked:")) {
+                priority.add(message);
+            } else {
+                messages.add(message);
+            }
         }
-        return messages;
+        priority.addAll(messages);
+        return priority;
     }
 }
