@@ -6,8 +6,6 @@ import models.actions.Furniture;
 
 public class FurnitureService {
 
-    public static final int MAX_FURNITURE_SIZE = 5;
-
     private FurnitureService() {
 
     }
@@ -19,7 +17,7 @@ public class FurnitureService {
         }
 
         // Check if the house has enough space for the furniture
-        if (house.getFurnitures().size() >= MAX_FURNITURE_SIZE) {
+        if (house.getFurnitures().size() >= house.getMaxFurnitureCapacity()) {
             return false; // House is full, cannot add more furniture
         }
         //Deduct money and add furniture to the house
@@ -33,8 +31,8 @@ public class FurnitureService {
         if (!success) {
             if (buyer.getMoney() < furniture.getPrice()) {
                 return "Insufficient funds! Need $" + furniture.getPrice() + ", have: $" + buyer.getMoney();
-            } else if (house.getFurnitures().size() >= MAX_FURNITURE_SIZE) {
-                return "House is at maximum furniture capacity!";
+            } else if (house.getFurnitures().size() >= house.getMaxFurnitureCapacity()) {
+                return "House is at maximum furniture capacity! (" + house.getMaxFurnitureCapacity() + " items)";
             }
         }
         return buyer.getName() + " purchased " + furniture.getName() + " for $" + furniture.getPrice();

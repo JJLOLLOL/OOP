@@ -54,6 +54,16 @@ public class House extends Location {
         this.isOwned = owned;
     }
 
+    public int getMaxFurnitureCapacity() {
+        return switch(this.houseTier) {
+            case 1 -> 6;
+            case 2 -> 7;
+            case 3 -> 8;
+            case 4 -> 9;
+            default -> 6;
+        };
+    }
+
     // Upgrade current house to the next tier
     public void upgradeHouse(House nextTierHouse) {
 
@@ -73,8 +83,8 @@ public class House extends Location {
     // Validation for furniture limit
     public void validateFurnitureLimit() {
 
-        if (getFurnitures().size() > 3) {
-            throw new IllegalStateException("A house can contain at most 3 furniture items.");
+        if (getFurnitures().size() >= getMaxFurnitureCapacity()) {
+            throw new IllegalStateException("A house can contain at most " + getMaxFurnitureCapacity() + " furniture items.");
         }
     }
 }
