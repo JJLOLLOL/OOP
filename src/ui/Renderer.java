@@ -430,16 +430,20 @@ public class Renderer {
      * highlighted.</li>
      * <li>{@code PICK_CAREER} – available careers with salary, hours, and
      * related skills.</li>
-     * <li>{@code SHOP} – main shop menu (browse houses, furniture, sell furniture).</li>
-     * <li>{@code SHOP_HOUSES} – list of purchasable houses with tier and price.</li>
-     * <li>{@code SHOP_FURNITURE} – list of purchasable furniture with price.</li>
-     * <li>{@code SELL_FURNITURE} – list of furniture in player's house with sell refund amount (50% of purchase price).</li>
+     * <li>{@code SHOP} – main shop menu (browse houses, furniture, sell
+     * furniture).</li>
+     * <li>{@code SHOP_HOUSES} – list of purchasable houses with tier and
+     * price.</li>
+     * <li>{@code SHOP_FURNITURE} – list of purchasable furniture with
+     * price.</li>
+     * <li>{@code SELL_FURNITURE} – list of furniture in player's house with
+     * sell refund amount (50% of purchase price).</li>
      * </ul>
      *
      * @param step the current {@link PlayController.Step} determining which
      * sub-menu to display
      * @param loc the {@link Location} the active Sim currently occupies
-     * @param player the active {@link SimCharacter}}
+     * @param player the active {@link SimCharacter}
      * @param state the {@link GameState} providing Sim list and relationship
      * data
      * @param world the {@link WorldRegistry} used to enumerate all locations
@@ -584,8 +588,9 @@ public class Renderer {
                 for (int i = 0; i < furniture.size(); i++) {
                     Furniture f = furniture.get(i);
                     double refundAmount = f.getPrice() * 0.5;
+                    String formattedRefund = String.format("%.2f", refundAmount);
                     lines.add(menuItem(String.valueOf(i + 1),
-                            f.getName() + " - Refund: $" + (int) refundAmount));
+                            f.getName() + " - Refund: $" + formattedRefund));
                 }
                 lines.add(menuItem("0", "Back to Shop"));
             }

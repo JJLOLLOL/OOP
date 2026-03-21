@@ -61,6 +61,7 @@ public class PlayController {
     private static models.Character selectedCharacter = null;
     private static List<House> currentHouses = null;
     private static List<Furniture> currentFurniture = null;
+    private static List<House> shopInventoryHouses = null; // Persistent shop inventory (initialized once)
 
     /**
      * Available careers shown in the PICK_CAREER screen (excludes JOBLESS).
@@ -106,7 +107,7 @@ public class PlayController {
             case SHOP ->
                 handleShop(input, player, state);
             case SHOP_HOUSES ->
-                handleShopHouses(input, player, state);
+                handleShopHouses(input, player, state, world);
             case SHOP_FURNITURE ->
                 handleShopFurniture(input, player, state);
             case SELL_FURNITURE ->
@@ -165,7 +166,7 @@ public class PlayController {
      * evaluation. Input {@code "0"} cancels back to {@link Step#MAIN}.
      *
      * @param input the player's career selection (career number or "0")
-     * @param player the active {@link SimCharacter}}
+     * @param player the active {@link SimCharacter}
      * @param state the {@link GameState}
      * @return {@code true} if the step changed; {@code false} if input was invalid
      */
@@ -211,9 +212,13 @@ public class PlayController {
 
         switch (input) {
             case "1" -> {
-                // Houses
-                currentHouses = ShopInventory.getAvailableHouses();
-                currentHouses.removeIf(House::isOwned); // Filter out owned houses
+                // Houses (initialize persistent inventory only once)
+                if (shopInventoryHouses == null) {
+                    shopInventoryHouses = ShopInventory.getAvailableHouses();
+                }
+                currentHouses = shopInventoryHouses.stream()
+                        .filter(h -> !h.isOwned())
+                        .collect(Collectors.toList());
                 if (currentHouses.isEmpty()) {
                     NotificationService.add(player, "No houses available for purchase.");
                     return false;
@@ -252,7 +257,7 @@ public class PlayController {
         }
     }
 
-    private static boolean handleShopHouses(String input, SimCharacter player, GameState state) {
+    private static boolean handleShopHouses(String input, SimCharacter player, GameState state, WorldRegistry world) {
         if (input.equals("0")) {
             currentHouses = null;
             setStep(Step.SHOP);
@@ -264,8 +269,7 @@ public class PlayController {
             boolean success = HouseService.purchaseHouse(player, house);
 
             if (success) {
-                player.setCurrentHouse(house);
-                player.setLocation(house);  // Update location to the new house so Renderer displays correct furniture
+                player.setLocation(player.getCurrentHouse());
                 NotificationService.add(player, HouseService.getPurchaseMessage(player, house, true));
             } else {
                 NotificationService.add(player, HouseService.getPurchaseMessage(player, house, false));
@@ -483,7 +487,7 @@ public class PlayController {
      * returns to {@link Step#MAIN}.
      *
      * @param input the player's location selection (location number or "0")
-     * @param player the active {@link SimCharacter}}
+     * @param player the active {@link SimCharacter}
      * @param world the {@link WorldRegistry} providing the list of all locations
      * @return {@code true} if the step changed; {@code false} if input was invalid
      */
