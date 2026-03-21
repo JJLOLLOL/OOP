@@ -95,7 +95,7 @@ public class FurnitureAction implements ActivityInterface {
      * </ul>
      *
      * @param character the sim performing the action
-     * @param clock the game clock to advance ({@code null} = no time skip)
+     * @param clock     the game clock to advance ({@code null} = no time skip)
      * @return {@code true} if the action succeeded
      */
     public boolean perform(SimCharacter character, GameClock clock) {

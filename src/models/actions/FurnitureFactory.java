@@ -28,15 +28,15 @@ public class FurnitureFactory {
         Furniture cheapMattress = new Furniture("Cheap Mattress", "Tier 1 - A simple mattress for basic rest");
         cheapMattress.addAction(new FurnitureAction(
                 "Nap",
-                "A short rest to recover energy.",
-                Map.of("Energy", 10.0, "Hunger", -10.0), // Need changes
-                Map.of(), // Skill changes
-                0.0, // Money cost
-                2.0)); // Time required in hours
+                "A short rest to recover some energy.",
+                Map.of("Energy", 15.0, "Hunger", -5.0),
+                Map.of(),
+                0.0,
+                1.5));
         cheapMattress.addAction(new FurnitureAction(
                 "Sleep",
                 "A full sleep for big energy recovery.",
-                Map.of("Energy", 80.0, "Hunger", -40.0),
+                Map.of("Energy", 70.0, "Hunger", -25.0),
                 Map.of(),
                 0.0,
                 8.0));
@@ -48,14 +48,14 @@ public class FurnitureFactory {
         singleBed.addAction(new FurnitureAction(
                 "Nap",
                 "A short rest to recover energy.",
-                Map.of("Energy", 15.0, "Hunger", -10.0),
+                Map.of("Energy", 20.0, "Hunger", -5.0),
                 Map.of(),
                 0.0,
-                2.0));
+                1.5));
         singleBed.addAction(new FurnitureAction(
                 "Sleep",
                 "A full sleep for big energy recovery.",
-                Map.of("Energy", 85.0, "Hunger", -40.0),
+                Map.of("Energy", 78.0, "Hunger", -22.0),
                 Map.of(),
                 0.0,
                 8.0));
@@ -63,18 +63,19 @@ public class FurnitureFactory {
     }
 
     public static Furniture createDoubleBed() {
-        Furniture doubleBed = new Furniture("Double Bed", "Tier 3 - A luxurious double bed for the better sleep experience");
+        Furniture doubleBed = new Furniture("Double Bed",
+                "Tier 3 - A luxurious double bed for the better sleep experience");
         doubleBed.addAction(new FurnitureAction(
                 "Nap",
                 "A short rest to recover energy.",
-                Map.of("Energy", 20.0, "Hunger", -10.0),
+                Map.of("Energy", 25.0, "Hunger", -5.0),
                 Map.of(),
                 0.0,
-                2.0));
+                1.5));
         doubleBed.addAction(new FurnitureAction(
                 "Sleep",
                 "A full sleep for big energy recovery.",
-                Map.of("Energy", 90.0, "Hunger", -35.0),
+                Map.of("Energy", 85.0, "Hunger", -20.0),
                 Map.of(),
                 0.0,
                 8.0));
@@ -82,18 +83,19 @@ public class FurnitureFactory {
     }
 
     public static Furniture createQueenBed() {
-        Furniture queenBed = new Furniture("Queen Bed", "Tier 4 - A spacious queen bed for the ultimate sleep experience");
+        Furniture queenBed = new Furniture("Queen Bed",
+                "Tier 4 - A spacious queen bed for the ultimate sleep experience");
         queenBed.addAction(new FurnitureAction(
                 "Nap",
                 "A short rest to recover energy.",
-                Map.of("Energy", 25.0, "Hunger", -5.0),
+                Map.of("Energy", 30.0, "Hunger", -4.0),
                 Map.of(),
                 0.0,
-                2.0));
+                1.5));
         queenBed.addAction(new FurnitureAction(
                 "Sleep",
                 "A full sleep for big energy recovery.",
-                Map.of("Energy", 100.0, "Hunger", -30.0),
+                Map.of("Energy", 92.0, "Hunger", -17.0),
                 Map.of(),
                 0.0,
                 8.0));
@@ -105,14 +107,14 @@ public class FurnitureFactory {
         kingBed.addAction(new FurnitureAction(
                 "Nap",
                 "A short rest to recover energy.",
-                Map.of("Energy", 30.0, "Hunger", -5.0),
+                Map.of("Energy", 35.0, "Hunger", -3.0),
                 Map.of(),
                 0.0,
-                2.0));
+                1.5));
         kingBed.addAction(new FurnitureAction(
                 "Sleep",
                 "A full sleep for big energy recovery.",
-                Map.of("Energy", 100.0, "Hunger", -25.0),
+                Map.of("Energy", 100.0, "Hunger", -14.0),
                 Map.of(),
                 0.0,
                 8.0));
@@ -126,15 +128,15 @@ public class FurnitureFactory {
                 "Cook a sad bowl of instant noodles.",
                 Map.of("Hunger", 30.0, "Energy", -5.0),
                 Map.of("Cooking", 8.0),
-                10.0,
-                0.5));
+                3.0,
+                0.25));
         hotplate.addAction(new FurnitureAction(
                 "Boil Eggs",
                 "Boil some eggs for a quick snack.",
-                Map.of("Hunger", 10.0, "Energy", -3.0),
+                Map.of("Hunger", 15.0, "Energy", -3.0),
                 Map.of("Cooking", 5.0),
-                5.0,
-                0.5));
+                2.0,
+                0.25));
         return hotplate;
     }
 
@@ -145,15 +147,15 @@ public class FurnitureFactory {
                 "Prepare a nice cup of Nissin noodles.",
                 Map.of("Hunger", 25.0, "Energy", -5.0),
                 Map.of("Cooking", 10.0),
-                5.0,
-                0.5));
+                3.0,
+                0.25));
         oldStove.addAction(new FurnitureAction(
                 "Cook Spaghetti",
                 "Cook a proper pasta dish.",
-                Map.of("Hunger", 35.0, "Energy", -8.0),
+                Map.of("Hunger", 45.0, "Energy", -8.0),
                 Map.of("Cooking", 20.0),
-                10.0,
-                1.0));
+                8.0,
+                0.75));
         return oldStove;
     }
 
@@ -162,50 +164,51 @@ public class FurnitureFactory {
         modernStove.addAction(new FurnitureAction(
                 "Cook Ramen",
                 "Cook a delicious bowl of ramen.",
-                Map.of("Hunger", 30.0, "Energy", -5.0),
+                Map.of("Hunger", 35.0, "Energy", -5.0),
                 Map.of("Cooking", 15.0),
-                10.0,
-                0.5));
+                8.0,
+                0.75));
         modernStove.addAction(new FurnitureAction(
                 "Cook Fried Rice",
                 "Cook a delicious plate of fried rice.",
-                Map.of("Hunger", 40.0, "Energy", -10.0),
+                Map.of("Hunger", 50.0, "Energy", -10.0),
                 Map.of("Cooking", 25.0),
-                15.0,
-                1.0));
+                12.0,
+                0.75));
         modernStove.addAction(new FurnitureAction(
                 "Cook Steak",
                 "Cook a juicy steak to perfection.",
-                Map.of("Hunger", 50.0, "Energy", -15.0),
+                Map.of("Hunger", 60.0, "Energy", -15.0),
                 Map.of("Cooking", 30.0),
                 20.0,
-                1.5));
+                1.0));
         return modernStove;
     }
 
     public static Furniture createGourmetStove() {
-        Furniture gourmetStove = new Furniture("Gourmet Stove", "Tier 4 - A gourmet stove for the best cooking experience");
+        Furniture gourmetStove = new Furniture("Gourmet Stove",
+                "Tier 4 - A gourmet stove for the best cooking experience");
         gourmetStove.addAction(new FurnitureAction(
                 "Cook Gourmet Ramen",
                 "Cook a bowl of gourmet ramen with premium ingredients.",
-                Map.of("Hunger", 40.0, "Energy", -5.0),
+                Map.of("Hunger", 45.0, "Energy", -5.0),
                 Map.of("Cooking", 20.0),
                 15.0,
-                0.5));
+                1.0));
         gourmetStove.addAction(new FurnitureAction(
                 "Cook Paella",
                 "Cook a flavorful and colorful paella.",
-                Map.of("Hunger", 50.0, "Energy", -10.0),
+                Map.of("Hunger", 60.0, "Energy", -10.0),
                 Map.of("Cooking", 30.0),
-                25.0,
-                1.0));
+                22.0,
+                1.5));
         gourmetStove.addAction(new FurnitureAction(
                 "Cook Beef Wellington",
                 "Cook a classic beef wellington to impress your guests.",
-                Map.of("Hunger", 60.0, "Energy", -15.0),
+                Map.of("Hunger", 70.0, "Energy", -15.0),
                 Map.of("Cooking", 40.0),
-                30.0,
-                1.5));
+                35.0,
+                2.0));
         return gourmetStove;
     }
 
@@ -214,17 +217,17 @@ public class FurnitureFactory {
         oldShower.addAction(new FurnitureAction(
                 "Take Quick Shower",
                 "A quick shower to freshen up.",
-                Map.of("Hygiene", 30.0, "Energy", -5.0),
+                Map.of("Hygiene", 45.0, "Energy", -3.0),
                 Map.of(),
                 0.0,
-                0.5));
+                0.25));
         oldShower.addAction(new FurnitureAction(
                 "Take Long Shower",
                 "A long shower for better hygiene.",
-                Map.of("Hygiene", 50.0, "Energy", -10.0),
+                Map.of("Hygiene", 65.0, "Energy", -5.0),
                 Map.of(),
                 0.0,
-                1.0));
+                0.5));
         return oldShower;
     }
 
@@ -233,43 +236,44 @@ public class FurnitureFactory {
         normalShower.addAction(new FurnitureAction(
                 "Take Quick Shower",
                 "A quick shower to freshen up.",
-                Map.of("Hygiene", 40.0, "Energy", -5.0),
+                Map.of("Hygiene", 55.0, "Energy", -3.0),
                 Map.of(),
                 0.0,
-                0.5));
+                0.25));
         normalShower.addAction(new FurnitureAction(
                 "Take Long Shower",
                 "A long shower for better hygiene.",
-                Map.of("Hygiene", 70.0, "Energy", -10.0),
+                Map.of("Hygiene", 75.0, "Energy", -5.0),
                 Map.of(),
                 0.0,
-                1.0));
+                0.5));
         return normalShower;
     }
 
     public static Furniture createLuxuryBathtub() {
-        Furniture luxuryBathtub = new Furniture("Luxury Bathtub", "Tier 3 - A luxurious bathtub for the ultimate relaxation");
+        Furniture luxuryBathtub = new Furniture("Luxury Bathtub",
+                "Tier 3 - A luxurious bathtub for the ultimate relaxation");
         luxuryBathtub.addAction(new FurnitureAction(
                 "Take Quick Shower",
                 "A quick shower to freshen up.",
-                Map.of("Hygiene", 40.0, "Energy", -5.0),
+                Map.of("Hygiene", 55.0, "Energy", -3.0),
+                Map.of(),
+                0.0,
+                0.25));
+        luxuryBathtub.addAction(new FurnitureAction(
+                "Take Long Shower",
+                "A long shower for better hygiene.",
+                Map.of("Hygiene", 75.0, "Energy", -5.0),
                 Map.of(),
                 0.0,
                 0.5));
         luxuryBathtub.addAction(new FurnitureAction(
-                "Take Long Shower",
-                "A long shower for better hygiene.",
-                Map.of("Hygiene", 70.0, "Energy", -10.0),
+                "Take Aromatherapy Bath",
+                "Enjoy an aromatherapy bath for maximum relaxation and hygiene.",
+                Map.of("Hygiene", 90.0, "Energy", 10.0, "Fun", 40.0),
                 Map.of(),
                 0.0,
                 1.0));
-        luxuryBathtub.addAction(new FurnitureAction(
-                "Take Aromatherapy Bath",
-                "Enjoy an aromatherapy bath for maximum relaxation and hygiene.",
-                Map.of("Hygiene", 80.0, "Energy", -10.0, "Fun", 40.0),
-                Map.of(),
-                0.0,
-                1.5));
         return luxuryBathtub;
     }
 
@@ -277,11 +281,11 @@ public class FurnitureFactory {
         Furniture toilet = new Furniture("Toilet", "Tier 1 - A basic toilet for your needs");
         toilet.addAction(new FurnitureAction(
                 "Use Toilet",
-                "Take care of your business to relieve bladder and bowels.",
-                Map.of("Bladder", 50.0, "Hygiene", -5.0),
+                "Take care of your business and wash up afterwards.",
+                Map.of("Hygiene", 5.0),
                 Map.of(),
                 0.0,
-                0.25));
+                0.1));
         return toilet;
     }
 
@@ -310,7 +314,8 @@ public class FurnitureFactory {
     }
 
     public static Furniture createOLEDTV() {
-        Furniture oledTV = new Furniture("OLED TV", "Tier 3 - A high-end OLED TV for the best entertainment experience");
+        Furniture oledTV = new Furniture("OLED TV",
+                "Tier 3 - A high-end OLED TV for the best entertainment experience");
         oledTV.addAction(new FurnitureAction(
                 "Watch TV",
                 "Watch some TV to relax and improve mood.",
@@ -322,28 +327,29 @@ public class FurnitureFactory {
     }
 
     public static Furniture createRestaurantTable() {
-        Furniture restaurantTable = new Furniture("Restaurant Table", "A fancy restaurant table for the best dining experience");
+        Furniture restaurantTable = new Furniture("Restaurant Table",
+                "A fancy restaurant table for the best dining experience");
         restaurantTable.addAction(new FurnitureAction(
                 "Eat Nice Meal",
                 "Enjoy a delicious meal at the restaurant table.",
-                Map.of("Hunger", 50.0, "Energy", 20.0, "Fun", 20.0),
-                Map.of(),
+                Map.of("Hunger", 60.0, "Energy", 10.0, "Fun", 25.0),
+                Map.of("Charisma", 5.0),
                 30.0,
                 1.0));
         restaurantTable.addAction(new FurnitureAction(
                 "Drink Nice Wine",
                 "Drink a nice glass of wine.",
-                Map.of("Fun", 50.0, "Bladder", 30.0),
-                Map.of(),
-                30.0,
-                0.5));
+                Map.of("Fun", 40.0),
+                Map.of("Charisma", 5.0),
+                25.0,
+                0.25));
         restaurantTable.addAction(new FurnitureAction(
                 "Have Dessert",
                 "Indulge in a delicious dessert.",
-                Map.of("Hunger", 30.0, "Fun", 30.0),
+                Map.of("Hunger", 25.0, "Fun", 30.0),
                 Map.of(),
-                20.0,
-                0.5));
+                15.0,
+                0.25));
         return restaurantTable;
     }
 
@@ -352,15 +358,15 @@ public class FurnitureFactory {
         treadmill.addAction(new FurnitureAction(
                 "Run on Treadmill",
                 "Get some exercise by running on the treadmill.",
-                Map.of("Energy", -20.0, "Hunger", -10.0, "Fun", 20.0, "Hygiene", -30.0),
-                Map.of("Fitness", 15.0),
+                Map.of("Energy", -25.0, "Hunger", -10.0, "Fun", 15.0, "Hygiene", -25.0),
+                Map.of("Fitness", 20.0),
                 5.0,
                 1.0));
         treadmill.addAction(new FurnitureAction(
                 "Walk on Treadmill",
                 "Take a leisurely walk on the treadmill for light exercise.",
-                Map.of("Energy", -10.0, "Hunger", -5.0, "Fun", 10.0, "Hygiene", -15.0),
-                Map.of("Fitness", 5.0),
+                Map.of("Energy", -10.0, "Hunger", -5.0, "Fun", 10.0, "Hygiene", -10.0),
+                Map.of("Fitness", 8.0),
                 5.0,
                 1.0));
         return treadmill;
@@ -371,8 +377,8 @@ public class FurnitureFactory {
         dumbbells.addAction(new FurnitureAction(
                 "Lift Dumbbells",
                 "Strengthen your muscles by lifting dumbbells.",
-                Map.of("Energy", -15.0, "Hunger", -10.0, "Fun", 15.0, "Hygiene", -20.0),
-                Map.of("Fitness", 20.0),
+                Map.of("Energy", -20.0, "Hunger", -10.0, "Fun", 10.0, "Hygiene", -20.0),
+                Map.of("Fitness", 25.0),
                 5.0,
                 1.0));
         return dumbbells;
@@ -383,16 +389,16 @@ public class FurnitureFactory {
         vendingMachine.addAction(new FurnitureAction(
                 "Buy Snack",
                 "Buy a quick snack from the vending machine.",
-                Map.of("Hunger", 20.0, "Energy", -5.0, "Fun", 10.0),
+                Map.of("Hunger", 15.0, "Energy", -2.0, "Fun", 5.0),
                 Map.of(),
-                2.0,
+                3.0,
                 0.25));
         vendingMachine.addAction(new FurnitureAction(
                 "Buy Drink",
                 "Buy a refreshing drink from the vending machine.",
-                Map.of("Hunger", 10.0, "Energy", -5.0, "Fun", 10.0),
+                Map.of("Hunger", 5.0, "Energy", 5.0, "Fun", 5.0),
                 Map.of(),
-                2.0,
+                3.0,
                 0.25));
         return vendingMachine;
     }
@@ -402,15 +408,15 @@ public class FurnitureFactory {
         parkPath.addAction(new FurnitureAction(
                 "Take a Walk",
                 "Take a leisurely walk along the park path to enjoy the scenery.",
-                Map.of("Energy", -10.0, "Hunger", -5.0, "Fun", 20.0, "Hygiene", -10.0),
+                Map.of("Energy", -8.0, "Hunger", -5.0, "Fun", 25.0, "Hygiene", -5.0),
                 Map.of("Fitness", 5.0),
                 0.0,
                 1.0));
         parkPath.addAction(new FurnitureAction(
                 "Go for a Jog",
                 "Go for a jog along the park path to get some exercise.",
-                Map.of("Energy", -20.0, "Hunger", -10.0, "Fun", 30.0, "Hygiene", -20.0),
-                Map.of("Fitness", 15.0),
+                Map.of("Energy", -22.0, "Hunger", -10.0, "Fun", 20.0, "Hygiene", -20.0),
+                Map.of("Fitness", 18.0),
                 0.0,
                 1.0));
         return parkPath;
@@ -421,8 +427,8 @@ public class FurnitureFactory {
         parkLake.addAction(new FurnitureAction(
                 "Go for a Swim",
                 "Take a refreshing swim in the park lake.",
-                Map.of("Energy", -20.0, "Hunger", -10.0, "Fun", 30.0, "Hygiene", -30.0),
-                Map.of("Fitness", 15.0),
+                Map.of("Energy", -20.0, "Hunger", -10.0, "Fun", 35.0, "Hygiene", -20.0),
+                Map.of("Fitness", 20.0),
                 0.0,
                 1.0));
         return parkLake;
@@ -433,7 +439,7 @@ public class FurnitureFactory {
         bicycle.addAction(new FurnitureAction(
                 "Go for a Bike Ride",
                 "Take a bike ride around the neighborhood for fun and exercise.",
-                Map.of("Energy", -20.0, "Hunger", -10.0, "Fun", 30.0, "Hygiene", -20.0),
+                Map.of("Energy", -18.0, "Hunger", -8.0, "Fun", 30.0, "Hygiene", -15.0),
                 Map.of("Fitness", 15.0),
                 0.0,
                 1.0));
@@ -445,17 +451,17 @@ public class FurnitureFactory {
         picnicTable.addAction(new FurnitureAction(
                 "Have a Picnic",
                 "Enjoy a picnic at the table with some delicious food.",
-                Map.of("Hunger", 40.0, "Energy", 20.0, "Fun", 30.0),
+                Map.of("Hunger", 45.0, "Energy", 15.0, "Fun", 35.0),
                 Map.of(),
-                20.0,
+                15.0,
                 1.0));
         picnicTable.addAction(new FurnitureAction(
                 "Eat Muffin",
                 "Eat a muffin",
-                Map.of("Hunger", 20.0),
+                Map.of("Hunger", 20.0, "Fun", 5.0),
                 Map.of(),
-                5.0,
-                0.2));
+                4.0,
+                0.1));
         return picnicTable;
     }
 
@@ -464,36 +470,37 @@ public class FurnitureFactory {
         cafeTable.addAction(new FurnitureAction(
                 "Drink Coffee",
                 "Enjoy a cup of coffee at the cafe table.",
-                Map.of("Energy", 20.0, "Fun", 10.0),
+                Map.of("Energy", 25.0, "Fun", 15.0),
                 Map.of(),
-                5.0,
-                0.5));
+                6.0,
+                0.25));
         cafeTable.addAction(new FurnitureAction(
                 "Eat Pastry",
                 "Indulge in a delicious pastry at the cafe table.",
                 Map.of("Hunger", 30.0, "Fun", 20.0),
                 Map.of(),
-                10.0,
-                0.5));
+                8.0,
+                0.25));
         return cafeTable;
     }
 
     public static Furniture createEspressoMachine() {
-        Furniture espressoMachine = new Furniture("Espresso Machine", "A high-end espresso machine for the best coffee experience");
+        Furniture espressoMachine = new Furniture("Espresso Machine",
+                "A high-end espresso machine for the best coffee experience");
         espressoMachine.addAction(new FurnitureAction(
                 "Make Espresso",
                 "Brew a strong and delicious espresso shot.",
                 Map.of("Energy", 30.0, "Fun", 10.0),
                 Map.of(),
-                5.0,
-                0.5));
+                4.0,
+                0.25));
         espressoMachine.addAction(new FurnitureAction(
                 "Make Cappuccino",
                 "Create a creamy cappuccino with steamed milk.",
-                Map.of("Energy", 25.0, "Fun", 15.0),
+                Map.of("Energy", 22.0, "Fun", 20.0),
                 Map.of(),
-                7.0,
-                0.5));
+                5.0,
+                0.25));
         return espressoMachine;
     }
 
@@ -503,9 +510,9 @@ public class FurnitureFactory {
                 "Play Music",
                 "Select a song to play on the jukebox and enjoy the music.",
                 Map.of("Fun", 30.0, "Energy", -5.0),
-                Map.of(),
+                Map.of("Music", 10.0, "Creativity", 5.0),
                 2.0,
-                1.0));
+                0.5));
         return jukeBox;
     }
 
@@ -515,7 +522,7 @@ public class FurnitureFactory {
                 "Read Book",
                 "Pick a book from the shelf and read to improve knowledge and have fun.",
                 Map.of("Fun", 20.0, "Energy", -5.0),
-                Map.of("Intellect", 10.0),
+                Map.of("Logic", 12.0, "Writing", 8.0),
                 0.0,
                 1.0));
         return bookshelf;
@@ -526,15 +533,15 @@ public class FurnitureFactory {
         computerDesk.addAction(new FurnitureAction(
                 "Play Video Games",
                 "Play some video games on the computer to have fun and relax.",
-                Map.of("Fun", 30.0, "Energy", -5.0),
-                Map.of(),
+                Map.of("Fun", 35.0, "Energy", -8.0),
+                Map.of("Logic", 5.0),
                 0.0,
                 1.0));
         computerDesk.addAction(new FurnitureAction(
                 "Work on Computer",
                 "Use the computer for work or study to improve skills and earn money.",
                 Map.of("Energy", -10.0, "Fun", -5.0),
-                Map.of("Intellect", 20.0),
+                Map.of("Programming", 15.0, "Logic", 8.0),
                 0.0,
                 2.0));
         return computerDesk;
@@ -545,9 +552,9 @@ public class FurnitureFactory {
         bar.addAction(new FurnitureAction(
                 "Have a Drink",
                 "Enjoy a drink at the bar to relax and have fun.",
-                Map.of("Fun", 30.0, "Energy", -5.0),
-                Map.of(),
-                10.0,
+                Map.of("Fun", 35.0, "Energy", -5.0),
+                Map.of("Charisma", 8.0),
+                12.0,
                 1.0));
         return bar;
     }
@@ -557,8 +564,8 @@ public class FurnitureFactory {
         danceFloor.addAction(new FurnitureAction(
                 "Dance",
                 "Dance on the dance floor to have fun and improve fitness.",
-                Map.of("Fun", 40.0, "Energy", -20.0, "Hygiene", -30.0),
-                Map.of("Fitness", 20.0),
+                Map.of("Fun", 50.0, "Energy", -25.0, "Hygiene", -30.0),
+                Map.of("Fitness", 20.0, "Charisma", 10.0),
                 0.0,
                 1.0));
         return danceFloor;
@@ -570,12 +577,11 @@ public class FurnitureFactory {
                 "Work",
                 "Put in a full day's work.",
                 Map.of(
-                        "Hunger", -50.0,
-                        "Energy", -70.0,
-                        "Hygiene", -30.0,
-                        "Fun", -30.0,
-                        "Social", 20.0
-                ),
+                        "Hunger", -40.0,
+                        "Energy", -55.0,
+                        "Hygiene", -20.0,
+                        "Fun", -25.0,
+                        "Social", 20.0),
                 Map.of(),
                 0.0,
                 8.0));
