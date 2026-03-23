@@ -6,9 +6,16 @@ import models.House;
 import models.actions.Furniture;
 import models.actions.FurnitureFactory;
 
+/**
+ * Provides the static inventory of available houses and furniture that a Sim can purchase.
+ */
 public class ShopInventory {
 
-    // Available houses for purchase (Tier 2+)
+    /**
+     * Retrieves a list of all available houses for purchase (Tier 2 and above).
+     *
+     * @return a list of {@link House} instances available in the shop
+     */
     public static List<House> getAvailableHouses() {
         List<House> houses = new ArrayList<>();
 
@@ -63,7 +70,11 @@ public class ShopInventory {
         return houses;
     }
 
-    // Available furniture for purchase
+    /**
+     * Retrieves a list of all available furniture items for purchase.
+     *
+     * @return a list of {@link Furniture} instances available in the shop
+     */
     public static List<Furniture> getAvailableFurniture() {
         List<Furniture> furniture = new ArrayList<>();
 

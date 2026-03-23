@@ -1,5 +1,9 @@
 package Types;
 
+/**
+ * Represents the various achievements a Sim can unlock during gameplay.
+ * Achievements are categorized into career, skill, and social milestones.
+ */
 public enum AchievementList {
 
     // Career achievements
@@ -30,15 +34,31 @@ public enum AchievementList {
     private final String title;
     private final String description;
 
+    /**
+     * Constructs a new AchievementList enum constant.
+     *
+     * @param title       the display name of the achievement
+     * @param description a brief description of how to unlock the achievement
+     */
     AchievementList(String title, String description) {
         this.title = title;
         this.description = description;
     }
 
+    /**
+     * Retrieves the display title of the achievement.
+     *
+     * @return the title
+     */
     public String getTitle() {
         return title;
     }
 
+    /**
+     * Retrieves the description of how to unlock the achievement.
+     *
+     * @return the description
+     */
     public String getDescription() {
         return description;
     }
