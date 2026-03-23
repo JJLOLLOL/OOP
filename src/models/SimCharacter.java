@@ -11,10 +11,12 @@ public class SimCharacter extends Character {
     private final Map<String, Need> needs = new HashMap<>();
     private final Map<String, Skills> skills = new HashMap<>();
     private Career career;
+    private House currentHouse;
 
     public SimCharacter(String name, int age, String gender, Location defaultLocation) {
         super(name, age, gender, defaultLocation);
         this.money = 1000.0;
+        this.currentHouse = null;
         this.career = new Career(CareerList.JOBLESS);
         initialiseNeeds();
         initialiseSkills();
@@ -66,5 +68,14 @@ public class SimCharacter extends Character {
 
     public double getMoney() {
         return money;
+    }
+
+    // ── House ─────────────────────────────────────────────────────────────────
+    public House getCurrentHouse() {
+        return currentHouse;
+    }
+
+    public void setCurrentHouse(House house) {
+        this.currentHouse = house;
     }
 }

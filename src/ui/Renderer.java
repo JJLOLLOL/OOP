@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import models.House;
 import models.Location;
 import models.SimCharacter;
 import models.Skills;
@@ -429,6 +430,14 @@ public class Renderer {
      * highlighted.</li>
      * <li>{@code PICK_CAREER} – available careers with salary, hours, and
      * related skills.</li>
+     * <li>{@code SHOP} – main shop menu (browse houses, furniture, sell
+     * furniture).</li>
+     * <li>{@code SHOP_HOUSES} – list of purchasable houses with tier and
+     * price.</li>
+     * <li>{@code SHOP_FURNITURE} – list of purchasable furniture with
+     * price.</li>
+     * <li>{@code SELL_FURNITURE} – list of furniture in player's house with
+     * sell refund amount (50% of purchase price).</li>
      * </ul>
      *
      * @param step the current {@link PlayController.Step} determining which
@@ -452,7 +461,8 @@ public class Renderer {
                 lines.add(menuItem("2", "Socialise"));
                 lines.add(menuItem("3", "Change Location"));
                 lines.add(menuItem("4", "Switch Character"));
-                lines.add(menuItem("5", "Exit Game"));
+                lines.add(menuItem("5", "Shop"));
+                lines.add(menuItem("6", "Exit Game"));
             }
             case INTERACTABLES -> {
                 lines.add(menuTitle("Interact Objects"));
@@ -541,6 +551,48 @@ public class Renderer {
                 }
                 lines.add("");
                 lines.add(backItem());
+            }
+            case SHOP -> {
+                lines.add(menuTitle("Shop"));
+                lines.add(menuItem("1", "Browse Houses"));
+                lines.add(menuItem("2", "Browse Furniture"));
+                lines.add(menuItem("3", "Sell Furniture"));
+                lines.add(menuItem("0", "Back to Main Menu"));
+            }
+
+            case SHOP_HOUSES -> {
+                List<House> houses = PlayController.getCurrentHouses();
+                lines.add(menuTitle("Houses for Sale"));
+                for (int i = 0; i < houses.size(); i++) {
+                    House h = houses.get(i);
+                    lines.add(menuItem(String.valueOf(i + 1),
+                            h.getLocationName() + " (Tier " + h.getHouseTier() + ") - $" + (int) h.getHousePrice()));
+                }
+                lines.add(menuItem("0", "Back to Shop"));
+            }
+
+            case SHOP_FURNITURE -> {
+                List<Furniture> furniture = PlayController.getCurrentFurniture();
+                lines.add(menuTitle("Furniture for Sale"));
+                for (int i = 0; i < furniture.size(); i++) {
+                    Furniture f = furniture.get(i);
+                    lines.add(menuItem(String.valueOf(i + 1),
+                            f.getName() + " - $" + (int) f.getPrice()));
+                }
+                lines.add(menuItem("0", "Back to Shop"));
+            }
+
+            case SELL_FURNITURE -> {
+                List<Furniture> furniture = PlayController.getCurrentFurniture();
+                lines.add(menuTitle("Sell Furniture from Your House"));
+                for (int i = 0; i < furniture.size(); i++) {
+                    Furniture f = furniture.get(i);
+                    double refundAmount = f.getPrice() * 0.5;
+                    String formattedRefund = String.format("%.2f", refundAmount);
+                    lines.add(menuItem(String.valueOf(i + 1),
+                            f.getName() + " - Refund: $" + formattedRefund));
+                }
+                lines.add(menuItem("0", "Back to Shop"));
             }
         }
         return lines;

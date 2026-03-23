@@ -25,7 +25,7 @@ furniture.get("Bed").performAction("Nap", sim);
 public class FurnitureFactory {
 
     public static Furniture createCheapMattress() {
-        Furniture cheapMattress = new Furniture("Cheap Mattress", "Tier 1 - A simple mattress for basic rest");
+        Furniture cheapMattress = new Furniture("Cheap Mattress", "Tier 1 - A simple mattress for basic rest", 50.0);
         cheapMattress.addAction(new FurnitureAction(
                 "Nap",
                 "A short rest to recover some energy.",
@@ -44,7 +44,7 @@ public class FurnitureFactory {
     }
 
     public static Furniture createSingleBed() {
-        Furniture singleBed = new Furniture("Single Bed", "Tier 2 - A comfortable single bed for a good night's sleep");
+        Furniture singleBed = new Furniture("Single Bed", "Tier 2 - A comfortable single bed for a good night's sleep", 150.0);
         singleBed.addAction(new FurnitureAction(
                 "Nap",
                 "A short rest to recover energy.",
@@ -64,7 +64,7 @@ public class FurnitureFactory {
 
     public static Furniture createDoubleBed() {
         Furniture doubleBed = new Furniture("Double Bed",
-                "Tier 3 - A luxurious double bed for the better sleep experience");
+                "Tier 3 - A luxurious double bed for the better sleep experience", 250.0);
         doubleBed.addAction(new FurnitureAction(
                 "Nap",
                 "A short rest to recover energy.",
@@ -84,7 +84,7 @@ public class FurnitureFactory {
 
     public static Furniture createQueenBed() {
         Furniture queenBed = new Furniture("Queen Bed",
-                "Tier 4 - A spacious queen bed for the ultimate sleep experience");
+                "Tier 4 - A spacious queen bed for the ultimate sleep experience", 350.0);
         queenBed.addAction(new FurnitureAction(
                 "Nap",
                 "A short rest to recover energy.",
@@ -103,7 +103,7 @@ public class FurnitureFactory {
     }
 
     public static Furniture createKingBed() {
-        Furniture kingBed = new Furniture("King Bed", "Tier 5 - The ultimate king bed for the best sleep experience");
+        Furniture kingBed = new Furniture("King Bed", "Tier 5 - The ultimate king bed for the best sleep experience", 450.0);
         kingBed.addAction(new FurnitureAction(
                 "Nap",
                 "A short rest to recover energy.",
@@ -122,7 +122,7 @@ public class FurnitureFactory {
     }
 
     public static Furniture createSingleHotplate() {
-        Furniture hotplate = new Furniture("Single Hotplate", "Tier 1 - A simple hotplate for cooking");
+        Furniture hotplate = new Furniture("Single Hotplate", "Tier 1 - A simple hotplate for cooking", 50.0);
         hotplate.addAction(new FurnitureAction(
                 "Cook Instant Noodles",
                 "Cook a sad bowl of instant noodles.",
@@ -141,7 +141,7 @@ public class FurnitureFactory {
     }
 
     public static Furniture createOldStove() {
-        Furniture oldStove = new Furniture("Old Stove", "Tier 2 - An old stove for cooking");
+        Furniture oldStove = new Furniture("Old Stove", "Tier 2 - An old stove for cooking", 100.0);
         oldStove.addAction(new FurnitureAction(
                 "Cook Nissin Cup Noodles",
                 "Prepare a nice cup of Nissin noodles.",
@@ -160,7 +160,7 @@ public class FurnitureFactory {
     }
 
     public static Furniture createModernStove() {
-        Furniture modernStove = new Furniture("Modern Stove", "Tier 3 - A modern stove for better cooking");
+        Furniture modernStove = new Furniture("Modern Stove", "Tier 3 - A modern stove for better cooking", 200.0);
         modernStove.addAction(new FurnitureAction(
                 "Cook Ramen",
                 "Cook a delicious bowl of ramen.",
@@ -187,7 +187,7 @@ public class FurnitureFactory {
 
     public static Furniture createGourmetStove() {
         Furniture gourmetStove = new Furniture("Gourmet Stove",
-                "Tier 4 - A gourmet stove for the best cooking experience");
+                "Tier 4 - A gourmet stove for the best cooking experience", 300.0);
         gourmetStove.addAction(new FurnitureAction(
                 "Cook Gourmet Ramen",
                 "Cook a bowl of gourmet ramen with premium ingredients.",
@@ -213,7 +213,7 @@ public class FurnitureFactory {
     }
 
     public static Furniture createOldShower() {
-        Furniture oldShower = new Furniture("Old Shower", "Tier 1 - A basic shower for cleaning up");
+        Furniture oldShower = new Furniture("Old Shower", "Tier 1 - A basic shower for cleaning up", 50.0);
         oldShower.addAction(new FurnitureAction(
                 "Take Quick Shower",
                 "A quick shower to freshen up.",
@@ -232,7 +232,7 @@ public class FurnitureFactory {
     }
 
     public static Furniture createNormalShower() {
-        Furniture normalShower = new Furniture("Normal Shower", "Tier 2 - A normal shower for better cleaning");
+        Furniture normalShower = new Furniture("Normal Shower", "Tier 2 - A normal shower for better cleaning", 100.0);
         normalShower.addAction(new FurnitureAction(
                 "Take Quick Shower",
                 "A quick shower to freshen up.",
@@ -252,7 +252,7 @@ public class FurnitureFactory {
 
     public static Furniture createLuxuryBathtub() {
         Furniture luxuryBathtub = new Furniture("Luxury Bathtub",
-                "Tier 3 - A luxurious bathtub for the ultimate relaxation");
+                "Tier 3 - A luxurious bathtub for the ultimate relaxation", 250.0);
         luxuryBathtub.addAction(new FurnitureAction(
                 "Take Quick Shower",
                 "A quick shower to freshen up.",
@@ -278,7 +278,7 @@ public class FurnitureFactory {
     }
 
     public static Furniture createToilet() {
-        Furniture toilet = new Furniture("Toilet", "Tier 1 - A basic toilet for your needs");
+        Furniture toilet = new Furniture("Toilet", "Tier 1 - A basic toilet for your needs", 50.0);
         toilet.addAction(new FurnitureAction(
                 "Use Toilet",
                 "Take care of your business and wash up afterwards.",
@@ -290,7 +290,7 @@ public class FurnitureFactory {
     }
 
     public static Furniture createOldCRTTV() {
-        Furniture crtTV = new Furniture("Old CRT TV", "Tier 1 - An old CRT TV for basic entertainment");
+        Furniture crtTV = new Furniture("Old CRT TV", "Tier 1 - An old CRT TV for basic entertainment", 100.0);
         crtTV.addAction(new FurnitureAction(
                 "Watch TV",
                 "Watch some TV to relax and improve mood.",
@@ -302,7 +302,7 @@ public class FurnitureFactory {
     }
 
     public static Furniture createModernLCDTV() {
-        Furniture lcdTV = new Furniture("Modern LCD TV", "Tier 2 - A modern LCD TV for better entertainment");
+        Furniture lcdTV = new Furniture("Modern LCD TV", "Tier 2 - A modern LCD TV for better entertainment", 200.0);
         lcdTV.addAction(new FurnitureAction(
                 "Watch TV",
                 "Watch some TV to relax and improve mood.",
@@ -315,7 +315,7 @@ public class FurnitureFactory {
 
     public static Furniture createOLEDTV() {
         Furniture oledTV = new Furniture("OLED TV",
-                "Tier 3 - A high-end OLED TV for the best entertainment experience");
+                "Tier 3 - A high-end OLED TV for the best entertainment experience", 300.0);
         oledTV.addAction(new FurnitureAction(
                 "Watch TV",
                 "Watch some TV to relax and improve mood.",
@@ -328,7 +328,7 @@ public class FurnitureFactory {
 
     public static Furniture createRestaurantTable() {
         Furniture restaurantTable = new Furniture("Restaurant Table",
-                "A fancy restaurant table for the best dining experience");
+                "A fancy restaurant table for the best dining experience", 150.0);
         restaurantTable.addAction(new FurnitureAction(
                 "Eat Nice Meal",
                 "Enjoy a delicious meal at the restaurant table.",
@@ -354,7 +354,7 @@ public class FurnitureFactory {
     }
 
     public static Furniture createTreadmill() {
-        Furniture treadmill = new Furniture("Treadmill", "A treadmill for staying fit and healthy");
+        Furniture treadmill = new Furniture("Treadmill", "A treadmill for staying fit and healthy", 200.0);
         treadmill.addAction(new FurnitureAction(
                 "Run on Treadmill",
                 "Get some exercise by running on the treadmill.",
@@ -373,7 +373,7 @@ public class FurnitureFactory {
     }
 
     public static Furniture createDumbbells() {
-        Furniture dumbbells = new Furniture("Dumbbells", "A set of dumbbells for strength training");
+        Furniture dumbbells = new Furniture("Dumbbells", "A set of dumbbells for strength training", 150.0);
         dumbbells.addAction(new FurnitureAction(
                 "Lift Dumbbells",
                 "Strengthen your muscles by lifting dumbbells.",
@@ -385,7 +385,7 @@ public class FurnitureFactory {
     }
 
     public static Furniture createVendingMachine() {
-        Furniture vendingMachine = new Furniture("Vending Machine", "A vending machine for quick snacks and drinks");
+        Furniture vendingMachine = new Furniture("Vending Machine", "A vending machine for quick snacks and drinks", 100.0);
         vendingMachine.addAction(new FurnitureAction(
                 "Buy Snack",
                 "Buy a quick snack from the vending machine.",
@@ -404,7 +404,7 @@ public class FurnitureFactory {
     }
 
     public static Furniture createParkPath() {
-        Furniture parkPath = new Furniture("Park Path", "A scenic park path for walking and enjoying nature");
+        Furniture parkPath = new Furniture("Park Path", "A scenic park path for walking and enjoying nature", 0.0);
         parkPath.addAction(new FurnitureAction(
                 "Take a Walk",
                 "Take a leisurely walk along the park path to enjoy the scenery.",
@@ -423,7 +423,7 @@ public class FurnitureFactory {
     }
 
     public static Furniture createParkLake() {
-        Furniture parkLake = new Furniture("Park Lake", "A peaceful lake you can swim in");
+        Furniture parkLake = new Furniture("Park Lake", "A peaceful lake you can swim in", 0.0);
         parkLake.addAction(new FurnitureAction(
                 "Go for a Swim",
                 "Take a refreshing swim in the park lake.",
@@ -435,7 +435,7 @@ public class FurnitureFactory {
     }
 
     public static Furniture createBicycle() {
-        Furniture bicycle = new Furniture("Bicycle", "A bicycle for transportation and exercise");
+        Furniture bicycle = new Furniture("Bicycle", "A bicycle for transportation and exercise", 100.0);
         bicycle.addAction(new FurnitureAction(
                 "Go for a Bike Ride",
                 "Take a bike ride around the neighborhood for fun and exercise.",
@@ -447,7 +447,7 @@ public class FurnitureFactory {
     }
 
     public static Furniture createPicnicTable() {
-        Furniture picnicTable = new Furniture("Picnic Table", "A picnic table for outdoor dining and relaxation");
+        Furniture picnicTable = new Furniture("Picnic Table", "A picnic table for outdoor dining and relaxation", 50.0);
         picnicTable.addAction(new FurnitureAction(
                 "Have a Picnic",
                 "Enjoy a picnic at the table with some delicious food.",
@@ -466,7 +466,7 @@ public class FurnitureFactory {
     }
 
     public static Furniture createCafeTable() {
-        Furniture cafeTable = new Furniture("Cafe Table", "A cozy cafe table for enjoying coffee and snacks");
+        Furniture cafeTable = new Furniture("Cafe Table", "A cozy cafe table for enjoying coffee and snacks", 75.0);
         cafeTable.addAction(new FurnitureAction(
                 "Drink Coffee",
                 "Enjoy a cup of coffee at the cafe table.",
@@ -486,7 +486,7 @@ public class FurnitureFactory {
 
     public static Furniture createEspressoMachine() {
         Furniture espressoMachine = new Furniture("Espresso Machine",
-                "A high-end espresso machine for the best coffee experience");
+                "A high-end espresso machine for the best coffee experience", 200.0);
         espressoMachine.addAction(new FurnitureAction(
                 "Make Espresso",
                 "Brew a strong and delicious espresso shot.",
@@ -505,7 +505,7 @@ public class FurnitureFactory {
     }
 
     public static Furniture createJukeBox() {
-        Furniture jukeBox = new Furniture("Jukebox", "A classic jukebox for playing music and improving mood");
+        Furniture jukeBox = new Furniture("Jukebox", "A classic jukebox for playing music and improving mood", 150.0);
         jukeBox.addAction(new FurnitureAction(
                 "Play Music",
                 "Select a song to play on the jukebox and enjoy the music.",
@@ -517,7 +517,7 @@ public class FurnitureFactory {
     }
 
     public static Furniture createBookshelf() {
-        Furniture bookshelf = new Furniture("Bookshelf", "A bookshelf filled with books for reading and learning");
+        Furniture bookshelf = new Furniture("Bookshelf", "A bookshelf filled with books for reading and learning", 100.0);
         bookshelf.addAction(new FurnitureAction(
                 "Read Book",
                 "Pick a book from the shelf and read to improve knowledge and have fun.",
@@ -529,7 +529,7 @@ public class FurnitureFactory {
     }
 
     public static Furniture createComputerDesk() {
-        Furniture computerDesk = new Furniture("Computer Desk", "A computer desk with a PC for gaming and work");
+        Furniture computerDesk = new Furniture("Computer Desk", "A computer desk with a PC for gaming and work", 200.0);
         computerDesk.addAction(new FurnitureAction(
                 "Play Video Games",
                 "Play some video games on the computer to have fun and relax.",
@@ -548,7 +548,7 @@ public class FurnitureFactory {
     }
 
     public static Furniture createBar() {
-        Furniture bar = new Furniture("Bar", "A bar for socializing and enjoying drinks");
+        Furniture bar = new Furniture("Bar", "A bar for socializing and enjoying drinks", 150.0);
         bar.addAction(new FurnitureAction(
                 "Have a Drink",
                 "Enjoy a drink at the bar to relax and have fun.",
@@ -560,7 +560,7 @@ public class FurnitureFactory {
     }
 
     public static Furniture createDanceFloor() {
-        Furniture danceFloor = new Furniture("Dance Floor", "A dance floor for dancing and having fun");
+        Furniture danceFloor = new Furniture("Dance Floor", "A dance floor for dancing and having fun", 200.0);
         danceFloor.addAction(new FurnitureAction(
                 "Dance",
                 "Dance on the dance floor to have fun and improve fitness.",
@@ -572,7 +572,7 @@ public class FurnitureFactory {
     }
 
     public static Furniture createWorkDesk() {
-        Furniture workDesk = new Furniture("Work Desk", "Your workstation for the day.");
+        Furniture workDesk = new Furniture("Work Desk", "Your workstation for the day.", 150.0);
         workDesk.addAction(new FurnitureAction(
                 "Work",
                 "Put in a full day's work.",
