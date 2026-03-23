@@ -3,15 +3,26 @@ package models;
 import java.util.ArrayList;
 import models.actions.Furniture;
 
+/**
+ * Represents a specialized residential {@link Location} that a Sim can own,
+ * upgrade, and furnish. Houses have tiers, prices, and furniture capacity limits.
+ */
 public class House extends Location {
-    //add 3 max furnitures only.
 
     private int houseTier;
     private double houseRate;
     private double housePrice;
     private boolean isOwned;
 
-    // Constructor for purchasable / higher tier houses
+    /**
+     * Constructs a purchasable, higher-tier house.
+     *
+     * @param locationName the name of the house/location
+     * @param furnitures   the initial list of furniture
+     * @param housePrice   the purchase price of the house
+     * @param houseRate    the utility rate or multiplier associated with the house
+     * @param houseTier    the tier level of the house (determines capacity)
+     */
     public House(String locationName, ArrayList<Furniture> furnitures,
             double housePrice, double houseRate, int houseTier) {
 
@@ -23,7 +34,12 @@ public class House extends Location {
         this.isOwned = false;
     }
 
-    // Constructor for default Tier 1 house (owned)
+    /**
+     * Constructs a default Tier 1 house that is already owned.
+     *
+     * @param locationName the name of the house/location
+     * @param furnitures   the initial list of furniture
+     */
     public House(String locationName, ArrayList<Furniture> furnitures) {
 
         super(locationName, furnitures);
@@ -34,26 +50,57 @@ public class House extends Location {
         this.isOwned = true;
     }
 
+    /**
+     * Retrieves the tier level of the house.
+     *
+     * @return the house tier
+     */
     public int getHouseTier() {
         return houseTier;
     }
 
+    /**
+     * Retrieves the rate or multiplier of the house.
+     *
+     * @return the house rate
+     */
     public double getHouseRate() {
         return houseRate;
     }
 
+    /**
+     * Retrieves the purchase price of the house.
+     *
+     * @return the house price
+     */
     public double getHousePrice() {
         return housePrice;
     }
 
+    /**
+     * Checks if the house is currently owned by a player.
+     *
+     * @return {@code true} if owned, {@code false} otherwise
+     */
     public boolean isOwned() {
         return isOwned;
     }
 
+    /**
+     * Sets the ownership status of the house.
+     *
+     * @param owned {@code true} to mark as owned, {@code false} otherwise
+     */
     public void setOwned(boolean owned) {
         this.isOwned = owned;
     }
 
+    /**
+     * Calculates and returns the maximum number of furniture items the house can hold
+     * based on its current tier.
+     *
+     * @return the maximum furniture capacity
+     */
     public int getMaxFurnitureCapacity() {
         return switch(this.houseTier) {
             case 1 -> 6;
@@ -65,7 +112,13 @@ public class House extends Location {
         };
     }
 
-    // Upgrade current house to the next tier
+    /**
+     * Upgrades the current house to the specified next-tier house.
+     * Transfers ownership status.
+     *
+     * @param nextTierHouse the {@link House} object representing the next tier
+     * @throws IllegalArgumentException if the next house is null or not exactly one tier higher
+     */
     public void upgradeHouse(House nextTierHouse) {
 
         if (nextTierHouse == null) {
@@ -109,7 +162,11 @@ public class House extends Location {
         this.getFurnitures().addAll(purchasedHouse.getFurnitures());
     }
 
-    // Validation for furniture limit
+    /**
+     * Validates that the house's current furniture count does not exceed its capacity.
+     *
+     * @throws IllegalStateException if the furniture limit is exceeded
+     */
     public void validateFurnitureLimit() {
 
         if (getFurnitures().size() > getMaxFurnitureCapacity()) {
