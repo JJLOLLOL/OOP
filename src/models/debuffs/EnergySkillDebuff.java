@@ -3,6 +3,10 @@ package models.debuffs;
 import models.SimCharacter;
 import models.needs.Need;
 
+/**
+ * A debuff that reduces skill progression when the Energy need is critically low.
+ * Simulates the difficulty of learning and focusing while exhausted.
+ */
 public class EnergySkillDebuff implements Debuff {
     @Override
     public double modifySkillChange(SimCharacter sim, String skillName, double amount) {

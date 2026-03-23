@@ -3,6 +3,10 @@ package models.debuffs;
 import models.SimCharacter;
 import models.needs.Need;
 
+/**
+ * A debuff that blocks social interactions when the Hygiene need is critically low.
+ * Simulates characters refusing to interact with a dirty Sim.
+ */
 public class HygieneSocialDebuff implements Debuff {
     @Override
     public boolean blocksInteraction(SimCharacter sim, String interactionType) {
