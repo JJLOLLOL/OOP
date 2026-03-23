@@ -28,6 +28,16 @@ public class FurnitureAction implements ActivityInterface {
     private final double activityCost;
     private final double timeRequired; // in-game hours (e.g. 0.5 = 30 min, 8.0 = full sleep)
 
+    /**
+     * Constructs a new {@code FurnitureAction}.
+     *
+     * @param name               the name of the action
+     * @param description        the description of the action
+     * @param affectedNeedsMap   a map of needs affected by the action and their change values
+     * @param affectedSkillsMap  a map of skills affected by the action and their change values
+     * @param activityCost       the monetary cost deducted when the action is performed
+     * @param timeRequired       the time in in-game hours required to complete the action
+     */
     public FurnitureAction(
             String name,
             String description,

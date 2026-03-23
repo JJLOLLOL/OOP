@@ -2,28 +2,19 @@ package models.actions;
 
 import java.util.Map;
 
-// Factory class to create different types of furniture with their associated actions
-// Code to create furniture in Main.java or in some initialization class:
-/*
-Furniture bed = FurnitureFactory.createBed();
-Furniture hotplate = FurnitureFactory.createSingleHotplate();
- */
-// To have Sim perform an action on a piece of furniture:
-/*
-Furniture bed = FurnitureFactory.createBed();
-bed.performAction("Sleep", sim);
- */
-// To store multiple pieces of furniture in a map for easy access in Location:
-/* 
-Map<String, Furniture> furniture = new HashMap<>();
-furniture.put("Bed", FurnitureFactory.createBed());
-furniture.put("Oven", FurnitureFactory.createOven());
-
-// Then later:
-furniture.get("Bed").performAction("Nap", sim);
+/**
+ * Factory class used to create different types of {@link Furniture} with their associated actions.
+ * <p>
+ * Provides static methods to easily instantiate and configure furniture items, such as beds, stoves,
+ * showers, and entertainment devices, along with the {@link FurnitureAction}s a Sim can perform on them.
  */
 public class FurnitureFactory {
 
+    /**
+     * Creates a Tier 1 Cheap Mattress.
+     *
+     * @return a {@link Furniture} instance representing a cheap mattress
+     */
     public static Furniture createCheapMattress() {
         Furniture cheapMattress = new Furniture("Cheap Mattress", "Tier 1 - A simple mattress for basic rest", 50.0);
         cheapMattress.addAction(new FurnitureAction(
@@ -43,6 +34,11 @@ public class FurnitureFactory {
         return cheapMattress;
     }
 
+    /**
+     * Creates a Tier 2 Single Bed.
+     *
+     * @return a {@link Furniture} instance representing a single bed
+     */
     public static Furniture createSingleBed() {
         Furniture singleBed = new Furniture("Single Bed", "Tier 2 - A comfortable single bed for a good night's sleep", 150.0);
         singleBed.addAction(new FurnitureAction(
@@ -62,6 +58,11 @@ public class FurnitureFactory {
         return singleBed;
     }
 
+    /**
+     * Creates a Tier 3 Double Bed.
+     *
+     * @return a {@link Furniture} instance representing a double bed
+     */
     public static Furniture createDoubleBed() {
         Furniture doubleBed = new Furniture("Double Bed",
                 "Tier 3 - A luxurious double bed for the better sleep experience", 250.0);
@@ -82,6 +83,11 @@ public class FurnitureFactory {
         return doubleBed;
     }
 
+    /**
+     * Creates a Tier 4 Queen Bed.
+     *
+     * @return a {@link Furniture} instance representing a queen bed
+     */
     public static Furniture createQueenBed() {
         Furniture queenBed = new Furniture("Queen Bed",
                 "Tier 4 - A spacious queen bed for the ultimate sleep experience", 350.0);
@@ -102,6 +108,11 @@ public class FurnitureFactory {
         return queenBed;
     }
 
+    /**
+     * Creates a Tier 5 King Bed.
+     *
+     * @return a {@link Furniture} instance representing a king bed
+     */
     public static Furniture createKingBed() {
         Furniture kingBed = new Furniture("King Bed", "Tier 5 - The ultimate king bed for the best sleep experience", 450.0);
         kingBed.addAction(new FurnitureAction(
@@ -121,6 +132,11 @@ public class FurnitureFactory {
         return kingBed;
     }
 
+    /**
+     * Creates a Tier 1 Single Hotplate.
+     *
+     * @return a {@link Furniture} instance representing a single hotplate
+     */
     public static Furniture createSingleHotplate() {
         Furniture hotplate = new Furniture("Single Hotplate", "Tier 1 - A simple hotplate for cooking", 50.0);
         hotplate.addAction(new FurnitureAction(
@@ -140,6 +156,11 @@ public class FurnitureFactory {
         return hotplate;
     }
 
+    /**
+     * Creates a Tier 2 Old Stove.
+     *
+     * @return a {@link Furniture} instance representing an old stove
+     */
     public static Furniture createOldStove() {
         Furniture oldStove = new Furniture("Old Stove", "Tier 2 - An old stove for cooking", 100.0);
         oldStove.addAction(new FurnitureAction(
@@ -159,6 +180,11 @@ public class FurnitureFactory {
         return oldStove;
     }
 
+    /**
+     * Creates a Tier 3 Modern Stove.
+     *
+     * @return a {@link Furniture} instance representing a modern stove
+     */
     public static Furniture createModernStove() {
         Furniture modernStove = new Furniture("Modern Stove", "Tier 3 - A modern stove for better cooking", 200.0);
         modernStove.addAction(new FurnitureAction(
@@ -185,6 +211,11 @@ public class FurnitureFactory {
         return modernStove;
     }
 
+    /**
+     * Creates a Tier 4 Gourmet Stove.
+     *
+     * @return a {@link Furniture} instance representing a gourmet stove
+     */
     public static Furniture createGourmetStove() {
         Furniture gourmetStove = new Furniture("Gourmet Stove",
                 "Tier 4 - A gourmet stove for the best cooking experience", 300.0);
@@ -212,6 +243,11 @@ public class FurnitureFactory {
         return gourmetStove;
     }
 
+    /**
+     * Creates a Tier 1 Old Shower.
+     *
+     * @return a {@link Furniture} instance representing an old shower
+     */
     public static Furniture createOldShower() {
         Furniture oldShower = new Furniture("Old Shower", "Tier 1 - A basic shower for cleaning up", 50.0);
         oldShower.addAction(new FurnitureAction(
@@ -231,6 +267,11 @@ public class FurnitureFactory {
         return oldShower;
     }
 
+    /**
+     * Creates a Tier 2 Normal Shower.
+     *
+     * @return a {@link Furniture} instance representing a normal shower
+     */
     public static Furniture createNormalShower() {
         Furniture normalShower = new Furniture("Normal Shower", "Tier 2 - A normal shower for better cleaning", 100.0);
         normalShower.addAction(new FurnitureAction(
@@ -250,6 +291,11 @@ public class FurnitureFactory {
         return normalShower;
     }
 
+    /**
+     * Creates a Tier 3 Luxury Bathtub.
+     *
+     * @return a {@link Furniture} instance representing a luxury bathtub
+     */
     public static Furniture createLuxuryBathtub() {
         Furniture luxuryBathtub = new Furniture("Luxury Bathtub",
                 "Tier 3 - A luxurious bathtub for the ultimate relaxation", 250.0);
@@ -277,6 +323,11 @@ public class FurnitureFactory {
         return luxuryBathtub;
     }
 
+    /**
+     * Creates a Toilet.
+     *
+     * @return a {@link Furniture} instance representing a toilet
+     */
     public static Furniture createToilet() {
         Furniture toilet = new Furniture("Toilet", "Tier 1 - A basic toilet for your needs", 50.0);
         toilet.addAction(new FurnitureAction(
@@ -289,6 +340,11 @@ public class FurnitureFactory {
         return toilet;
     }
 
+    /**
+     * Creates a Tier 1 Old CRT TV.
+     *
+     * @return a {@link Furniture} instance representing an old CRT TV
+     */
     public static Furniture createOldCRTTV() {
         Furniture crtTV = new Furniture("Old CRT TV", "Tier 1 - An old CRT TV for basic entertainment", 100.0);
         crtTV.addAction(new FurnitureAction(
@@ -301,6 +357,11 @@ public class FurnitureFactory {
         return crtTV;
     }
 
+    /**
+     * Creates a Tier 2 Modern LCD TV.
+     *
+     * @return a {@link Furniture} instance representing a modern LCD TV
+     */
     public static Furniture createModernLCDTV() {
         Furniture lcdTV = new Furniture("Modern LCD TV", "Tier 2 - A modern LCD TV for better entertainment", 200.0);
         lcdTV.addAction(new FurnitureAction(
@@ -313,6 +374,11 @@ public class FurnitureFactory {
         return lcdTV;
     }
 
+    /**
+     * Creates a Tier 3 OLED TV.
+     *
+     * @return a {@link Furniture} instance representing an OLED TV
+     */
     public static Furniture createOLEDTV() {
         Furniture oledTV = new Furniture("OLED TV",
                 "Tier 3 - A high-end OLED TV for the best entertainment experience", 300.0);
@@ -326,6 +392,11 @@ public class FurnitureFactory {
         return oledTV;
     }
 
+    /**
+     * Creates a Restaurant Table.
+     *
+     * @return a {@link Furniture} instance representing a restaurant table
+     */
     public static Furniture createRestaurantTable() {
         Furniture restaurantTable = new Furniture("Restaurant Table",
                 "A fancy restaurant table for the best dining experience", 150.0);
@@ -353,6 +424,11 @@ public class FurnitureFactory {
         return restaurantTable;
     }
 
+    /**
+     * Creates a Treadmill.
+     *
+     * @return a {@link Furniture} instance representing a treadmill
+     */
     public static Furniture createTreadmill() {
         Furniture treadmill = new Furniture("Treadmill", "A treadmill for staying fit and healthy", 200.0);
         treadmill.addAction(new FurnitureAction(
@@ -372,6 +448,11 @@ public class FurnitureFactory {
         return treadmill;
     }
 
+    /**
+     * Creates a set of Dumbbells.
+     *
+     * @return a {@link Furniture} instance representing dumbbells
+     */
     public static Furniture createDumbbells() {
         Furniture dumbbells = new Furniture("Dumbbells", "A set of dumbbells for strength training", 150.0);
         dumbbells.addAction(new FurnitureAction(
@@ -384,6 +465,11 @@ public class FurnitureFactory {
         return dumbbells;
     }
 
+    /**
+     * Creates a Vending Machine.
+     *
+     * @return a {@link Furniture} instance representing a vending machine
+     */
     public static Furniture createVendingMachine() {
         Furniture vendingMachine = new Furniture("Vending Machine", "A vending machine for quick snacks and drinks", 100.0);
         vendingMachine.addAction(new FurnitureAction(
@@ -403,6 +489,11 @@ public class FurnitureFactory {
         return vendingMachine;
     }
 
+    /**
+     * Creates a Park Path.
+     *
+     * @return a {@link Furniture} instance representing a park path
+     */
     public static Furniture createParkPath() {
         Furniture parkPath = new Furniture("Park Path", "A scenic park path for walking and enjoying nature", 0.0);
         parkPath.addAction(new FurnitureAction(
@@ -422,6 +513,11 @@ public class FurnitureFactory {
         return parkPath;
     }
 
+    /**
+     * Creates a Park Lake.
+     *
+     * @return a {@link Furniture} instance representing a park lake
+     */
     public static Furniture createParkLake() {
         Furniture parkLake = new Furniture("Park Lake", "A peaceful lake you can swim in", 0.0);
         parkLake.addAction(new FurnitureAction(
@@ -434,6 +530,11 @@ public class FurnitureFactory {
         return parkLake;
     }
 
+    /**
+     * Creates a Bicycle.
+     *
+     * @return a {@link Furniture} instance representing a bicycle
+     */
     public static Furniture createBicycle() {
         Furniture bicycle = new Furniture("Bicycle", "A bicycle for transportation and exercise", 100.0);
         bicycle.addAction(new FurnitureAction(
@@ -446,6 +547,11 @@ public class FurnitureFactory {
         return bicycle;
     }
 
+    /**
+     * Creates a Picnic Table.
+     *
+     * @return a {@link Furniture} instance representing a picnic table
+     */
     public static Furniture createPicnicTable() {
         Furniture picnicTable = new Furniture("Picnic Table", "A picnic table for outdoor dining and relaxation", 50.0);
         picnicTable.addAction(new FurnitureAction(
@@ -465,6 +571,11 @@ public class FurnitureFactory {
         return picnicTable;
     }
 
+    /**
+     * Creates a Cafe Table.
+     *
+     * @return a {@link Furniture} instance representing a cafe table
+     */
     public static Furniture createCafeTable() {
         Furniture cafeTable = new Furniture("Cafe Table", "A cozy cafe table for enjoying coffee and snacks", 75.0);
         cafeTable.addAction(new FurnitureAction(
@@ -484,6 +595,11 @@ public class FurnitureFactory {
         return cafeTable;
     }
 
+    /**
+     * Creates an Espresso Machine.
+     *
+     * @return a {@link Furniture} instance representing an espresso machine
+     */
     public static Furniture createEspressoMachine() {
         Furniture espressoMachine = new Furniture("Espresso Machine",
                 "A high-end espresso machine for the best coffee experience", 200.0);
@@ -504,6 +620,11 @@ public class FurnitureFactory {
         return espressoMachine;
     }
 
+    /**
+     * Creates a Jukebox.
+     *
+     * @return a {@link Furniture} instance representing a jukebox
+     */
     public static Furniture createJukeBox() {
         Furniture jukeBox = new Furniture("Jukebox", "A classic jukebox for playing music and improving mood", 150.0);
         jukeBox.addAction(new FurnitureAction(
@@ -516,6 +637,11 @@ public class FurnitureFactory {
         return jukeBox;
     }
 
+    /**
+     * Creates a Bookshelf.
+     *
+     * @return a {@link Furniture} instance representing a bookshelf
+     */
     public static Furniture createBookshelf() {
         Furniture bookshelf = new Furniture("Bookshelf", "A bookshelf filled with books for reading and learning", 100.0);
         bookshelf.addAction(new FurnitureAction(
@@ -528,6 +654,11 @@ public class FurnitureFactory {
         return bookshelf;
     }
 
+    /**
+     * Creates a Computer Desk.
+     *
+     * @return a {@link Furniture} instance representing a computer desk
+     */
     public static Furniture createComputerDesk() {
         Furniture computerDesk = new Furniture("Computer Desk", "A computer desk with a PC for gaming and work", 200.0);
         computerDesk.addAction(new FurnitureAction(
@@ -547,6 +678,11 @@ public class FurnitureFactory {
         return computerDesk;
     }
 
+    /**
+     * Creates a Bar.
+     *
+     * @return a {@link Furniture} instance representing a bar
+     */
     public static Furniture createBar() {
         Furniture bar = new Furniture("Bar", "A bar for socializing and enjoying drinks", 150.0);
         bar.addAction(new FurnitureAction(
@@ -559,6 +695,11 @@ public class FurnitureFactory {
         return bar;
     }
 
+    /**
+     * Creates a Dance Floor.
+     *
+     * @return a {@link Furniture} instance representing a dance floor
+     */
     public static Furniture createDanceFloor() {
         Furniture danceFloor = new Furniture("Dance Floor", "A dance floor for dancing and having fun", 200.0);
         danceFloor.addAction(new FurnitureAction(
@@ -571,6 +712,11 @@ public class FurnitureFactory {
         return danceFloor;
     }
 
+    /**
+     * Creates a Work Desk.
+     *
+     * @return a {@link Furniture} instance representing a work desk
+     */
     public static Furniture createWorkDesk() {
         Furniture workDesk = new Furniture("Work Desk", "Your workstation for the day.", 150.0);
         workDesk.addAction(new FurnitureAction(
