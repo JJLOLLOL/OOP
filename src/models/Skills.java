@@ -1,5 +1,9 @@
 package models;
 
+/**
+ * Represents a specific skill that a Sim can level up over time.
+ * Skills implement the {@link ProgressBar} interface to track experience points and levels.
+ */
 public class Skills implements ProgressBar{
     private String skillName;
     private int level;
@@ -7,6 +11,11 @@ public class Skills implements ProgressBar{
     private double requiredXP;
     private static final int MAX_LEVEL = 10;
 
+    /**
+     * Constructs a new Skill with the specified name, starting at level 1.
+     *
+     * @param skillName the name of the skill (e.g., "Cooking", "Fitness")
+     */
     public Skills(String skillName){
         this.skillName = skillName;
         this.level = 1;
@@ -14,19 +23,32 @@ public class Skills implements ProgressBar{
         this.requiredXP = 100.0;
     }
 
-    //getter methods
+    /**
+     * Retrieves the name of the skill.
+     *
+     * @return the skill name
+     */
     public String getSkillName(){
         return skillName;
     }
 
+    /**
+     * Retrieves the current level of the skill.
+     *
+     * @return the skill level
+     */
     public int getLevel(){
         return level;
     }
 
+    @Override
     public double getRequiredXP() {
         return requiredXP;
     }
 
+    /**
+     * Recalculates the required XP for the next level based on the current level.
+     */
     private void updateRequiredXP() {
         requiredXP = 100.0 * Math.pow(1.5, level - 1);
     }
