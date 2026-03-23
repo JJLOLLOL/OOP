@@ -3,6 +3,9 @@ package services;
 import models.House;
 import models.SimCharacter;
 
+/**
+ * Provides services related to purchasing and upgrading houses for Sims.
+ */
 public class HouseService {
 
     private HouseService() {
@@ -38,6 +41,14 @@ public class HouseService {
         return true;
     }
 
+    /**
+     * Generates a user-friendly message describing the result of a house purchase attempt.
+     *
+     * @param buyer   the {@link SimCharacter} attempting the purchase
+     * @param house   the {@link House} being purchased
+     * @param success {@code true} if the purchase succeeded; {@code false} otherwise
+     * @return a formatted message detailing the outcome
+     */
     public static String getPurchaseMessage(SimCharacter buyer, House house, boolean success) {
         if (!success) {
             if (house.isOwned()) {

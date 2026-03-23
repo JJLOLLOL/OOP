@@ -7,6 +7,9 @@ import models.SimCharacter;
 import models.actions.FurnitureAction;
 import models.actions.FurnitureFactory;
 
+/**
+ * Provides services to manage career work shifts for Sims.
+ */
 public class WorkService {
 
     public static final int SHIFT_START_HOUR = 9;
