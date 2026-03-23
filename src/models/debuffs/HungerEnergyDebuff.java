@@ -3,6 +3,10 @@ package models.debuffs;
 import models.SimCharacter;
 import models.needs.Need;
 
+/**
+ * A debuff that negatively impacts the Energy need when the Hunger need is critically low.
+ * Reduces energy recovery from resting and increases the base decay rate of energy.
+ */
 public class HungerEnergyDebuff implements Debuff {
     @Override
     public double modifyNeedChange(SimCharacter sim, String needName, double amount) {

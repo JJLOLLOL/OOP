@@ -6,7 +6,8 @@ import models.SimCharacter;
 
 /**
  * Holds and applies all active debuff rules in the game.
- * New debuff classes just need to be added to the DEBUFFS list to take effect globally.
+ * <p>
+ * New debuff classes just need to be added to the {@code DEBUFFS} list to take effect globally.
  */
 public class DebuffRegistry {
     private static final List<Debuff> DEBUFFS = new ArrayList<>();
@@ -19,6 +20,14 @@ public class DebuffRegistry {
         DEBUFFS.add(new FatigueDecayDebuff());
     }
 
+    /**
+     * Applies all active debuff modifiers to a need change amount.
+     *
+     * @param sim      the {@link SimCharacter} experiencing the change
+     * @param needName the name of the need being changed
+     * @param amount   the original amount of change
+     * @return the final modified amount after all debuffs have been applied
+     */
     public static double applyNeedModifiers(SimCharacter sim, String needName, double amount) {
         double modifiedAmount = amount;
         for (Debuff debuff : DEBUFFS) {
@@ -27,6 +36,14 @@ public class DebuffRegistry {
         return modifiedAmount;
     }
 
+    /**
+     * Applies all active debuff modifiers to a skill progress amount.
+     *
+     * @param sim       the {@link SimCharacter} gaining skill progress
+     * @param skillName the name of the skill
+     * @param amount    the original amount of progress
+     * @return the final modified progress amount after all debuffs have been applied
+     */
     public static double applySkillModifiers(SimCharacter sim, String skillName, double amount) {
         double modifiedAmount = amount;
         for (Debuff debuff : DEBUFFS) {
@@ -35,6 +52,14 @@ public class DebuffRegistry {
         return modifiedAmount;
     }
 
+    /**
+     * Applies all active debuff modifiers to a need's decay rate.
+     *
+     * @param sim       the {@link SimCharacter} whose need is decaying
+     * @param needName  the name of the need
+     * @param baseDecay the original base decay rate
+     * @return the final modified decay rate after all debuffs have been applied
+     */
     public static double applyDecayModifiers(SimCharacter sim, String needName, double baseDecay) {
         double modifiedDecay = baseDecay;
         for (Debuff debuff : DEBUFFS) {
@@ -43,6 +68,13 @@ public class DebuffRegistry {
         return modifiedDecay;
     }
 
+    /**
+     * Checks if any active debuff blocks the specified interaction and returns the block reason.
+     *
+     * @param sim             the {@link SimCharacter} attempting the interaction
+     * @param interactionType the type of interaction
+     * @return the message explaining why the interaction is blocked, or {@code null} if it is allowed
+     */
     public static String getInteractionBlockReason(SimCharacter sim, String interactionType) {
         for (Debuff debuff : DEBUFFS) {
             if (debuff.blocksInteraction(sim, interactionType)) {
