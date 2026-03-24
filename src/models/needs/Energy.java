@@ -33,7 +33,7 @@ public class Energy extends Need {
     @Override
     public CriticalConsequence getCriticalConsequences(SimCharacter character) {
         return new CriticalConsequence(
-                character.getName() + " is exhausted! Find a place to rest soon! Needs will now decay faster.",
+                character.getName() + " is exhausted! Hunger drops significantly (-10) and needs will now decay faster. Find a place to rest soon!",
                 new CriticalConsequence.AffectedNeed("Hunger", -10)
         );
     }

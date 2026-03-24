@@ -83,8 +83,11 @@ public class NeedService {
                     CriticalConsequence consequence = need.getCriticalConsequences(sim);
 
                     if (consequence != null) {
-                        // Apply notification
-                        NotificationService.add(sim, consequence.getNotificationMessage());
+                        // Apply notification (only if there is a non-null message)
+                        String message = consequence.getNotificationMessage();
+                        if (message != null) {
+                            NotificationService.add(sim, message);
+                        }
 
                         // Apply need adjustments
                         for (CriticalConsequence.AffectedNeed affected : consequence.getAffectedNeeds()) {

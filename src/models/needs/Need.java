@@ -31,14 +31,14 @@ public abstract class Need {
      * Constructs a new {@code Need} with a specified name and decay rate.
      *
      * @param needName  the name of the need (e.g., "Hunger", "Energy")
-     * @param decayRate the amount the need decreases per game tick
-     * @throws IllegalArgumentException if the decay rate is negative
+     * @param decayRate the amount the need decreases per game tick (must be positive)
+     * @throws IllegalArgumentException if the decay rate is not positive
      */
     public Need(String needName, double decayRate) {
         this.needName = needName;
         this.value = INITIAL_NEED_VALUE;
-        if (decayRate < 0) {
-            throw new IllegalArgumentException("Decay rate cannot be negative.");
+        if (decayRate <= 0) {
+            throw new IllegalArgumentException("Decay rate must be positive (greater than 0).");
         }
         this.baseDecayRate = decayRate;
     }

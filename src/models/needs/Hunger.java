@@ -31,7 +31,7 @@ public class Hunger extends Need {
     @Override
     public CriticalConsequence getCriticalConsequences(SimCharacter character) {
         return new CriticalConsequence(
-                character.getName() + " is starving! Find food soon! Energy will decrease faster until hunger is restored.",
+                character.getName() + " is starving! Find food soon! Energy immediately drops by 10 and will decrease faster until hunger is restored.",
                 new CriticalConsequence.AffectedNeed[] {
                         new CriticalConsequence.AffectedNeed("Energy", -10)
                 }
