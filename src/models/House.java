@@ -173,4 +173,48 @@ public class House extends Location {
             throw new IllegalStateException("A house can contain at most " + getMaxFurnitureCapacity() + " furniture items.");
         }
     }
+
+    /**
+     * Adds a furniture item to the house.
+     *
+     * @param furniture the {@link Furniture} to add
+     * @return {@code true} if the furniture was added; {@code false} if at
+     * capacity
+     */
+    public boolean addFurniture(Furniture furniture) {
+        if (furnitures.size() >= getMaxFurnitureCapacity()) {
+            return false;
+        }
+        return furnitures.add(furniture);
+    }
+
+    /**
+     * Removes a furniture item from the house.
+     *
+     * @param furniture the {@link Furniture} to remove
+     * @return {@code true} if the furniture was removed; {@code false} if not
+     * found
+     */
+    public boolean removeFurniture(Furniture furniture) {
+        return furnitures.remove(furniture);
+    }
+
+    /**
+     * Gets the current number of furniture items in the house.
+     *
+     * @return the furniture count
+     */
+    public int getFurnitureCount() {
+        return furnitures.size();
+    }
+
+    /**
+     * Checks if the house contains a specific furniture item.
+     *
+     * @param furniture the {@link Furniture} to check for
+     * @return {@code true} if the house contains this furniture
+     */
+    public boolean hasFurniture(Furniture furniture) {
+        return furnitures.contains(furniture);
+    }
 }

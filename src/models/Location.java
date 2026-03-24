@@ -12,7 +12,7 @@ import models.actions.Furniture;
 public class Location {
 
     private String locationName;
-    private ArrayList<Furniture> furnitures;
+    protected ArrayList<Furniture> furnitures;
     private ArrayList<NPCCharacter> npcs;
 
     /**
