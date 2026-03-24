@@ -1,9 +1,10 @@
 package models.actions;
-
+import core.GameClock;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import models.SimCharacter;
 
 /**
  * Represents a piece of furniture in the game world that a character can
@@ -78,7 +79,7 @@ public class Furniture {
      * @param clock the {@link core.GameClock} to advance when the action completes
      * @return {@code true} if the action was successfully performed, {@code false} otherwise
      */
-    public boolean performAction(String actionName, models.SimCharacter character, core.GameClock clock) {
+    public boolean performAction(String actionName, SimCharacter character, GameClock clock) {
         if (actionName == null || character == null || clock == null) {
             return false;
         }

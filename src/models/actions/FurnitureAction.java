@@ -89,21 +89,15 @@ public class FurnitureAction implements ActivityInterface {
     }
 
     /**
-     * Performs the action and, on success, advances the in-game clock by
+     * Performs the action and advances the in-game clock by
      * {@link #timeRequired} hours.
      *
-     * <p>
-     * The action is blocked if:
-     * <ul>
-     * <li>The character is null</li>
-     * <li>The character cannot afford the money cost</li>
-     * <li>Any negative need effect would reduce that need below zero</li>
-     * </ul>
-     *
      * @param character the sim performing the action (cannot be null)
-     * @param clock the game clock to advance ({@code null} = no time skip)
+     * @param clock the game clock to advance ({@code null} skips time
+     * advancement)
      * @return {@code true} if the action succeeded; {@code false} if input
-     * invalid or action blocked
+     * invalid or blocked
+     * @throws IllegalArgumentException if character is null
      */
     @Override
     public boolean perform(SimCharacter character, GameClock clock) {
