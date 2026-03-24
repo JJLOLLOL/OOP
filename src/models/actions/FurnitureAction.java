@@ -85,15 +85,6 @@ public class FurnitureAction implements ActivityInterface {
     }
 
     /**
-     * Performs the action without advancing the clock. Kept for interface
-     * compatibility; prefer {@link #perform(SimCharacter, GameClock)}.
-     */
-    @Override
-    public boolean perform(SimCharacter character) {
-        return perform(character, null);
-    }
-
-    /**
      * Performs the action and, on success, advances the in-game clock by
      * {@link #timeRequired} hours.
      *
@@ -108,6 +99,7 @@ public class FurnitureAction implements ActivityInterface {
      * @param clock     the game clock to advance ({@code null} = no time skip)
      * @return {@code true} if the action succeeded
      */
+    @Override
     public boolean perform(SimCharacter character, GameClock clock) {
         if (character == null) {
             return false;

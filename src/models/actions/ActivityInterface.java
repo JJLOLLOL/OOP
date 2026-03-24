@@ -57,10 +57,11 @@ public interface ActivityInterface {
     double moneyDeducted();
 
     /**
-     * Executes the activity for the given character.
+     * Executes the activity for the given character and advances the game clock.
      *
      * @param character the {@link SimCharacter} performing the activity
+     * @param clock     the {@link core.GameClock} to advance when action completes
      * @return {@code true} if the activity was successfully performed; {@code false} otherwise
      */
-    boolean perform(SimCharacter character);
+    boolean perform(SimCharacter character, core.GameClock clock);
 }

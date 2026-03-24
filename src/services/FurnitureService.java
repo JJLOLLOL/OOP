@@ -9,6 +9,8 @@ import models.actions.Furniture;
  */
 public class FurnitureService {
 
+    private static final double REFUND_PERCENTAGE = 0.5;
+
     private FurnitureService() {
 
     }
@@ -94,7 +96,7 @@ public class FurnitureService {
 
         // Remove furniture from house and refund player (50% of original price)
         house.getFurnitures().remove(furniture);
-        double refundAmount = furniture.getPrice() * 0.5;
+        double refundAmount = furniture.getPrice() * REFUND_PERCENTAGE;
         seller.setMoney(refundAmount);
 
         return true; // Furniture sold successfully

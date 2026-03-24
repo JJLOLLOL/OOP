@@ -69,14 +69,15 @@ public class Furniture {
      *
      * @param actionName the name of the action to perform
      * @param character  the {@link models.SimCharacter} performing the action
+     * @param clock      the {@link core.GameClock} to advance when the action completes
      * @return {@code true} if the action was successfully performed, {@code false} otherwise
      */
-    public boolean performAction(String actionName, models.SimCharacter character) {
+    public boolean performAction(String actionName, models.SimCharacter character, core.GameClock clock) {
         FurnitureAction action = availableActionsMap.get(actionName);
         if (action == null) {
             return false;
         }
-        return action.perform(character);
+        return action.perform(character, clock);
     }
 
     /**
