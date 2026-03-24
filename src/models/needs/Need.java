@@ -23,7 +23,7 @@ public abstract class Need {
 
     private final String needName;
     private double value; // 0 to 100
-    private double decayRate; // How much it decreases per tick
+    private double decayMultiplier = 1.0;
     private final double baseDecayRate;
     private boolean criticallyLowNotified = false;
 
@@ -40,7 +40,6 @@ public abstract class Need {
         if (decayRate < 0) {
             throw new IllegalArgumentException("Decay rate cannot be negative.");
         }
-        this.decayRate = decayRate;
         this.baseDecayRate = decayRate;
     }
 
@@ -50,7 +49,39 @@ public abstract class Need {
      * @param deltaTime the time elapsed since the last tick
      */
     public void decay(double deltaTime) {
-        setValue(this.value - (this.decayRate * deltaTime));
+        double effectiveDecayRate = baseDecayRate * decayMultiplier;
+        setValue(this.value - (effectiveDecayRate * deltaTime));
+    }
+
+    /**
+     * Applies a temporary multiplier to the decay rate (e.g., from debuffs).
+     * This multiplier is reset each tick.
+     *
+     * @param multiplier the multiplier to apply to the base decay rate
+     * @throws IllegalArgumentException if the multiplier is negative
+     */
+    public void applyDecayModifier(double multiplier) {
+        if (multiplier < 0) {
+            throw new IllegalArgumentException("Decay multiplier cannot be negative.");
+        }
+        this.decayMultiplier = multiplier;
+    }
+
+    /**
+     * Resets the decay multiplier to 1.0 (no modification). Should be called at
+     * the start of each tick before applying new modifiers.
+     */
+    public void resetDecayModifier() {
+        this.decayMultiplier = 1.0;
+    }
+
+    /**
+     * Gets the effective decay rate (base * multiplier) for this tick.
+     *
+     * @return the effective decay rate
+     */
+    public double getEffectiveDecayRate() {
+        return baseDecayRate * decayMultiplier;
     }
 
     /**
@@ -98,15 +129,6 @@ public abstract class Need {
     }
 
     /**
-     * Retrieves the current decay rate of the need.
-     *
-     * @return the decay rate
-     */
-    public double getDecayRate() {
-        return decayRate;
-    }
-
-    /**
      * Retrieves the base decay rate of the need.
      *
      * @return the base decay rate
@@ -140,20 +162,6 @@ public abstract class Need {
      */
     protected void setValue(double newValue) {
         this.value = Math.max(MIN_NEED_VALUE, Math.min(MAX_NEED_VALUE, newValue));
-    }
-
-    /**
-     * Sets the current decay rate of the need.
-     *
-     * @param decayRate the new decay rate
-     * @throws IllegalArgumentException if the decay rate is negative
-     */
-    public void setDecayRate(double decayRate) {
-
-        if (decayRate < 0) {
-            throw new IllegalArgumentException("Decay rate cannot be negative.");
-        }
-        this.decayRate = decayRate;
     }
 
     @Override
