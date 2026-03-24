@@ -31,12 +31,16 @@ public class FurnitureAction implements ActivityInterface {
     /**
      * Constructs a new {@code FurnitureAction}.
      *
-     * @param name               the name of the action
-     * @param description        the description of the action
-     * @param affectedNeedsMap   a map of needs affected by the action and their change values
-     * @param affectedSkillsMap  a map of skills affected by the action and their change values
-     * @param activityCost       the monetary cost deducted when the action is performed
-     * @param timeRequired       the time in in-game hours required to complete the action
+     * @param name the name of the action
+     * @param description the description of the action
+     * @param affectedNeedsMap a map of needs affected by the action and their
+     * change values
+     * @param affectedSkillsMap a map of skills affected by the action and their
+     * change values
+     * @param activityCost the monetary cost deducted when the action is
+     * performed
+     * @param timeRequired the time in in-game hours required to complete the
+     * action
      */
     public FurnitureAction(
             String name,
@@ -91,13 +95,15 @@ public class FurnitureAction implements ActivityInterface {
      * <p>
      * The action is blocked if:
      * <ul>
+     * <li>The character is null</li>
      * <li>The character cannot afford the money cost</li>
      * <li>Any negative need effect would reduce that need below zero</li>
      * </ul>
      *
-     * @param character the sim performing the action
-     * @param clock     the game clock to advance ({@code null} = no time skip)
-     * @return {@code true} if the action succeeded
+     * @param character the sim performing the action (cannot be null)
+     * @param clock the game clock to advance ({@code null} = no time skip)
+     * @return {@code true} if the action succeeded; {@code false} if input
+     * invalid or action blocked
      */
     @Override
     public boolean perform(SimCharacter character, GameClock clock) {
