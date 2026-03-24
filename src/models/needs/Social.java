@@ -12,11 +12,14 @@ import services.NotificationService;
  */
 public class Social extends Need {
 
+    /** Default decay rate for Social need per game tick. */
+    private static final double DEFAULT_DECAY_RATE = 3.0;
+
     /**
      * Constructs a {@code Social} need with its default decay rate.
      */
     public Social() {
-        super("Social", 3.0); // Default decay rate for social needs
+        super("Social", DEFAULT_DECAY_RATE);
     }
 
     /**

@@ -12,11 +12,14 @@ import services.NotificationService;
  */
 public class Energy extends Need {
 
+    /** Default decay rate for Energy need per game tick. */
+    private static final double DEFAULT_DECAY_RATE = 5.5;
+
     /**
      * Constructs an {@code Energy} need with its default decay rate.
      */
     public Energy() {
-        super("Energy", 5.5); // Default decay rate for energy
+        super("Energy", DEFAULT_DECAY_RATE);
     }
 
     /**

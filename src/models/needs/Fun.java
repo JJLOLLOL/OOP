@@ -12,11 +12,14 @@ import services.NotificationService;
  */
 public class Fun extends Need {
 
+    /** Default decay rate for Fun need per game tick. */
+    private static final double DEFAULT_DECAY_RATE = 3.0;
+
     /**
      * Constructs a {@code Fun} need with its default decay rate.
      */
     public Fun() {
-        super("Fun", 3.0); // Default decay rate for fun
+        super("Fun", DEFAULT_DECAY_RATE);
     }
 
     /**

@@ -12,11 +12,14 @@ import services.NotificationService;
  */
 public class Hygiene extends Need {
 
+    /** Default decay rate for Hygiene need per game tick. */
+    private static final double DEFAULT_DECAY_RATE = 3.0;
+
     /**
      * Constructs a {@code Hygiene} need with its default decay rate.
      */
     public Hygiene() {
-        super("Hygiene", 3.0); // Default decay rate for hygiene
+        super("Hygiene", DEFAULT_DECAY_RATE);
     }
 
     /**

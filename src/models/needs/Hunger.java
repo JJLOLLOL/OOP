@@ -11,11 +11,14 @@ import services.NotificationService;
  */
 public class Hunger extends Need {
 
+    /** Default decay rate for Hunger need per game tick. */
+    private static final double DEFAULT_DECAY_RATE = 8.0;
+
     /**
      * Constructs a {@code Hunger} need with its default decay rate.
      */
     public Hunger() {
-        super("Hunger", 8.0); // Default decay rate for hunger
+        super("Hunger", DEFAULT_DECAY_RATE);
     }
 
     /**

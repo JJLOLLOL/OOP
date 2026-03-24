@@ -9,11 +9,22 @@ import models.SimCharacter;
  */
 public abstract class Need {
 
+    /** Minimum value for any need. */
+    private static final double MIN_NEED_VALUE = 0.0;
+
+    /** Maximum value for any need. */
+    private static final double MAX_NEED_VALUE = 100.0;
+
+    /** Initial value assigned to newly created needs. */
+    private static final double INITIAL_NEED_VALUE = 80.0;
+
+    /** Need value threshold below which critical consequences are triggered. */
+    private static final double CRITICAL_THRESHOLD = 20.0;
+
     private final String needName;
     private double value; // 0 to 100
     private double decayRate; // How much it decreases per tick
     private final double baseDecayRate;
-    private static final double CRITICAL_THRESHOLD = 20.0; // Below this, the need is critically low
     private boolean criticallyLowNotified = false;
 
     /**
@@ -25,7 +36,7 @@ public abstract class Need {
      */
     public Need(String needName, double decayRate) {
         this.needName = needName;
-        this.value = 80.0; // Starting value for the sim character
+        this.value = INITIAL_NEED_VALUE;
         if (decayRate < 0) {
             throw new IllegalArgumentException("Decay rate cannot be negative.");
         }
@@ -43,7 +54,7 @@ public abstract class Need {
     }
 
     /**
-     * Adjusts the need's value by a given amount, keeping it within the 0 to 100 bounds.
+     * Adjusts the need's value by a given amount, keeping it within the min and max bounds.
      *
      * @param amount the amount to add to (or subtract from, if negative) the need's value
      */
@@ -80,7 +91,7 @@ public abstract class Need {
     /**
      * Retrieves the current value of the need.
      *
-     * @return the current value, bounded between 0 and 100
+     * @return the current value, bounded between {@link #MIN_NEED_VALUE} and {@link #MAX_NEED_VALUE}
      */
     public double getValue() {
         return value;
@@ -123,12 +134,12 @@ public abstract class Need {
     }
 
     /**
-     * Safely updates the value of the need, ensuring it remains bounded between 0 and 100.
+     * Safely updates the value of the need, ensuring it remains bounded between min and max values.
      *
      * @param newValue the new target value for the need
      */
     protected void setValue(double newValue) {
-        this.value = Math.max(0, Math.min(100, newValue)); // Ensure value stays between 0 and 100
+        this.value = Math.max(MIN_NEED_VALUE, Math.min(MAX_NEED_VALUE, newValue));
     }
 
     /**
