@@ -1,8 +1,6 @@
 package models.needs;
 
 import models.SimCharacter;
-import services.NeedService;
-import services.NotificationService;
 
 /**
  * Represents the Hygiene need of a Sim.
@@ -12,7 +10,9 @@ import services.NotificationService;
  */
 public class Hygiene extends Need {
 
-    /** Default decay rate for Hygiene need per game tick. */
+    /**
+     * Default decay rate for Hygiene need per game tick.
+     */
     private static final double DEFAULT_DECAY_RATE = 3.0;
 
     /**
@@ -23,17 +23,17 @@ public class Hygiene extends Need {
     }
 
     /**
-     * Applies negative consequences when the Sim is very dirty.
-     * Sends a dirtiness warning and decreases the Social need.
+     * Applies negative consequences when the Sim is very dirty. Sends a
+     * dirtiness warning and decreases the Social need.
      *
      * @param character the {@link SimCharacter} who is dirty
      */
     @Override
-    public void onCriticallyLow(SimCharacter character) {
-        NotificationService.add(character, character.getName() + " is very dirty! Take a shower soon! Social need is decreased");
-
-        // Decrease Social when Hygiene is low (unpleasantness makes you less social)
-        NeedService.adjustNeed(character, "Social", -10);
+    public CriticalConsequence getCriticalConsequences(SimCharacter character) {
+        return new CriticalConsequence(
+                character.getName() + " is very dirty! Take a shower soon! Social need is decreased.",
+                new CriticalConsequence.AffectedNeed("Social", -10)
+        );
     }
 
 }

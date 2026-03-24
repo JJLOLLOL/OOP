@@ -3,6 +3,7 @@ package services;
 import models.SimCharacter;
 import models.Skills;
 import models.debuffs.DebuffRegistry;
+import models.needs.CriticalConsequence;
 import models.needs.Need;
 
 /**
@@ -79,7 +80,22 @@ public class NeedService {
             // Check for critical state and trigger callbacks
             if (need.isCriticallyLow()) {
                 if (!need.isCriticallyLowNotified()) {
-                    need.onCriticallyLow(sim);
+                    CriticalConsequence consequence = need.getCriticalConsequences(sim);
+
+                    if (consequence != null) {
+                        // Apply notification
+                        NotificationService.add(sim, consequence.getNotificationMessage());
+
+                        // Apply need adjustments
+                        for (CriticalConsequence.AffectedNeed affected : consequence.getAffectedNeeds()) {
+                            adjustNeed(sim, affected.getNeedName(), affected.getAdjustment());
+                        }
+
+                        // Apply skill adjustments
+                        for (CriticalConsequence.AffectedSkill affected : consequence.getAffectedSkills()) {
+                            addSkillProgress(sim, affected.getSkillName(), affected.getAdjustment());
+                        }
+                    }
                     need.setCriticallyLowNotified(true);
                 }
             } else {

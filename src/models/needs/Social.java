@@ -1,8 +1,6 @@
 package models.needs;
 
 import models.SimCharacter;
-import services.NeedService;
-import services.NotificationService;
 
 /**
  * Represents the Social need of a Sim.
@@ -12,7 +10,9 @@ import services.NotificationService;
  */
 public class Social extends Need {
 
-    /** Default decay rate for Social need per game tick. */
+    /**
+     * Default decay rate for Social need per game tick.
+     */
     private static final double DEFAULT_DECAY_RATE = 3.0;
 
     /**
@@ -23,17 +23,17 @@ public class Social extends Need {
     }
 
     /**
-     * Applies negative consequences when the Sim is lonely.
-     * Sends a loneliness warning and decreases the Energy need.
+     * Applies negative consequences when the Sim is lonely. Sends a loneliness
+     * warning and decreases the Energy need.
      *
      * @param character the {@link SimCharacter} who is feeling lonely
      */
     @Override
-    public void onCriticallyLow(SimCharacter character) {
-        NotificationService.add(character, character.getName() + " is feeling lonely! Try socializing with others soon! You have lost energy.");
-
-        // Decrease Energy when Social is low (loneliness makes you less energetic)
-        NeedService.adjustNeed(character, "Energy", -10);
+    public CriticalConsequence getCriticalConsequences(SimCharacter character) {
+        return new CriticalConsequence(
+                character.getName() + " is feeling lonely! Try socializing with others soon! You have lost energy.",
+                new CriticalConsequence.AffectedNeed("Energy", -10)
+        );
     }
 
 }

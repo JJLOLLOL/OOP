@@ -1,18 +1,19 @@
 package models.needs;
 
 import models.SimCharacter;
-import services.NeedService;
-import services.NotificationService;
 
 /**
  * Represents the Energy need of a Sim.
  * <p>
  * Energy depletes over time and through exertion. A critically low Energy level
- * causes exhaustion, which negatively impacts the Hunger need and overall need decay.
+ * causes exhaustion, which negatively impacts the Hunger need and overall need
+ * decay.
  */
 public class Energy extends Need {
 
-    /** Default decay rate for Energy need per game tick. */
+    /**
+     * Default decay rate for Energy need per game tick.
+     */
     private static final double DEFAULT_DECAY_RATE = 5.5;
 
     /**
@@ -23,20 +24,18 @@ public class Energy extends Need {
     }
 
     /**
-     * Applies negative consequences when the Sim is exhausted.
-     * Sends an exhaustion warning and immediately decreases the Hunger need.
+     * Applies negative consequences when the Sim is exhausted. Sends an
+     * exhaustion warning and immediately decreases the Hunger need.
      * Additionally, triggers fatigue debuff effects elsewhere in the system.
      *
      * @param character the {@link SimCharacter} who is exhausted
      */
     @Override
-    public void onCriticallyLow(SimCharacter character) {
-        NotificationService.add(character, character.getName() + " is exhausted! Find a place to rest soon! Needs will now decay faster.");
-
-        // Decrease Hunger when Energy is low (exhaustion makes you hungrier faster)
-        NeedService.adjustNeed(character, "Hunger", -5);
-
-        // Fatigue decay effects are handled via FatigueDecayDebuff.modifyNeedDecay()
+    public CriticalConsequence getCriticalConsequences(SimCharacter character) {
+        return new CriticalConsequence(
+                character.getName() + " is exhausted! Find a place to rest soon! Needs will now decay faster.",
+                new CriticalConsequence.AffectedNeed("Hunger", -10)
+        );
     }
 
 }

@@ -103,12 +103,14 @@ public abstract class Need {
     }
 
     /**
-     * Triggered when the need drops below the critical threshold.
-     * Implemented by subclasses to apply specific negative effects or notifications.
+     * Defines the consequences when the need drops below the critical
+     * threshold. Returns a data object describing what should happen; the
+     * service applies it.
      *
-     * @param character the {@link SimCharacter} experiencing the critically low need
+     * @return a {@link CriticalConsequence} describing the effects, or null if
+     * no consequences
      */
-    public abstract void onCriticallyLow(SimCharacter character);
+    public abstract CriticalConsequence getCriticalConsequences(SimCharacter character);
 
     /**
      * Retrieves the name of the need.
