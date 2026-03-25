@@ -8,14 +8,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-import models.House;
-import models.Location;
-import models.SimCharacter;
+
 import models.actions.Furniture;
+import models.character.SimCharacter;
 import models.debuffs.DebuffRegistry;
+import models.location.House;
+import models.location.Location;
+import models.need.NeedType;
 import services.FurnitureService;
 import services.HouseService;
-import services.NeedService;
 import services.NotificationService;
 import services.WorkService;
 import ui.Renderer;
@@ -58,7 +59,7 @@ public class PlayController {
     // ── Session state ─────────────────────────────────────────────────────────
     private static Step step = Step.MAIN;
     private static Furniture selectedFurniture = null;
-    private static models.Character selectedCharacter = null;
+    private static models.character.Character selectedCharacter = null;
     private static List<House> currentHouses = null;
     private static List<Furniture> currentFurniture = null;
     private static List<House> shopInventoryHouses = null; // Persistent shop inventory (initialized once)
@@ -217,7 +218,6 @@ public class PlayController {
                     shopInventoryHouses = ShopInventory.getAvailableHouses();
                 }
                 currentHouses = shopInventoryHouses.stream()
-                        .filter(h -> !h.isOwned())
                         .collect(Collectors.toList());
                 if (currentHouses.isEmpty()) {
                     NotificationService.add(player, "No houses available for purchase.");
@@ -242,7 +242,7 @@ public class PlayController {
                     NotificationService.add(player, "You must own a house to sell furniture!");
                     return false;
                 }
-                currentFurniture = new ArrayList<>(player.getCurrentHouse().getFurnitures());
+                currentFurniture = new ArrayList<>(player.getCurrentHouse().getFurnitureViews());
                 if (currentFurniture.isEmpty()) {
                     NotificationService.add(player, "Your house has no furniture to sell.");
                     return false;
@@ -358,8 +358,8 @@ public class PlayController {
             setStep(Step.MAIN);
             return true;
         }
-        return pickFromList(input, loc.getFurnitures(), idx -> {
-            selectedFurniture = loc.getFurnitures().get(idx);
+        return pickFromList(input, loc.getFurnitureViews(), idx -> {
+            selectedFurniture = loc.getFurnitureViews().get(idx);
             setStep(Step.INTERACTABLE_ACTION);
         });
     }
@@ -434,7 +434,7 @@ public class PlayController {
             setStep(Step.MAIN);
             return true;
         }
-        List<models.Character> chars = charsAt(loc, state, world);
+        List<models.character.Character> chars = charsAt(loc, state, world);
         return pickFromList(input, chars, idx -> {
             selectedCharacter = chars.get(idx);
             setStep(Step.SOCIALISE_ACTION);
@@ -464,7 +464,7 @@ public class PlayController {
             }
 
             String result = state.getRelationshipService().interact(player, selectedCharacter, chosen);
-            NeedService.adjustNeed(player, "Social", chosen.getEffect());
+            player.adjustNeed(NeedType.getType("Social"), chosen.getEffect());
             addAchievementNotifications(
                     player,
                     state.getAchievementService().evaluateSocialAchievements(
@@ -550,10 +550,10 @@ public class PlayController {
      *
      * @param state the {@link GameState} providing player Sims
      * @param world the {@link WorldRegistry} providing all NPCs
-     * @return a {@link List} containing all {@link SimCharacter}s and {@link models.NPCCharacter}s
+     * @return a {@link List} containing all {@link SimCharacter}s and {@link models.character.NPCCharacter}s
      */
-    private static List<models.Character> getAllCharacters(GameState state, WorldRegistry world) {
-        List<models.Character> characters = new ArrayList<>();
+    private static List<models.character.Character> getAllCharacters(GameState state, WorldRegistry world) {
+        List<models.character.Character> characters = new ArrayList<>();
         characters.addAll(state.getSims());
         characters.addAll(world.getAllNPCs());
         return characters;
@@ -647,7 +647,7 @@ public class PlayController {
     /**
      * Returns the character selected in SOCIALISE_ACTION, or {@code null}.
      */
-    public static models.Character getSelectedCharacter() {
+    public static models.character.Character getSelectedCharacter() {
         return selectedCharacter;
     }
 
@@ -676,10 +676,10 @@ public class PlayController {
      * Returns all characters present at {@code loc}: other player sims first,
      * then NPCs. Excludes the active player.
      */
-    public static List<models.Character> charsAt(Location loc, GameState state,
+    public static List<models.character.Character> charsAt(Location loc, GameState state,
             WorldRegistry world) {
         SimCharacter player = state.getActivePlayer();
-        List<models.Character> chars = new ArrayList<>();
+        List<models.character.Character> chars = new ArrayList<>();
         state.getSims().stream()
                 .filter(s -> !s.equals(player) && s.getLocation().equals(loc))
                 .forEach(chars::add);

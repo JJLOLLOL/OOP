@@ -7,7 +7,8 @@ import java.util.Deque;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
-import models.SimCharacter;
+
+import models.character.SimCharacter;
 
 /**
  * Manages timed notifications for each {@link SimCharacter}. Notifications

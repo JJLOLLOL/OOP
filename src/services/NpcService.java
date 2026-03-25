@@ -4,8 +4,9 @@ import core.GameClock;
 import core.WorldRegistry;
 import java.util.Map;
 import java.util.TreeMap;
-import models.Location;
-import models.NPCCharacter;
+
+import models.character.NPCCharacter;
+import models.location.Location;
 
 /**
  * Updates NPC locations every tick according to their daily schedule.

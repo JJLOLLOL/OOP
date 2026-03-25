@@ -10,8 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
-import models.Character;
-import models.SimCharacter;
+
+import models.character.Character;
+import models.character.SimCharacter;
 
 /**
  * Manages the tracking and unlocking of achievements for Sims.

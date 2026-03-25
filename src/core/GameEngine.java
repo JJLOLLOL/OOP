@@ -1,7 +1,6 @@
 package core;
 
 import java.util.Scanner;
-import services.NeedService;
 import services.NpcService;
 import ui.Renderer;
 
@@ -110,8 +109,8 @@ public class GameEngine {
         if (state.getPhase() == GameState.Phase.PLAYING) {
             state.getGameClock().tick(dt);
 
-            for (models.SimCharacter sim : state.getSims()) {
-                NeedService.updateNeeds(sim, dt / 60.0);
+            for (models.character.SimCharacter sim : state.getSims()) {
+                sim.updateNeeds(dt / 60.0);
             }
 
             npcService.updateNPCLocations(state.getGameClock());

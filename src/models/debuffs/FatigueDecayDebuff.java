@@ -1,7 +1,8 @@
 package models.debuffs;
 
-import models.SimCharacter;
-import models.needs.Need;
+import models.character.SimCharacter;
+import models.need.Need;
+import models.need.NeedType;
 
 /**
  * Implements fatigue effects: when Energy is critically low, other needs decay faster.
@@ -9,11 +10,11 @@ import models.needs.Need;
  */
 public class FatigueDecayDebuff implements Debuff {
     @Override
-    public double modifyNeedDecay(SimCharacter sim, String needName, double baseDecay) {
-        Need energy = sim.getNeeds().get("Energy");
-        if (energy != null && energy.isCriticallyLow()) {
+    public double modifyNeedDecay(SimCharacter sim, NeedType type, double baseDecay) {
+        Need energy = sim.getNeed(type);
+        if (energy != null && energy.isCritical()) {
             // Energy is critically low: increase decay of other needs
-            if (!needName.equals("Energy")) {
+            if (type == NeedType.ENERGY) {
                 return baseDecay + 1; // All other needs decay 1 point faster per second
             }
             // Energy itself decays twice as fast when critically low

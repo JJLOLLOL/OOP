@@ -5,10 +5,11 @@ import Types.RelationshipList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import models.Character;
-import models.NPCCharacter;
-import models.Relationship;
-import models.SimCharacter;
+
+import models.character.Character;
+import models.character.NPCCharacter;
+import models.character.Relationship;
+import models.character.SimCharacter;
 
 /**
  * Manages relationships and interactions between all characters in the game.

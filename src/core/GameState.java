@@ -2,7 +2,8 @@ package core;
 
 import java.util.ArrayList;
 import java.util.List;
-import models.SimCharacter;
+
+import models.character.SimCharacter;
 import services.AchievementService;
 import services.RelationshipService;
 

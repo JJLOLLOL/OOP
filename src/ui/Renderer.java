@@ -9,13 +9,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import models.House;
-import models.Location;
-import models.SimCharacter;
-import models.Skills;
+
 import models.actions.Furniture;
 import models.actions.FurnitureAction;
-import models.needs.Need;
+import models.character.SimCharacter;
+import models.location.House;
+import models.location.Location;
+import models.need.Need;
+import models.skill.Skill;
 import services.NotificationService;
 
 /**
@@ -371,13 +372,13 @@ public class Renderer {
         lines.add(SIM_NAME + player.getName() + RESET
                 + MUTED + " (" + player.getAge() + player.getGender().charAt(0) + ")" + RESET);
 
-        models.Career career = player.getCareer();
+        models.career.Career career = player.getCareer();
         lines.add(career.getCurrentCareer() != CareerList.JOBLESS
                 ? BRIGHT_MAGENTA + career.getTitle() + RESET + MUTED + "  " + career.getRank() + RESET
                 : MUTED + "Unemployed" + RESET);
         lines.add("");
 
-        for (Need need : player.getNeeds().values()) {
+        for (Need need : player.getStats().getNeedViews()) {
             lines.add(bar(
                     need.getNeedName(), 8, (int) need.getValue(), 100,
                     need.getValue() >= 70 ? BRIGHT_GREEN : need.getValue() >= 40 ? BRIGHT_YELLOW : BRIGHT_RED,
@@ -389,17 +390,17 @@ public class Renderer {
         lines.add(BORDER + "─".repeat(LEFT_W) + RESET);
         lines.add(LABEL + "At " + RESET + BRIGHT_CYAN + loc.getLocationName() + RESET);
 
-        List<models.Character> chars = PlayController.charsAt(loc, state, world);
+        List<models.character.Character> chars = PlayController.charsAt(loc, state, world);
         if (chars.isEmpty()) {
             lines.add(MUTED + "No one nearby." + RESET);
         } else {
             lines.add(LABEL + "nearby:" + RESET);
-            for (models.Character c : chars) {
+            for (models.character.Character c : chars) {
                 RelationshipList status = state.getRelationshipService().getStatus(player, c);
                 int score = state.getRelationshipService().getScore(player, c);
                 String col = score > 0 ? BRIGHT_GREEN : score < 0 ? BRIGHT_RED : BRIGHT_YELLOW;
                 lines.add(WHITE + c.getName() + RESET + MUTED + " [" + status.label + "] " + RESET + col + score + RESET);
-                if (c instanceof models.NPCCharacter npc && npc.getDescription() != null && !npc.getDescription().isBlank()) {
+                if (c instanceof models.character.NPCCharacter npc && npc.getDescription() != null && !npc.getDescription().isBlank()) {
                     lines.add(MUTED + "  " + npc.getDescription() + RESET);
                 }
             }
@@ -466,7 +467,7 @@ public class Renderer {
             }
             case INTERACTABLES -> {
                 lines.add(menuTitle("Interact Objects"));
-                List<Furniture> flist = loc.getFurnitures();
+                List<Furniture> flist = loc.getFurnitureViews();
                 for (int i = 0; i < flist.size(); i++) {
                     lines.add(menuItem(String.valueOf(i + 1), flist.get(i).getName()));
                 }
@@ -493,7 +494,7 @@ public class Renderer {
             }
             case SOCIALISE -> {
                 lines.add(menuTitle("Socialise"));
-                List<models.Character> chars = PlayController.charsAt(loc, state, world);
+                List<models.character.Character> chars = PlayController.charsAt(loc, state, world);
                 if (chars.isEmpty()) {
                     lines.add(MUTED + "Nobody here." + RESET);
                 } else {
@@ -566,7 +567,7 @@ public class Renderer {
                 for (int i = 0; i < houses.size(); i++) {
                     House h = houses.get(i);
                     lines.add(menuItem(String.valueOf(i + 1),
-                            h.getLocationName() + " (Tier " + h.getHouseTier() + ") - $" + (int) h.getHousePrice()));
+                            h.getLocationName() + " (Tier " + h.getTier() + ") - $" + (int) h.getPrice()));
                 }
                 lines.add(menuItem("0", "Back to Shop"));
             }
@@ -604,7 +605,7 @@ public class Renderer {
      * bars.
      *
      * <p>
-     * Each {@link Skills} entry is rendered as a labelled bar where the fill
+     * Each {@link Skill} entry is rendered as a labelled bar where the fill
      * percentage represents progress towards the next level. Colour thresholds
      * are: green ≥ 70 %, yellow ≥ 40 %, blue below 40 %. The current level is
      * shown as a muted suffix (e.g. {@code Lv3}).
@@ -616,9 +617,9 @@ public class Renderer {
     private static List<String> buildSkillsPanel(SimCharacter player) {
         List<String> lines = new ArrayList<>();
         lines.add(menuTitle("Skills"));
-        for (Skills skill : player.getAllSkills().values()) {
+        for (Skill skill : player.getStats().getSkillViews()) {
             int pct = (int) Math.min(100, (skill.getProgress() / skill.getRequiredXP()) * 100);
-            lines.add(bar(skill.getSkillName(), 11, pct, 100,
+            lines.add(bar(skill.getName(), 11, pct, 100,
                     pct >= 70 ? BRIGHT_GREEN : pct >= 40 ? BRIGHT_YELLOW : BRIGHT_BLUE,
                     MUTED + "Lv" + skill.getLevel() + RESET));
         }

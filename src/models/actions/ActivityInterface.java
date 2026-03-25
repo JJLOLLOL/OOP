@@ -1,7 +1,8 @@
 package models.actions;
 
 import java.util.Map;
-import models.SimCharacter;
+
+import models.character.SimCharacter;
 
 /**
  * Represents an activity or action that a {@link SimCharacter} can perform.

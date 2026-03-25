@@ -68,10 +68,10 @@ public class Furniture {
      * Performs the specified action on the given character.
      *
      * @param actionName the name of the action to perform
-     * @param character  the {@link models.SimCharacter} performing the action
+     * @param character  the {@link models.character.SimCharacter} performing the action
      * @return {@code true} if the action was successfully performed, {@code false} otherwise
      */
-    public boolean performAction(String actionName, models.SimCharacter character) {
+    public boolean performAction(String actionName, models.character.SimCharacter character) {
         FurnitureAction action = availableActionsMap.get(actionName);
         if (action == null) {
             return false;

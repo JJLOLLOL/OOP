@@ -1,7 +1,8 @@
 package models.debuffs;
 
-import models.SimCharacter;
-import models.needs.Need;
+import models.character.SimCharacter;
+import models.need.Need;
+import models.need.NeedType;
 
 /**
  * A debuff that blocks social interactions when the Hygiene need is critically low.
@@ -12,8 +13,8 @@ public class HygieneSocialDebuff implements Debuff {
     public boolean blocksInteraction(SimCharacter sim, String interactionType) {
         // Debuff: Hygiene -> NPC (low hygiene -> NPC rejects interaction)
         if ("Socialise".equals(interactionType)) {
-            Need hygiene = sim.getNeeds().get("Hygiene");
-            return hygiene != null && hygiene.isCriticallyLow();
+            Need hygiene = sim.getNeed(NeedType.HYGIENE);
+            return hygiene != null && hygiene.isCritical();
         }
         return false;
     }

@@ -2,7 +2,10 @@ package models.debuffs;
 
 import java.util.ArrayList;
 import java.util.List;
-import models.SimCharacter;
+
+import models.character.SimCharacter;
+import models.need.NeedType;
+import models.skill.SkillType;
 
 /**
  * Holds and applies all active debuff rules in the game.
@@ -28,10 +31,10 @@ public class DebuffRegistry {
      * @param amount   the original amount of change
      * @return the final modified amount after all debuffs have been applied
      */
-    public static double applyNeedModifiers(SimCharacter sim, String needName, double amount) {
+    public static double applyNeedModifiers(SimCharacter sim, NeedType type, double amount) {
         double modifiedAmount = amount;
         for (Debuff debuff : DEBUFFS) {
-            modifiedAmount = debuff.modifyNeedChange(sim, needName, modifiedAmount);
+            modifiedAmount = debuff.modifyNeedChange(sim, type, modifiedAmount);
         }
         return modifiedAmount;
     }
@@ -44,10 +47,10 @@ public class DebuffRegistry {
      * @param amount    the original amount of progress
      * @return the final modified progress amount after all debuffs have been applied
      */
-    public static double applySkillModifiers(SimCharacter sim, String skillName, double amount) {
+    public static double applySkillModifiers(SimCharacter sim, SkillType type, double amount) {
         double modifiedAmount = amount;
         for (Debuff debuff : DEBUFFS) {
-            modifiedAmount = debuff.modifySkillChange(sim, skillName, modifiedAmount);
+            modifiedAmount = debuff.modifySkillChange(sim, type, modifiedAmount);
         }
         return modifiedAmount;
     }
@@ -60,10 +63,10 @@ public class DebuffRegistry {
      * @param baseDecay the original base decay rate
      * @return the final modified decay rate after all debuffs have been applied
      */
-    public static double applyDecayModifiers(SimCharacter sim, String needName, double baseDecay) {
+    public static double applyDecayModifiers(SimCharacter sim, NeedType type, double baseDecay) {
         double modifiedDecay = baseDecay;
         for (Debuff debuff : DEBUFFS) {
-            modifiedDecay = debuff.modifyNeedDecay(sim, needName, modifiedDecay);
+            modifiedDecay = debuff.modifyNeedDecay(sim, type, modifiedDecay);
         }
         return modifiedDecay;
     }
