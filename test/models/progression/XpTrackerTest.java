@@ -57,4 +57,18 @@ class XpTrackerTest {
 
         assertEquals(0, tracker.getProgress());
     }
+
+    @Test
+    void setRequiredXpRejectsNonPositiveValuesAndUpdatesThreshold() {
+        XpTracker tracker = new XpTracker(100);
+
+        assertThrows(IllegalArgumentException.class, () -> tracker.setRequiredXP(0));
+        assertThrows(IllegalArgumentException.class, () -> tracker.setRequiredXP(-10));
+
+        tracker.setRequiredXP(80);
+        tracker.addProgress(80);
+
+        assertEquals(80, tracker.getRequiredXP());
+        assertTrue(tracker.canAdvance());
+    }
 }

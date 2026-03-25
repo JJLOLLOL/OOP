@@ -64,4 +64,28 @@ class HouseTest {
         assertEquals(2, currentHouse.getFurnitureCount());
         assertEquals(8, currentHouse.getMaxFurnitureCapacity());
     }
+
+    @Test
+    void fullConstructorUsesProvidedValuesAndSupportsHigherTierFallbackCapacity() {
+        House mansion = new House("Mansion", new ArrayList<>(), 50000, 4.5, 7);
+
+        assertEquals(7, mansion.getTier());
+        assertEquals(4.5, mansion.getRate());
+        assertEquals(50000, mansion.getPrice());
+        assertEquals(12, mansion.getMaxFurnitureCapacity());
+    }
+
+    @Test
+    void upgradeRejectsNullHouse() {
+        House house = new House("Starter Home", new ArrayList<>());
+
+        assertThrows(IllegalArgumentException.class, () -> house.upgradeTo(null));
+    }
+
+    @Test
+    void removeFurnitureRejectsNull() {
+        House house = new House("Starter Home", new ArrayList<>());
+
+        assertThrows(IllegalArgumentException.class, () -> house.removeFurniture(null));
+    }
 }
