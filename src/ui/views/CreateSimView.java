@@ -1,0 +1,93 @@
+package ui.views;
+
+import core.CreateSimController;
+import core.GameState;
+import models.character.SimCharacter;
+
+import java.util.List;
+
+import static ui.ConsoleUtils.*;
+import static ui.Renderer.*;
+
+/**
+ * Renders the user interface for the Sim creation phase.
+ */
+public class CreateSimView {
+
+    /**
+     * Renders the Sim-creation wizard screen.
+     *
+     * @param state the current {@link GameState}
+     */
+    public static void render(GameState state) {
+        printBanner("CREATE YOUR SIMS");
+        System.out.println();
+        switch (CreateSimController.getStep()) {
+            case COUNT ->
+                prompt("How many Sims do you want to create?");
+            case NAME -> {
+                showCommitted(CreateSimController.getCommitted());
+                System.out.printf("  " + MUTED + "Creating Sim %d of %d%n" + RESET,
+                        CreateSimController.getCurrentIndex() + 1, CreateSimController.getTotalSims());
+                prompt("Enter name:");
+            }
+            case AGE -> {
+                showCommitted(CreateSimController.getCommitted());
+                field("Name", CreateSimController.getInFlightName());
+                prompt("Enter age:");
+            }
+            case GENDER -> {
+                showCommitted(CreateSimController.getCommitted());
+                field("Name", CreateSimController.getInFlightName());
+                field("Age", CreateSimController.getInFlightAge());
+                prompt("Enter gender (M / F):");
+            }
+            case CONFIRM -> {
+                System.out.println("  " + TITLE + "Review your Sims:" + RESET + "\n");
+                List<String[]> committed = CreateSimController.getCommitted();
+                for (int i = 0; i < committed.size(); i++) {
+                    String[] data = committed.get(i);
+                    System.out.printf("    " + BRIGHT_YELLOW + "%d. " + RESET + BRIGHT_WHITE + "%s" + RESET + "%n", i + 1, simLabel(data[0], data[1], data[2]));
+                }
+                System.out.println("\n  " + LABEL + "Confirm? " + RESET + BRIGHT_GREEN + "(Y)" + RESET + " / " + BRIGHT_RED + "(N)" + RESET);
+            }
+            case PICK_PLAYER -> {
+                System.out.println("  " + TITLE + "Choose your active Sim:" + RESET + "\n");
+                for (int i = 0; i < state.getSims().size(); i++) {
+                    SimCharacter s = state.getSims().get(i);
+                    System.out.printf("    " + BRIGHT_YELLOW + "%d. " + RESET + BRIGHT_WHITE + "%s" + RESET + "%n", i + 1, simLabel(s.getName(), String.valueOf(s.getAge()), s.getGender()));
+                }
+            }
+        }
+        System.out.print("\n> ");
+    }
+
+    private static void prompt(String text) {
+        System.out.println("  " + LABEL + text + RESET);
+    }
+
+    private static void field(String key, String val) {
+        System.out.println("  " + MUTED + pad(key, 4) + " : " + RESET + BRIGHT_WHITE + val + RESET);
+    }
+
+    private static void printBanner(String title) {
+        System.out.println(BORDER + "┌" + seg(INNER_W) + "┐" + RESET);
+        System.out.println(BORDER + "│" + RESET + CLOCK + center(title, INNER_W) + RESET + BORDER + "│" + RESET);
+        System.out.println(BORDER + "└" + seg(INNER_W) + "┘" + RESET);
+    }
+
+    private static String simLabel(String name, String age, String gender) {
+        return BRIGHT_WHITE + name + RESET + MUTED + " (" + age + gender.charAt(0) + ")" + RESET;
+    }
+
+    private static void showCommitted(List<String[]> committed) {
+        if (committed.isEmpty()) {
+            return;
+        }
+        System.out.println("  " + MUTED + "Sims added so far:" + RESET);
+        for (String[] d : committed) {
+            System.out.println("    " + BRIGHT_BLACK + "•" + RESET + " " + simLabel(d[0], d[1], d[2]));
+        }
+        System.out.println();
+    }
+}
