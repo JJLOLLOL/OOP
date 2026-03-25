@@ -50,7 +50,7 @@ public class ActionsPanelView {
             }
             case INTERACTABLES -> {
                 lines.add(menuTitle("Interact Objects"));
-                List<Furniture> flist = loc.getFurnitures();
+                List<Furniture> flist = loc.getFurnitureViews();
                 for (int i = 0; i < flist.size(); i++) {
                     lines.add(menuItem(String.valueOf(i + 1), flist.get(i).getName()));
                 }
@@ -149,7 +149,7 @@ public class ActionsPanelView {
                 for (int i = 0; i < houses.size(); i++) {
                     House h = houses.get(i);
                     lines.add(menuItem(String.valueOf(i + 1),
-                            h.getLocationName() + " (Tier " + h.getHouseTier() + ") - $" + (int) h.getHousePrice()));
+                            h.getLocationName() + " (Tier " + h.getTier() + ") - $" + (int) h.getPrice()));
                 }
                 lines.add(menuItem("0", "Back to Shop"));
             }

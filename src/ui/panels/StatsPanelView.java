@@ -42,7 +42,7 @@ public class StatsPanelView {
                 : MUTED + "Unemployed" + RESET);
         lines.add("");
 
-        for (Need need : player.getNeedViews()) {
+        for (Need need : player.getStats().getNeedViews()) {
             lines.add(bar(
                     need.getNeedName(), 8, (int) need.getValue(), 100,
                     need.getValue() >= 70 ? BRIGHT_GREEN : need.getValue() >= 40 ? BRIGHT_YELLOW : BRIGHT_RED,

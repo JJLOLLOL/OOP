@@ -22,7 +22,7 @@ public class SkillsPanelView {
     public static List<String> build(SimCharacter player) {
         List<String> lines = new ArrayList<>();
         lines.add(menuTitle("Skills"));
-        for (Skill skill : player.getSkillViews()) {
+        for (Skill skill : player.getStats().getSkillViews()) {
             int pct = (int) Math.min(100, (skill.getProgress() / skill.getRequiredXP()) * 100);
             lines.add(bar(skill.getName(), 11, pct, 100,
                     pct >= 70 ? BRIGHT_GREEN : pct >= 40 ? BRIGHT_YELLOW : BRIGHT_BLUE,
