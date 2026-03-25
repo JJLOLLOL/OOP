@@ -16,7 +16,6 @@ import models.location.House;
 import models.location.Location;
 import models.need.NeedType;
 import services.FurnitureService;
-import services.HouseService;
 import services.NotificationService;
 import services.WorkService;
 import ui.Renderer;
@@ -266,17 +265,10 @@ public class PlayController {
 
         return pickFromList(input, currentHouses, idx -> {
             House house = currentHouses.get(idx);
-            boolean success = HouseService.purchaseHouse(player, house);
-
-            if (success) {
-                player.setLocation(player.getCurrentHouse());
-                NotificationService.add(player, HouseService.getPurchaseMessage(player, house, true));
-            } else {
-                NotificationService.add(player, HouseService.getPurchaseMessage(player, house, false));
-            }
+            boolean success = player.purchaseHouse(house);
+            NotificationService.add(player, player.getPurchaseMessage(house, success));
             setStep(Step.SHOP);
             currentHouses = null;
-
         });
     }
 
@@ -291,7 +283,7 @@ public class PlayController {
             Furniture furniture = currentFurniture.get(idx);
             House house = player.getCurrentHouse();
 
-            boolean success = FurnitureService.purchaseFurniture(player, house, furniture);
+            boolean success = player.purchaseFurniture(furniture);
 
             if (success) {
                 NotificationService.add(player, FurnitureService.getPurchaseMessage(player, house, furniture, true));

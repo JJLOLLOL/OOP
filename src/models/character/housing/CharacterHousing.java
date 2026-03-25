@@ -22,7 +22,7 @@ public class CharacterHousing {
         this.currentHouse = house;
     }
     
-    public void purchaseFurniture(Furniture furniture, CharacterFinances finances) {
+    public boolean purchaseFurniture(Furniture furniture, CharacterFinances finances) {
         if (furniture == null) {
             throw new IllegalArgumentException("Furniture cannot be null.");
         }
@@ -40,6 +40,7 @@ public class CharacterHousing {
         }
         currentHouse.addFurniture(furniture);
         finances.spendMoney(furniture.getPrice());
+        return true;
     }
     
     public void purchaseHouse(House targetHouse, CharacterFinances finances) {
