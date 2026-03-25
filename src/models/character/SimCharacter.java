@@ -9,6 +9,8 @@ import models.need.*;
 import models.skill.Skill;
 import models.skill.SkillType;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -78,11 +80,13 @@ public class SimCharacter extends Character {
         return getSkill(type).getProgress();
     }
 
-    public Map<SkillType, Skill> getAllSkills() {
-        return skills;
+    // TODO: encapsulation is stable but not strong enough
+    public Collection<Skill> getSkillViews() {
+        return Collections.unmodifiableCollection(skills.values());
     }
+    
     public String addSkillProgress(SimCharacter sim, SkillType type, double amount) {
-        double modified = DebuffRegistry.applySkillModifiers(this, type.getName(), amount);
+        double modified = DebuffRegistry.applySkillModifiers(this, type, amount);
         Skill skill = skills.get(type);
         return "progressed: " + skill.addProgress(modified);
     }
@@ -114,7 +118,7 @@ public class SimCharacter extends Character {
     }
 
     public void adjustNeedNS(SimCharacter sim, NeedType type, double amount) {
-        double modified = DebuffRegistry.applyNeedModifiers(this, type.getName(), amount);
+        double modified = DebuffRegistry.applyNeedModifiers(this, type, amount);
         Need need = needs.get(type);
         if (need != null) {
             need.adjustValue(modified);
@@ -125,7 +129,7 @@ public class SimCharacter extends Character {
     public void updateNeeds(double deltaTime) {
         for (Need need : this.getNeeds().values()) {
             double modifiedDecay = DebuffRegistry.applyDecayModifiers(
-                    this, need.getNeedName(), need.getBaseDecayRate());
+                    this, need.getType(), need.getBaseDecayRate());
             need.setDecayRate(modifiedDecay);
             need.decay(deltaTime);
             if (need.isCritical()) {
@@ -139,8 +143,13 @@ public class SimCharacter extends Character {
         }
     }
     
-    public double getNeedValue(NeedType type) {
-        return getNeed(type).getValue();
+    private Map<NeedType, Need> getNeeds() {
+        return needs;
+    }
+    
+    // TODO: encapsulation is stable but not strong enough
+    public Collection<Need> getNeedViews() {
+        return Collections.unmodifiableCollection(needs.values());
     }
 
     public Career getCareer() {
@@ -151,12 +160,6 @@ public class SimCharacter extends Character {
         this.career = new Career(newCareer);
     }
 
-
-
-
-    public Map<NeedType, Need> getNeeds() {
-        return needs;
-    }
 
     public void setMoney(double amount) {
         money += amount;

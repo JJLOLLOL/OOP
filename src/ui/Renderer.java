@@ -378,7 +378,7 @@ public class Renderer {
                 : MUTED + "Unemployed" + RESET);
         lines.add("");
 
-        for (Need need : player.getNeeds().values()) {
+        for (Need need : player.getNeedViews()) {
             lines.add(bar(
                     need.getNeedName(), 8, (int) need.getValue(), 100,
                     need.getValue() >= 70 ? BRIGHT_GREEN : need.getValue() >= 40 ? BRIGHT_YELLOW : BRIGHT_RED,
@@ -617,7 +617,7 @@ public class Renderer {
     private static List<String> buildSkillsPanel(SimCharacter player) {
         List<String> lines = new ArrayList<>();
         lines.add(menuTitle("Skills"));
-        for (Skill skill : player.getAllSkills().values()) {
+        for (Skill skill : player.getSkillViews()) {
             int pct = (int) Math.min(100, (skill.getProgress() / skill.getRequiredXP()) * 100);
             lines.add(bar(skill.getName(), 11, pct, 100,
                     pct >= 70 ? BRIGHT_GREEN : pct >= 40 ? BRIGHT_YELLOW : BRIGHT_BLUE,

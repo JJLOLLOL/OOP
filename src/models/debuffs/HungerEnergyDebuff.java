@@ -2,6 +2,7 @@ package models.debuffs;
 
 import models.character.SimCharacter;
 import models.need.Need;
+import models.need.NeedType;
 
 /**
  * A debuff that negatively impacts the Energy need when the Hunger need is critically low.
@@ -9,10 +10,10 @@ import models.need.Need;
  */
 public class HungerEnergyDebuff implements Debuff {
     @Override
-    public double modifyNeedChange(SimCharacter sim, String needName, double amount) {
+    public double modifyNeedChange(SimCharacter sim, NeedType type, double amount) {
         // Debuff: Hunger -> Energy (low hunger -> poor sleep recovery)
-        if ("Energy".equals(needName) && amount > 0) {
-            Need hunger = sim.getNeeds().get("Hunger");
+        if (type == NeedType.ENERGY && amount > 0) {
+            Need hunger = sim.getNeed(NeedType.HUNGER);
             if (hunger != null && hunger.isCritical()) {
                 return amount * 0.5; // 50% recovery reduction
             }
@@ -21,10 +22,10 @@ public class HungerEnergyDebuff implements Debuff {
     }
 
     @Override
-    public double modifyNeedDecay(SimCharacter sim, String needName, double baseDecay) {
+    public double modifyNeedDecay(SimCharacter sim, NeedType type, double baseDecay) {
         // Debuff: Hunger -> Energy decay (low hunger -> energy depletes faster)
-        if ("Energy".equals(needName)) {
-            Need hunger = sim.getNeeds().get("Hunger");
+        if (type == NeedType.ENERGY) {
+            Need hunger = sim.getNeed(NeedType.HUNGER);
             if (hunger != null && hunger.isCritical()) {
                 return baseDecay * 2.0; // Energy decays twice as fast
             }

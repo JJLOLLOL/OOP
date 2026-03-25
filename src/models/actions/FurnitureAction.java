@@ -125,7 +125,7 @@ public class FurnitureAction implements ActivityInterface {
             if (amount >= 0) {
                 continue;
             }
-            Need need = character.getNeeds().get(effect.getKey());
+            Need need = character.getNeed(NeedType.getType(effect.getKey()));
             if (need == null) {
                 continue;
             }
