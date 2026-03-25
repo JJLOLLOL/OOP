@@ -26,7 +26,7 @@ public class HouseService {
     public static boolean purchaseHouse(SimCharacter buyer, House purchasedHouse) {
         // if (purchasedHouse.isOwned()) {
             // return false; // House is already owned
-        // 
+        //
         if (buyer.getMoney() < purchasedHouse.getPrice()) {
             return false; // Not enough money to purchase
         }
