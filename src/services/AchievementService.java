@@ -14,6 +14,10 @@ import java.util.WeakHashMap;
 import models.character.Character;
 import models.character.SimCharacter;
 
+/**
+ * Manages the tracking and unlocking of achievements for Sims.
+ * Handles different categories of achievements such as skills, careers, and social interactions.
+ */
 public class AchievementService {
 
     private static final Map<SimCharacter, Set<AchievementList>> unlocked

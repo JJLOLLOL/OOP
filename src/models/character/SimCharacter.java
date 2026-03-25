@@ -29,7 +29,7 @@ public class SimCharacter extends Character {
         this.career = new Career(CareerList.JOBLESS);
 
     }
-    
+
     // ======== STATS
     public CharacterStats getStats() {
         return stats;

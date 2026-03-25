@@ -40,21 +40,21 @@ public class Location {
     public void removeNpcCharacter(NPCCharacter npc) {
         npcs.remove(npc);
     }
-    
+
     protected void addFurnitureInternal(Furniture furniture) {
         if (furniture == null) {
             throw new IllegalArgumentException("Furniture cannot be null.");
         }
         furnitures.add(furniture);
     }
-    
+
     protected void removeFurnitureInternal(Furniture furniture) {
         if (furniture == null) {
             throw new IllegalArgumentException("Furniture cannot be null.");
         }
         furnitures.remove(furniture);
     }
-    
+
     protected void replaceFurnitureInternal(List<Furniture> newFurniture) {
         if (newFurniture == null) {
             throw new IllegalArgumentException("Furniture list cannot be null.");

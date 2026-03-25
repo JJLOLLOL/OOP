@@ -1,7 +1,7 @@
 package models.debuffs;
 
-
 import models.character.SimCharacter;
+
 import models.need.NeedType;
 import models.skill.SkillType;
 
