@@ -12,7 +12,7 @@ public class Fun extends Need {
     @Override
     public void onCriticallyLow(SimCharacter sim) {
         NotificationService.add(sim, sim.getName() + " is bored! Find something fun to do soon! Their charisma skill has suffered due to boredom.");
-        sim.gainSkillXp(SkillType.CHARISMA, -5);
+        sim.adjustSkillXp(SkillType.CHARISMA, -5);
     }
 
 }

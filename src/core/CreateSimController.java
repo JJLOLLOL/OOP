@@ -176,7 +176,7 @@ public class CreateSimController {
             state.addSim(sim);
             
             // Assign the shared global Home as the player's house
-            sim.setCurrentHouse((models.location.House) home);
+            sim.assignHouse((models.location.House) home);
         }
 
         if (state.getSims().size() == 1) {

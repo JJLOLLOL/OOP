@@ -53,11 +53,11 @@ public class WorkService {
         clock.advanceHours(hoursWorked);
 
         for (Map.Entry<String, Double> e : WORK_ACTION.affectedNeedsByActionMap().entrySet()) {
-            player.adjustNeedNS(player, NeedType.getType(e.getKey()), e.getValue() * payFraction);
+            player.adjustNeed(NeedType.getType(e.getKey()), e.getValue() * payFraction);
         }
 
         double earned = player.getCareer().getSalary() * payFraction;
-        player.setMoney(earned);
+        player.earnMoney(earned);
 
         String careerResult = player.getCareer().addProgress(CAREER_XP_PER_SHIFT * payFraction);
         if (careerResult.contains("Promoted")) {
@@ -65,9 +65,9 @@ public class WorkService {
         }
 
         for (String skill : player.getCareer().getCurrentCareer().getRelatedSkills()) {
-            String result = player.addSkillProgress(player, SkillType.getType(skill), SKILL_XP_PER_HOUR * hoursWorked);
-            if (result != null && result.contains("levelled up")) {
-                NotificationService.add(player, result);
+            int levelUpCount = player.adjustSkillXp(SkillType.getType(skill), SKILL_XP_PER_HOUR * hoursWorked);
+            if (levelUpCount > 0) {
+                NotificationService.add(player, "Levelled Up by " + levelUpCount);
             }
         }
 

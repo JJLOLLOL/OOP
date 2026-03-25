@@ -218,7 +218,6 @@ public class PlayController {
                     shopInventoryHouses = ShopInventory.getAvailableHouses();
                 }
                 currentHouses = shopInventoryHouses.stream()
-                        .filter(h -> !h.isOwned())
                         .collect(Collectors.toList());
                 if (currentHouses.isEmpty()) {
                     NotificationService.add(player, "No houses available for purchase.");
@@ -243,7 +242,7 @@ public class PlayController {
                     NotificationService.add(player, "You must own a house to sell furniture!");
                     return false;
                 }
-                currentFurniture = new ArrayList<>(player.getCurrentHouse().getFurnitures());
+                currentFurniture = new ArrayList<>(player.getCurrentHouse().getFurnitureViews());
                 if (currentFurniture.isEmpty()) {
                     NotificationService.add(player, "Your house has no furniture to sell.");
                     return false;
@@ -359,8 +358,8 @@ public class PlayController {
             setStep(Step.MAIN);
             return true;
         }
-        return pickFromList(input, loc.getFurnitures(), idx -> {
-            selectedFurniture = loc.getFurnitures().get(idx);
+        return pickFromList(input, loc.getFurnitureViews(), idx -> {
+            selectedFurniture = loc.getFurnitureViews().get(idx);
             setStep(Step.INTERACTABLE_ACTION);
         });
     }
@@ -465,7 +464,7 @@ public class PlayController {
             }
 
             String result = state.getRelationshipService().interact(player, selectedCharacter, chosen);
-            player.adjustNeedNS(player, NeedType.getType("Social"), chosen.getEffect());
+            player.adjustNeed(NeedType.getType("Social"), chosen.getEffect());
             addAchievementNotifications(
                     player,
                     state.getAchievementService().evaluateSocialAchievements(

@@ -30,13 +30,13 @@ public class HouseService {
         if (purchasedHouse.isOwned()) {
             return false; // House is already owned
         }
-        if (buyer.getMoney() < purchasedHouse.getHousePrice()) {
+        if (buyer.getMoney() < purchasedHouse.getPrice()) {
             return false; // Not enough money to purchase
         }
 
         // Deduct money and upgrade the player's current home in-place
-        buyer.setMoney(-purchasedHouse.getHousePrice());
-        buyer.getCurrentHouse().upgradeToHouse(purchasedHouse);
+        buyer.spendMoney(purchasedHouse.getPrice());
+        buyer.getCurrentHouse().upgradeTo(purchasedHouse);
 
         return true;
     }
@@ -54,10 +54,10 @@ public class HouseService {
             if (house.isOwned()) {
                 return "Sorry, this house is already owned.";
             } else {
-                return "Insufficient funds! You need $" + house.getHousePrice() + " to purchase this house.";
+                return "Insufficient funds! You need $" + house.getPrice() + " to purchase this house.";
             }
         }
-        return buyer.getName() + " purchased " + house.getLocationName() + " for $" + house.getHousePrice() + "!";
+        return buyer.getName() + " purchased " + house.getLocationName() + " for $" + house.getPrice() + "!";
     }
 
     /**
@@ -78,19 +78,19 @@ public class HouseService {
         if (currentHouse == null) {
             return false; // Owner has no current house
         }
-        if (nextHouse.getHouseTier() != currentHouse.getHouseTier() + 1) {
+        if (nextHouse.getTier() != currentHouse.getTier() + 1) {
             return false; // Can only upgrade to the next tier
         }
 
-        double upgradeCost = nextHouse.getHousePrice() - currentHouse.getHousePrice();
+        double upgradeCost = nextHouse.getPrice() - currentHouse.getPrice();
 
         if (owner.getMoney() < upgradeCost) {
             return false; // Not enough money for upgrade
         }
 
         // Process upgrade: mutate current house in-place to next tier
-        owner.setMoney(-upgradeCost);
-        currentHouse.upgradeToHouse(nextHouse);
+        owner.spendMoney(upgradeCost);
+        currentHouse.upgradeTo(nextHouse);
         owner.setLocation(currentHouse);
 
         return true;

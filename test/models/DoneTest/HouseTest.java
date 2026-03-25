@@ -19,9 +19,9 @@ public class HouseTest {
         House house = new House("Luxury Villa", furnitures, 500000, 2.5, 5);
 
         assertEquals("Luxury Villa", house.getLocationName());
-        assertEquals(500000, house.getHousePrice(), 0.001);
-        assertEquals(2.5, house.getHouseRate(), 0.001);
-        assertEquals(5, house.getHouseTier());
+        assertEquals(500000, house.getPrice(), 0.001);
+        assertEquals(2.5, house.getRate(), 0.001);
+        assertEquals(5, house.getTier());
         assertFalse(house.isOwned());
     }
 
@@ -31,9 +31,9 @@ public class HouseTest {
         House house = new House("Starter House", new ArrayList<>());
 
         assertEquals("Starter House", house.getLocationName());
-        assertEquals(0, house.getHousePrice(), 0.001);
-        assertEquals(1, house.getHouseRate(), 0.001);
-        assertEquals(1, house.getHouseTier());
+        assertEquals(0, house.getPrice(), 0.001);
+        assertEquals(1, house.getRate(), 0.001);
+        assertEquals(1, house.getTier());
         assertTrue(house.isOwned());
     }
 
@@ -54,6 +54,6 @@ public class HouseTest {
 
         House house = new House("Penthouse", new ArrayList<>(), 1000000, 3.0, 6);
 
-        assertEquals(6, house.getHouseTier());
+        assertEquals(6, house.getTier());
     }
 }

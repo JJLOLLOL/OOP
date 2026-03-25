@@ -378,7 +378,7 @@ public class Renderer {
                 : MUTED + "Unemployed" + RESET);
         lines.add("");
 
-        for (Need need : player.getNeedViews()) {
+        for (Need need : player.getStats().getNeedViews()) {
             lines.add(bar(
                     need.getNeedName(), 8, (int) need.getValue(), 100,
                     need.getValue() >= 70 ? BRIGHT_GREEN : need.getValue() >= 40 ? BRIGHT_YELLOW : BRIGHT_RED,
@@ -467,7 +467,7 @@ public class Renderer {
             }
             case INTERACTABLES -> {
                 lines.add(menuTitle("Interact Objects"));
-                List<Furniture> flist = loc.getFurnitures();
+                List<Furniture> flist = loc.getFurnitureViews();
                 for (int i = 0; i < flist.size(); i++) {
                     lines.add(menuItem(String.valueOf(i + 1), flist.get(i).getName()));
                 }
@@ -567,7 +567,7 @@ public class Renderer {
                 for (int i = 0; i < houses.size(); i++) {
                     House h = houses.get(i);
                     lines.add(menuItem(String.valueOf(i + 1),
-                            h.getLocationName() + " (Tier " + h.getHouseTier() + ") - $" + (int) h.getHousePrice()));
+                            h.getLocationName() + " (Tier " + h.getTier() + ") - $" + (int) h.getPrice()));
                 }
                 lines.add(menuItem("0", "Back to Shop"));
             }
@@ -617,7 +617,7 @@ public class Renderer {
     private static List<String> buildSkillsPanel(SimCharacter player) {
         List<String> lines = new ArrayList<>();
         lines.add(menuTitle("Skills"));
-        for (Skill skill : player.getSkillViews()) {
+        for (Skill skill : player.getStats().getSkillViews()) {
             int pct = (int) Math.min(100, (skill.getProgress() / skill.getRequiredXP()) * 100);
             lines.add(bar(skill.getName(), 11, pct, 100,
                     pct >= 70 ? BRIGHT_GREEN : pct >= 40 ? BRIGHT_YELLOW : BRIGHT_BLUE,
