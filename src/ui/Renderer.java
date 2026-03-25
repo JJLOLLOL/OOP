@@ -21,8 +21,6 @@ import static ui.ConsoleUtils.*;
  * <ol>
  * <li><b>Stats</b> – active Sim's name, career, needs bars, money, and nearby
  * characters.</li>
- * <li><b>Actions</b> – context-sensitive menu driven by
- * {@link PlayController.Step}.</li>
  * <li><b>Skills</b> – skill progress bars for the active Sim.</li>
  * <li><b>Notifications</b> – recent event messages colour-coded by
  * severity.</li>
@@ -38,12 +36,9 @@ import static ui.ConsoleUtils.*;
  *
  * @see GameState
  * @see WorldRegistry
- * @see PlayController
- * @see CreateSimController
  */
 public class Renderer {
 
-    // ── Semantic aliases ──────────────────────────────────────────────────────
     /**
      * Colour alias used for box borders and dividers.
      */
@@ -74,7 +69,6 @@ public class Renderer {
      */
     public static final String SIM_NAME = BOLD + BRIGHT_WHITE;
 
-    // ── Layout ────────────────────────────────────────────────────────────────
     /**
      * Minimum visible character width for any panel column.
      */
@@ -112,20 +106,9 @@ public class Renderer {
      */
     public static int INNER_W = 4 * (MIN_COL_W + 2) + 3;
 
-    // ── Public API ────────────────────────────────────────────────────────────
     /**
      * Clears the terminal and renders the appropriate screen for the current
      * game phase.
-     *
-     * <p>
-     * Delegates to {@link #renderCreateSim(GameState)} during Sim creation and
-     * to {@link #renderPlaying(GameState, WorldRegistry)} during active
-     * gameplay. The {@code QUIT} phase produces no output.
-     *
-     * @param state the current {@link GameState}, used to determine the phase
-     * and retrieve Sim data
-     * @param world the {@link WorldRegistry} providing location information
-     * used during the playing phase
      */
     public static void render(GameState state, WorldRegistry world) {
         clearScreen();
