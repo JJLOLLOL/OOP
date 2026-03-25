@@ -149,4 +149,15 @@ public class ConsoleUtils {
                 + BRIGHT_BLACK + "-".repeat(empty) + "]" + RESET
                 + " " + colour + suffix + RESET;
     }
+
+    /**
+     * Returns a horizontal line segment of {@code n} box-drawing dash
+     * characters ({@code ─}).
+     *
+     * @param n the number of characters in the segment; must be non-negative
+     * @return a string of {@code n} repeated {@code ─} characters
+     */
+    public static String seg(int n) {
+        return "─".repeat(n);
+    }
 }
