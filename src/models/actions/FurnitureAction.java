@@ -6,7 +6,8 @@ import java.util.Map;
 
 import models.character.SimCharacter;
 import models.need.Need;
-import services.NeedService;
+import models.need.NeedType;
+import models.skill.SkillType;
 import services.NotificationService;
 
 /**
@@ -137,11 +138,11 @@ public class FurnitureAction implements ActivityInterface {
         character.setMoney(-activityCost);
 
         for (Map.Entry<String, Double> effect : affectedNeedsMap.entrySet()) {
-            NeedService.adjustNeed(character, effect.getKey(), effect.getValue());
+            character.adjustNeedNS(character, NeedType.getType(effect.getKey()), effect.getValue());
         }
 
         for (Map.Entry<String, Double> effect : affectedSkillsMap.entrySet()) {
-            String result = NeedService.addSkillProgress(character, effect.getKey(), effect.getValue());
+            String result = character.addSkillProgress(character, SkillType.getType(effect.getKey()), effect.getValue());
             if (result != null && result.contains("levelled up")) {
                 NotificationService.add(character, result);
             }

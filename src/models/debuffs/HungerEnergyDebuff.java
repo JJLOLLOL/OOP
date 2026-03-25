@@ -13,7 +13,7 @@ public class HungerEnergyDebuff implements Debuff {
         // Debuff: Hunger -> Energy (low hunger -> poor sleep recovery)
         if ("Energy".equals(needName) && amount > 0) {
             Need hunger = sim.getNeeds().get("Hunger");
-            if (hunger != null && hunger.isCriticallyLow()) {
+            if (hunger != null && hunger.isCritical()) {
                 return amount * 0.5; // 50% recovery reduction
             }
         }
@@ -25,7 +25,7 @@ public class HungerEnergyDebuff implements Debuff {
         // Debuff: Hunger -> Energy decay (low hunger -> energy depletes faster)
         if ("Energy".equals(needName)) {
             Need hunger = sim.getNeeds().get("Hunger");
-            if (hunger != null && hunger.isCriticallyLow()) {
+            if (hunger != null && hunger.isCritical()) {
                 return baseDecay * 2.0; // Energy decays twice as fast
             }
         }

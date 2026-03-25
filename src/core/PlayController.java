@@ -14,9 +14,9 @@ import models.character.SimCharacter;
 import models.debuffs.DebuffRegistry;
 import models.location.House;
 import models.location.Location;
+import models.need.NeedType;
 import services.FurnitureService;
 import services.HouseService;
-import services.NeedService;
 import services.NotificationService;
 import services.WorkService;
 import ui.Renderer;
@@ -465,7 +465,7 @@ public class PlayController {
             }
 
             String result = state.getRelationshipService().interact(player, selectedCharacter, chosen);
-            NeedService.adjustNeed(player, "Social", chosen.getEffect());
+            player.adjustNeedNS(player, NeedType.getType("Social"), chosen.getEffect());
             addAchievementNotifications(
                     player,
                     state.getAchievementService().evaluateSocialAchievements(

@@ -13,7 +13,12 @@ public enum NeedType {
     NeedType(String name) {
         this.name = name;
     }
+
     public String getName() {
         return name;
+    }
+
+    public static NeedType getType(String name) {
+        return NeedType.valueOf(name);
     }
 }

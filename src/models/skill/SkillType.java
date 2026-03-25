@@ -16,7 +16,12 @@ public enum SkillType {
     SkillType(String name) {
         this.name = name;
     }
+
     public String getName() {
         return name;
+    }
+
+    public static SkillType getType(String name) {
+        return SkillType.valueOf(name);
     }
 }

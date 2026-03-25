@@ -11,7 +11,7 @@ public class FatigueDecayDebuff implements Debuff {
     @Override
     public double modifyNeedDecay(SimCharacter sim, String needName, double baseDecay) {
         Need energy = sim.getNeeds().get("Energy");
-        if (energy != null && energy.isCriticallyLow()) {
+        if (energy != null && energy.isCritical()) {
             // Energy is critically low: increase decay of other needs
             if (!needName.equals("Energy")) {
                 return baseDecay + 1; // All other needs decay 1 point faster per second

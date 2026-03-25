@@ -13,7 +13,7 @@ public class EnergySkillDebuff implements Debuff {
         // Debuff: Energy -> Skills (low energy -> slower skill gain)
         if (amount > 0) {
             Need energy = sim.getNeeds().get("Energy");
-            if (energy != null && energy.isCriticallyLow()) {
+            if (energy != null && energy.isCritical()) {
                 return amount * 0.5; // 50% slower skill progression
             }
         }

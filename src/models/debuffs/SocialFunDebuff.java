@@ -13,7 +13,7 @@ public class SocialFunDebuff implements Debuff {
         // Debuff: Social -> Fun (low social -> fun decays faster)
         if ("Fun".equals(needName)) {
             Need social = sim.getNeeds().get("Social");
-            if (social != null && social.isCriticallyLow()) {
+            if (social != null && social.isCritical()) {
                 return baseDecay * 2.0; // Fun decays twice as fast
             }
         }

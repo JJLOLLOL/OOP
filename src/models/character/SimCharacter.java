@@ -2,35 +2,25 @@ package models.character;
 
 import Types.CareerList;
 import models.career.Career;
+import models.debuffs.DebuffRegistry;
 import models.location.House;
 import models.location.Location;
 import models.need.*;
 import models.skill.Skill;
+import models.skill.SkillType;
 
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Represents the main playable character in the game.
- * A Sim has money, a house, a career, a map of needs, and a map of skills.
- */
+
 public class SimCharacter extends Character {
 
     private double money;
-    private final Map<String, Need> needs = new HashMap<>();
-    private final Map<String, Skill> skills = new HashMap<>();
+    private final Map<NeedType, Need> needs = new HashMap<>();
+    private final Map<SkillType, Skill> skills = new HashMap<>();
     private Career career;
     private House currentHouse;
 
-    /**
-     * Constructs a new {@code SimCharacter}.
-     * Initializes starting money, needs, skills, and sets the career to Jobless.
-     *
-     * @param name            the name of the Sim
-     * @param age             the age of the Sim
-     * @param gender          the gender of the Sim
-     * @param defaultLocation the initial spawn location of the Sim
-     */
     public SimCharacter(String name, int age, String gender, Location defaultLocation) {
         super(name, age, gender, defaultLocation);
         this.money = 1000.0;
@@ -40,100 +30,143 @@ public class SimCharacter extends Character {
         initialiseSkills();
     }
 
-    /**
-     * Helper method to populate the Sim's initial needs.
-     */
     private void initialiseNeeds() {
-        needs.put("Hunger", new Hunger());
-        needs.put("Hygiene", new Hygiene());
-        needs.put("Energy", new Energy());
-        needs.put("Fun", new Fun());
-        needs.put("Social", new Social());
+        needs.put(NeedType.HUNGER, new Hunger());
+        needs.put(NeedType.HYGIENE, new Hygiene());
+        needs.put(NeedType.ENERGY, new Energy());
+        needs.put(NeedType.FUN, new Fun());
+        needs.put(NeedType.SOCIAL, new Social());
     }
 
-    /**
-     * Helper method to populate the Sim's initial skills.
-     */
     private void initialiseSkills() {
-        skills.put("Cooking", new Skill("Cooking"));
-        skills.put("Fitness", new Skill("Fitness"));
-        skills.put("Programming", new Skill("Programming"));
-        skills.put("Charisma", new Skill("Charisma"));
-        skills.put("Creativity", new Skill("Creativity"));
-        skills.put("Logic", new Skill("Logic"));
-        skills.put("Music", new Skill("Music"));
-        skills.put("Writing", new Skill("Writing"));
-        skills.put("Painting", new Skill("Painting"));
+        skills.put(SkillType.COOKING, new Skill(SkillType.COOKING));
+        skills.put(SkillType.FITNESS, new Skill(SkillType.FITNESS));
+        skills.put(SkillType.PROGRAMMING, new Skill(SkillType.PROGRAMMING));
+        skills.put(SkillType.CHARISMA, new Skill(SkillType.CHARISMA));
+        skills.put(SkillType.CREATIVITY, new Skill(SkillType.CREATIVITY));
+        skills.put(SkillType.LOGIC, new Skill(SkillType.LOGIC));
+        skills.put(SkillType.MUSIC, new Skill(SkillType.MUSIC));
+        skills.put(SkillType.WRITING, new Skill(SkillType.WRITING));
+        skills.put(SkillType.PAINTING, new Skill(SkillType.PAINTING));
     }
 
-    /**
-     * Retrieves the Sim's current career object.
-     *
-     * @return the {@link Career}
-     */
+    // skills
+    public Skill getSkill(SkillType type) {
+        if (type == null) {
+            throw new IllegalArgumentException("Skill type cannot be null.");
+        }
+        return skills.get(type);
+    }
+    public int gainSkillXp(SkillType type, double xp) {
+        if (type == null) {
+            throw new IllegalArgumentException("Skill type cannot be null.");
+        }
+        if (xp < 0) {
+            throw new IllegalArgumentException("XP gained cannot be negative.");
+        }
+
+        Skill skill = skills.get(type);
+        if (skill == null) {
+            throw new IllegalStateException("Skill not found: " + type);
+        }
+        return skill.addProgress(xp);
+    }
+    public int getSkillLevel(SkillType type) {
+        return getSkill(type).getLevel();
+    }
+    public double getSkillXp(SkillType type) {
+        return getSkill(type).getProgress();
+    }
+
+    public Map<SkillType, Skill> getAllSkills() {
+        return skills;
+    }
+    public String addSkillProgress(SimCharacter sim, SkillType type, double amount) {
+        double modified = DebuffRegistry.applySkillModifiers(this, type.getName(), amount);
+        Skill skill = skills.get(type);
+        return "progressed: " + skill.addProgress(modified);
+    }
+    
+    // needs
+    public Need getNeed(NeedType type) {
+        if (type == null) {
+            throw new IllegalArgumentException("Need type cannot be null.");
+        }
+    
+        Need need = needs.get(type);
+        if (need == null) {
+            throw new IllegalStateException("Need not found: " + type);
+        }
+    
+        return need;
+    }
+    
+    public void adjustNeed(NeedType type, int amount) {
+        if (type == null) {
+            throw new IllegalArgumentException("Need type cannot be null.");
+        }
+        if (amount == 0) {
+            return;
+        }
+
+        Need need = getNeed(type);
+        need.adjust(amount);
+    }
+
+    public void adjustNeedNS(SimCharacter sim, NeedType type, double amount) {
+        double modified = DebuffRegistry.applyNeedModifiers(this, type.getName(), amount);
+        Need need = needs.get(type);
+        if (need != null) {
+            need.adjustValue(modified);
+        }
+    }
+
+    @Deprecated
+    public void updateNeeds(double deltaTime) {
+        for (Need need : this.getNeeds().values()) {
+            double modifiedDecay = DebuffRegistry.applyDecayModifiers(
+                    this, need.getNeedName(), need.getBaseDecayRate());
+            need.setDecayRate(modifiedDecay);
+            need.decay(deltaTime);
+            if (need.isCritical()) {
+                if (!need.hasCriticalNotificationBeenSent()) {
+                    need.onCriticallyLow(this);
+                    need.setCriticalNotificationSent(true);
+                }
+            } else {
+                need.setCriticalNotificationSent(false);
+            }
+        }
+    }
+    
+    public double getNeedValue(NeedType type) {
+        return getNeed(type).getValue();
+    }
+
     public Career getCareer() {
         return career;
     }
 
-    /**
-     * Sets a new career for the Sim, replacing their old one.
-     *
-     * @param newCareer the new {@link CareerList} enum to join
-     */
     public void joinCareer(CareerList newCareer) {
         this.career = new Career(newCareer);
     }
 
-    /**
-     * Retrieves the map of all skills the Sim possesses.
-     *
-     * @return a Map of skill names to {@link Skill} objects
-     */
-    public Map<String, Skill> getAllSkills() {
-        return skills;
-    }
 
-    /**
-     * Retrieves the map of all needs the Sim has.
-     *
-     * @return a Map of need names to {@link Need} objects
-     */
-    public Map<String, Need> getNeeds() {
+
+
+    public Map<NeedType, Need> getNeeds() {
         return needs;
     }
 
-    /**
-     * Adjusts the Sim's available money by a specified amount.
-     *
-     * @param amount the amount to add (can be negative to deduct)
-     */
     public void setMoney(double amount) {
         money += amount;
     }
-
-    /**
-     * Retrieves the Sim's current money balance.
-     *
-     * @return the amount of money
-     */
     public double getMoney() {
         return money;
     }
-
-    /**
-     * Retrieves the Sim's currently owned house.
-     *
-     * @return the {@link House} owned by the Sim
-     */
     public House getCurrentHouse() {
         return currentHouse;
     }
-
-    /**
-     * Sets the house owned by the Sim.
-     *
-     * @param house the new {@link House}
-     */
     public void setCurrentHouse(House house) {
         this.currentHouse = house;
     }

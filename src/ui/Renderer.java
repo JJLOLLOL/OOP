@@ -619,7 +619,7 @@ public class Renderer {
         lines.add(menuTitle("Skills"));
         for (Skill skill : player.getAllSkills().values()) {
             int pct = (int) Math.min(100, (skill.getProgress() / skill.getRequiredXP()) * 100);
-            lines.add(bar(skill.getSkillName(), 11, pct, 100,
+            lines.add(bar(skill.getName(), 11, pct, 100,
                     pct >= 70 ? BRIGHT_GREEN : pct >= 40 ? BRIGHT_YELLOW : BRIGHT_BLUE,
                     MUTED + "Lv" + skill.getLevel() + RESET));
         }

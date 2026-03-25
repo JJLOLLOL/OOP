@@ -13,7 +13,7 @@ public class HygieneSocialDebuff implements Debuff {
         // Debuff: Hygiene -> NPC (low hygiene -> NPC rejects interaction)
         if ("Socialise".equals(interactionType)) {
             Need hygiene = sim.getNeeds().get("Hygiene");
-            return hygiene != null && hygiene.isCriticallyLow();
+            return hygiene != null && hygiene.isCritical();
         }
         return false;
     }
