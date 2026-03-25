@@ -65,7 +65,9 @@ public class SimCharacter extends Character {
         }
         stats.adjustNeedRaw(type, finalAmount);
     }
+
     @Deprecated
+    // TODO: move it else where and refactor to simplify
     public void updateNeeds(double deltaTime) {
         for (Need need : getStats().getNeedViews()) {
             double modifiedDecay = DebuffRegistry.applyDecayModifiers(
@@ -94,7 +96,7 @@ public class SimCharacter extends Character {
         return finances.getMoney();
     }
     public boolean canAfford(double amount) {
-        return canAfford(amount);
+        return finances.canAfford(amount);
     }
 
     // ======== CAREER

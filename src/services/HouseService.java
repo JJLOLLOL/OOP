@@ -27,9 +27,9 @@ public class HouseService {
      * @return {@code true} if purchase was successful; {@code false} otherwise
      */
     public static boolean purchaseHouse(SimCharacter buyer, House purchasedHouse) {
-        if (purchasedHouse.isOwned()) {
-            return false; // House is already owned
-        }
+        // if (purchasedHouse.isOwned()) {
+            // return false; // House is already owned
+        // 
         if (buyer.getMoney() < purchasedHouse.getPrice()) {
             return false; // Not enough money to purchase
         }
@@ -50,13 +50,13 @@ public class HouseService {
      * @return a formatted message detailing the outcome
      */
     public static String getPurchaseMessage(SimCharacter buyer, House house, boolean success) {
-        if (!success) {
-            if (house.isOwned()) {
-                return "Sorry, this house is already owned.";
-            } else {
-                return "Insufficient funds! You need $" + house.getPrice() + " to purchase this house.";
-            }
-        }
+        // if (!success) {
+            // if (house.isOwned()) {
+                // return "Sorry, this house is already owned.";
+            // } else {
+                // return "Insufficient funds! You need $" + house.getPrice() + " to purchase this house.";
+            // }
+        // }
         return buyer.getName() + " purchased " + house.getLocationName() + " for $" + house.getPrice() + "!";
     }
 

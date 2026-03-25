@@ -62,6 +62,4 @@ public class Location {
         furnitures.clear();
         furnitures.addAll(newFurniture);
     }
-
-
 }
