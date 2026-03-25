@@ -1,7 +1,7 @@
 package services;
 
-import models.House;
-import models.SimCharacter;
+import models.character.SimCharacter;
+import models.location.House;
 
 /**
  * Provides services related to purchasing and upgrading houses for Sims.

@@ -1,4 +1,4 @@
-package models;
+package models.career;
 
 import Types.CareerList;
 import Types.CareerRankList;

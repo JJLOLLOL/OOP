@@ -3,8 +3,9 @@ package models.actions;
 import core.GameClock;
 import java.util.HashMap;
 import java.util.Map;
-import models.SimCharacter;
-import models.needs.Need;
+
+import models.character.SimCharacter;
+import models.need.Need;
 import services.NeedService;
 import services.NotificationService;
 

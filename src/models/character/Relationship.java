@@ -1,4 +1,4 @@
-package models;
+package models.character;
 
 import Types.RelationshipList;
 

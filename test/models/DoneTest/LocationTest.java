@@ -3,9 +3,9 @@ package models.DoneTest;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
-import models.Location;
 import models.NPCCharacter;
 import models.actions.Furniture;
+import models.location.Location;
 
 import java.util.ArrayList;
 

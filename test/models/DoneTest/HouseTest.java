@@ -3,9 +3,9 @@ package models.DoneTest;
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-import models.House;
 import models.NPCCharacter;
 import models.actions.Furniture;
+import models.location.House;
 
 import java.util.ArrayList;
 

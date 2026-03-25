@@ -1,7 +1,7 @@
 package models.debuffs;
 
-import models.SimCharacter;
-import models.needs.Need;
+import models.character.SimCharacter;
+import models.need.Need;
 
 /**
  * A debuff that blocks social interactions when the Hygiene need is critically low.

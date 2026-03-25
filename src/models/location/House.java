@@ -1,4 +1,4 @@
-package models;
+package models.location;
 
 import java.util.ArrayList;
 import models.actions.Furniture;

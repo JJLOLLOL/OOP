@@ -2,9 +2,10 @@ package Types;
 
 import java.util.ArrayList;
 import java.util.List;
-import models.House;
+
 import models.actions.Furniture;
 import models.actions.FurnitureFactory;
+import models.location.House;
 
 /**
  * Provides the static inventory of available houses and furniture that a Sim can purchase.

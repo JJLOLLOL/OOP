@@ -1,8 +1,8 @@
 package services;
 
-import models.House;
-import models.SimCharacter;
 import models.actions.Furniture;
+import models.character.SimCharacter;
+import models.location.House;
 
 /**
  * Provides services for purchasing, selling, and managing furniture items within a house.

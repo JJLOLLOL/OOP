@@ -1,10 +1,12 @@
-package models;
+package models.skill;
+
+import models.ProgressBar;
 
 /**
  * Represents a specific skill that a Sim can level up over time.
  * Skills implement the {@link ProgressBar} interface to track experience points and levels.
  */
-public class Skills implements ProgressBar{
+public class Skill implements ProgressBar{
     private String skillName;
     private int level;
     private double progress;
@@ -16,7 +18,7 @@ public class Skills implements ProgressBar{
      *
      * @param skillName the name of the skill (e.g., "Cooking", "Fitness")
      */
-    public Skills(String skillName){
+    public Skill(String skillName){
         this.skillName = skillName;
         this.level = 1;
         this.progress = 0.0;

@@ -1,4 +1,6 @@
-package models;
+package models.character;
+
+import models.location.Location;
 
 /**
  * Abstract base class representing a character in the game world.

@@ -1,6 +1,6 @@
-package models.needs;
+package models.need;
 
-import models.SimCharacter;
+import models.character.SimCharacter;
 
 /**
  * Abstract base class representing a fundamental need for a {@link SimCharacter}.

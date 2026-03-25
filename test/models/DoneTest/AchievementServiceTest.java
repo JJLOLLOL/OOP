@@ -12,10 +12,11 @@ import core.GameState;
 import core.GameClock;
 import core.PlayController;
 import core.WorldRegistry;
-import models.Location;
 import models.NPCCharacter;
-import models.SimCharacter;
 import models.actions.FurnitureFactory;
+import models.character.SimCharacter;
+import models.location.Location;
+
 import org.junit.Test;
 import services.AchievementService;
 import services.NotificationService;

@@ -1,6 +1,6 @@
 package models.debuffs;
 
-import models.SimCharacter;
+import models.character.SimCharacter;
 
 /**
  * Interface for the debuff system.

@@ -1,9 +1,14 @@
-package models;
+package models.character;
 
 import Types.CareerList;
+import models.career.Career;
+import models.location.House;
+import models.location.Location;
+import models.need.*;
+import models.skill.Skill;
+
 import java.util.HashMap;
 import java.util.Map;
-import models.needs.*;
 
 /**
  * Represents the main playable character in the game.
@@ -13,7 +18,7 @@ public class SimCharacter extends Character {
 
     private double money;
     private final Map<String, Need> needs = new HashMap<>();
-    private final Map<String, Skills> skills = new HashMap<>();
+    private final Map<String, Skill> skills = new HashMap<>();
     private Career career;
     private House currentHouse;
 
@@ -50,15 +55,15 @@ public class SimCharacter extends Character {
      * Helper method to populate the Sim's initial skills.
      */
     private void initialiseSkills() {
-        skills.put("Cooking", new Skills("Cooking"));
-        skills.put("Fitness", new Skills("Fitness"));
-        skills.put("Programming", new Skills("Programming"));
-        skills.put("Charisma", new Skills("Charisma"));
-        skills.put("Creativity", new Skills("Creativity"));
-        skills.put("Logic", new Skills("Logic"));
-        skills.put("Music", new Skills("Music"));
-        skills.put("Writing", new Skills("Writing"));
-        skills.put("Painting", new Skills("Painting"));
+        skills.put("Cooking", new Skill("Cooking"));
+        skills.put("Fitness", new Skill("Fitness"));
+        skills.put("Programming", new Skill("Programming"));
+        skills.put("Charisma", new Skill("Charisma"));
+        skills.put("Creativity", new Skill("Creativity"));
+        skills.put("Logic", new Skill("Logic"));
+        skills.put("Music", new Skill("Music"));
+        skills.put("Writing", new Skill("Writing"));
+        skills.put("Painting", new Skill("Painting"));
     }
 
     /**
@@ -82,9 +87,9 @@ public class SimCharacter extends Character {
     /**
      * Retrieves the map of all skills the Sim possesses.
      *
-     * @return a Map of skill names to {@link Skills} objects
+     * @return a Map of skill names to {@link Skill} objects
      */
-    public Map<String, Skills> getAllSkills() {
+    public Map<String, Skill> getAllSkills() {
         return skills;
     }
 

@@ -1,6 +1,6 @@
-package models.needs;
+package models.need;
 
-import models.SimCharacter;
+import models.character.SimCharacter;
 import services.NeedService;
 import services.NotificationService;
 

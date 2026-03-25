@@ -1,9 +1,9 @@
 package services;
 
-import models.SimCharacter;
-import models.Skills;
+import models.character.SimCharacter;
 import models.debuffs.DebuffRegistry;
-import models.needs.Need;
+import models.need.Need;
+import models.skill.Skill;
 
 /**
  * Single point of entry for mutating a {@link SimCharacter}'s needs and skills.
@@ -45,7 +45,7 @@ public class NeedService {
      */
     public static String addSkillProgress(SimCharacter sim, String skillName, double amount) {
         double modified = DebuffRegistry.applySkillModifiers(sim, skillName, amount);
-        Skills skill = sim.getAllSkills().get(skillName);
+        Skill skill = sim.getAllSkills().get(skillName);
         if (skill == null) {
             return "Skill " + skillName + " not found!";
         }

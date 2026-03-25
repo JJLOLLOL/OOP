@@ -1,8 +1,9 @@
-package models;
+package models.location;
 
 import java.util.ArrayList;
 import java.util.List;
 import models.actions.Furniture;
+import models.character.NPCCharacter;
 
 /**
  * Represents a distinct physical area in the game world.

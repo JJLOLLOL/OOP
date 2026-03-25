@@ -1,7 +1,7 @@
 package models.debuffs;
 
-import models.SimCharacter;
-import models.needs.Need;
+import models.character.SimCharacter;
+import models.need.Need;
 
 /**
  * A debuff that causes the Fun need to decay faster when the Social need is critically low.

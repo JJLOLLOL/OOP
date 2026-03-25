@@ -7,11 +7,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import models.House;
-import models.Location;
-import models.NPCCharacter;
+
+import models.character.*;
 import models.actions.Furniture;
 import models.actions.FurnitureFactory;
+import models.location.House;
+import models.location.Location;
 
 /**
  * Holds all static world data — locations and NPCs — built once at startup.

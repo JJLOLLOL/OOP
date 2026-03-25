@@ -2,7 +2,8 @@ package models.debuffs;
 
 import java.util.ArrayList;
 import java.util.List;
-import models.SimCharacter;
+
+import models.character.SimCharacter;
 
 /**
  * Holds and applies all active debuff rules in the game.

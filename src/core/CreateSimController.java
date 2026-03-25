@@ -2,8 +2,9 @@ package core;
 
 import java.util.ArrayList;
 import java.util.List;
-import models.Location;
-import models.SimCharacter;
+
+import models.character.SimCharacter;
+import models.location.Location;
 import ui.Renderer;
 
 /**
@@ -175,7 +176,7 @@ public class CreateSimController {
             state.addSim(sim);
             
             // Assign the shared global Home as the player's house
-            sim.setCurrentHouse((models.House) home);
+            sim.setCurrentHouse((models.location.House) home);
         }
 
         if (state.getSims().size() == 1) {

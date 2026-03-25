@@ -3,9 +3,10 @@ package services;
 import Types.CareerList;
 import core.GameClock;
 import java.util.Map;
-import models.SimCharacter;
+
 import models.actions.FurnitureAction;
 import models.actions.FurnitureFactory;
+import models.character.SimCharacter;
 
 /**
  * Provides services to manage career work shifts for Sims.

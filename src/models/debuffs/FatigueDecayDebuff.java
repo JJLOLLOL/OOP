@@ -1,7 +1,7 @@
 package models.debuffs;
 
-import models.SimCharacter;
-import models.needs.Need;
+import models.character.SimCharacter;
+import models.need.Need;
 
 /**
  * Implements fatigue effects: when Energy is critically low, other needs decay faster.

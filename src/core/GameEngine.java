@@ -110,7 +110,7 @@ public class GameEngine {
         if (state.getPhase() == GameState.Phase.PLAYING) {
             state.getGameClock().tick(dt);
 
-            for (models.SimCharacter sim : state.getSims()) {
+            for (models.character.SimCharacter sim : state.getSims()) {
                 NeedService.updateNeeds(sim, dt / 60.0);
             }
 

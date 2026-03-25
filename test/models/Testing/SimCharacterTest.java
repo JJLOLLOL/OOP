@@ -5,14 +5,14 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 
 import Types.CareerList;
-import models.Location;
-import models.House;
 import models.Activity;
 import models.NPCCharacter;
-import models.needs.Need;
 import models.Skills;
-import models.SimCharacter;
-import models.Career;
+import models.career.Career;
+import models.character.SimCharacter;
+import models.location.House;
+import models.location.Location;
+import models.need.Need;
 
 import java.util.ArrayList;
 
