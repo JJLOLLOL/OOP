@@ -1,6 +1,7 @@
 package models.character;
 
 import Types.CareerList;
+import models.actions.Furniture;
 import models.career.Career;
 import models.character.finances.CharacterFinances;
 import models.character.housing.CharacterHousing;
@@ -110,11 +111,37 @@ public class SimCharacter extends Character {
         this.career = new Career(newCareer);
     }
 
-
+    // ======== HOUSING
     public House getCurrentHouse() {
         return housing.getCurrentHouse();
     }
     public void assignHouse(House house) {
         housing.assignHouse(house);;
     }
+    public boolean purchaseHouse(House targetHouse) {
+        if (targetHouse == null) {
+            throw new IllegalArgumentException("House cannot be null.");
+        }
+        if (getCurrentHouse() == null) {
+            return false;
+        }
+        if (!canAfford(targetHouse.getPrice())) {
+            return false;
+        }
+        housing.purchaseHouse(targetHouse, finances);
+        setLocation(getCurrentHouse());
+        return true;
+    }
+
+    public boolean purchaseFurniture(Furniture furniture) {
+        return housing.purchaseFurniture(furniture, finances);
+    }
+    
+    public String getPurchaseMessage(House house, boolean success) {
+        if (!success) {
+            return "Insufficient funds! You need $" + house.getPrice() + " to purchase this house.";
+        }
+        return getName() + " purchased " + house.getLocationName() + " for $" + house.getPrice() + "!";
+    }
+
 }

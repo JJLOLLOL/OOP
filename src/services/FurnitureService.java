@@ -13,30 +13,6 @@ public class FurnitureService {
 
     }
 
-    /**
-     * Handles the purchase of a new furniture item by a Sim for their house.
-     *
-     * @param buyer     the {@link SimCharacter} purchasing the furniture
-     * @param house     the {@link House} where the furniture will be placed
-     * @param furniture the {@link Furniture} to purchase
-     * @return {@code true} if the purchase was successful; {@code false} if insufficient funds or space
-     */
-    public static boolean purchaseFurniture(SimCharacter buyer, House house, Furniture furniture) {
-        // Check if the buyer has enough money
-        if (buyer.getMoney() < furniture.getPrice()) {
-            return false; // Not enough money to purchase
-        }
-
-        // Check if the house has enough space for the furniture
-        if (house.getFurnitureViews().size() >= house.getMaxFurnitureCapacity()) {
-            return false; // House is full, cannot add more furniture
-        }
-        //Deduct money and add furniture to the house
-        buyer.spendMoney(furniture.getPrice());
-        house.getFurnitureViews().add(furniture);
-
-        return true; // Furniture purchased successfully
-    }
 
     /**
      * Generates a message describing the result of a furniture purchase attempt.
