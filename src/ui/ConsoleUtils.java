@@ -128,4 +128,25 @@ public class ConsoleUtils {
         System.out.print("\033[H\033[2J");
         System.out.flush();
     }
+
+    /**
+     * Renders a labelled, colour-coded progress bar as a single formatted string.
+     *
+     * @param name the label displayed to the left of the bar
+     * @param nameWidth the column width reserved for the label
+     * @param value the current value of the stat being represented
+     * @param max the maximum possible value
+     * @param colour the ANSI colour code for the filled portion
+     * @param suffix additional text appended after the bar
+     * @return a single ANSI-formatted string representing the complete bar row
+     */
+    public static String bar(String name, int nameWidth, int value, int max, String colour, String suffix) {
+        int barWidth = 10; // Default bar width from original Renderer
+        int filled = Math.min(barWidth, value * barWidth / max);
+        int empty = barWidth - filled;
+        return BRIGHT_BLACK + String.format("%-" + nameWidth + "s", name) + RESET
+                + " " + BRIGHT_BLACK + "[" + RESET + colour + "#".repeat(filled) + RESET
+                + BRIGHT_BLACK + "-".repeat(empty) + "]" + RESET
+                + " " + colour + suffix + RESET;
+    }
 }

@@ -19,6 +19,10 @@ import models.location.House;
 import models.location.Location;
 import models.need.Need;
 import models.skill.Skill;
+import ui.panels.ActionsPanelView;
+import ui.panels.NotificationsPanelView;
+import ui.panels.SkillsPanelView;
+import ui.panels.StatsPanelView;
 import services.NotificationService;
 
 /**
@@ -61,70 +65,70 @@ public class Renderer {
     /**
      * Colour alias used for box borders and dividers.
      */
-    private static final String BORDER = BRIGHT_BLACK;
+    public static final String BORDER = BRIGHT_BLACK;
 
     /**
      * Colour alias used for field labels and UI labels.
      */
-    private static final String LABEL = BRIGHT_BLACK;
+    public static final String LABEL = BRIGHT_BLACK;
 
     /**
      * Colour alias used for secondary / de-emphasised text.
      */
-    private static final String MUTED = BRIGHT_BLACK;
+    public static final String MUTED = BRIGHT_BLACK;
 
     /**
      * Colour alias used for panel and section titles.
      */
-    private static final String TITLE = BOLD + BRIGHT_CYAN;
+    public static final String TITLE = BOLD + BRIGHT_CYAN;
 
     /**
      * Colour alias used for the in-game clock display.
      */
-    private static final String CLOCK = BOLD + BRIGHT_WHITE;
+    public static final String CLOCK = BOLD + BRIGHT_WHITE;
 
     /**
      * Colour alias used for the active Sim's name.
      */
-    private static final String SIM_NAME = BOLD + BRIGHT_WHITE;
+    public static final String SIM_NAME = BOLD + BRIGHT_WHITE;
 
     // ── Layout ────────────────────────────────────────────────────────────────
     /**
      * Minimum visible character width for any panel column.
      */
-    private static final int MIN_COL_W = 28;
+    public static final int MIN_COL_W = 28;
 
     /**
      * Number of characters used to draw each need/skill progress bar, excluding
      * label and percentage suffix.
      */
-    private static final int BAR_WIDTH = 10;
+    public static final int BAR_WIDTH = 10;
 
     /**
      * Computed width of the left (stats) panel, updated each render cycle.
      */
-    private static int LEFT_W = MIN_COL_W;
+    public static int LEFT_W = MIN_COL_W;
 
     /**
      * Computed width of the middle (actions) panel, updated each render cycle.
      */
-    private static int MID_W = MIN_COL_W;
+    public static int MID_W = MIN_COL_W;
 
     /**
      * Computed width of the skills panel, updated each render cycle.
      */
-    private static int SKILLS_W = MIN_COL_W;
+    public static int SKILLS_W = MIN_COL_W;
 
     /**
      * Computed width of the notifications panel, updated each render cycle.
      */
-    private static int NOTIF_W = MIN_COL_W;
+    public static int NOTIF_W = MIN_COL_W;
 
     /**
      * Total inner width of the combined four-panel box, including inter-column
      * borders. Recalculated each render cycle based on individual panel widths.
      */
-    private static int INNER_W = 4 * (MIN_COL_W + 2) + 3;
+    public static int INNER_W = 4 * (MIN_COL_W + 2) + 3;
 
     // ── Public API ────────────────────────────────────────────────────────────
     /**
@@ -254,10 +258,10 @@ public class Renderer {
         Location loc = player.getLocation();
         PlayController.Step step = PlayController.getStep();
 
-        List<String> stats = buildStatsPanel(player, loc, state, world);
-        List<String> actions = buildActionsPanel(step, loc, player, state, world);
-        List<String> skills = buildSkillsPanel(player);
-        List<String> notifs = buildNotificationsPanel(player);
+        List<String> stats = StatsPanelView.build(player, loc, state, world);
+        List<String> actions = ActionsPanelView.build(step, loc, player, state, world);
+        List<String> skills = SkillsPanelView.build(player);
+        List<String> notifs = NotificationsPanelView.build(player);
 
         LEFT_W = Math.max(MIN_COL_W, maxVisible(stats));
         MID_W = Math.max(MIN_COL_W, maxVisible(actions));
@@ -286,439 +290,7 @@ public class Renderer {
         System.out.print("\n> ");
     }
 
-    // ── Stats panel ───────────────────────────────────────────────────────────
-    /**
-     * Builds the left stats panel showing the active Sim's core attributes.
-     *
-     * <p>
-     * The panel contains, in order:
-     * <ol>
-     * <li>Sim name, age, and gender initial.</li>
-     * <li>Career title and rank, or "Unemployed" if jobless.</li>
-     * <li>A colour-coded progress bar for each {@link Need} (green ≥ 70, yellow
-     * ≥ 40, red below 40).</li>
-     * <li>Current money balance.</li>
-     * <li>Current location name.</li>
-     * <li>Characters present at the same location with their relationship
-     * status and score; NPC descriptions are shown where available.</li>
-     * </ol>
-     *
-     * @param player the active {@link SimCharacter} whose stats are displayed
-     * @param loc the {@link Location} the Sim currently occupies
-     * @param state the {@link GameState} used to query relationship data
-     * @param world the {@link WorldRegistry} (passed through to
-     * {@link PlayController#charsAt(Location, GameState, WorldRegistry)})
-     * @return an ordered list of ANSI-formatted strings representing the panel
-     * rows
-     */
-    private static List<String> buildStatsPanel(SimCharacter player, Location loc,
-            GameState state, WorldRegistry world) {
-        List<String> lines = new ArrayList<>();
-
-        lines.add(SIM_NAME + player.getName() + RESET
-                + MUTED + " (" + player.getAge() + player.getGender().charAt(0) + ")" + RESET);
-
-        models.career.Career career = player.getCareer();
-        lines.add(career.getCurrentCareer() != CareerList.JOBLESS
-                ? BRIGHT_MAGENTA + career.getTitle() + RESET + MUTED + "  " + career.getRank() + RESET
-                : MUTED + "Unemployed" + RESET);
-        lines.add("");
-
-        for (Need need : player.getNeedViews()) {
-            lines.add(bar(
-                    need.getNeedName(), 8, (int) need.getValue(), 100,
-                    need.getValue() >= 70 ? BRIGHT_GREEN : need.getValue() >= 40 ? BRIGHT_YELLOW : BRIGHT_RED,
-                    String.format("%3d%%", (int) need.getValue())));
-        }
-
-        lines.add("");
-        lines.add(BRIGHT_YELLOW + "Money: $" + String.format("%.2f", player.getMoney()) + RESET);
-        lines.add(BORDER + "─".repeat(LEFT_W) + RESET);
-        lines.add(LABEL + "At " + RESET + BRIGHT_CYAN + loc.getLocationName() + RESET);
-
-        List<models.character.Character> chars = PlayController.charsAt(loc, state, world);
-        if (chars.isEmpty()) {
-            lines.add(MUTED + "No one nearby." + RESET);
-        } else {
-            lines.add(LABEL + "nearby:" + RESET);
-            for (models.character.Character c : chars) {
-                RelationshipList status = state.getRelationshipService().getStatus(player, c);
-                int score = state.getRelationshipService().getScore(player, c);
-                String col = score > 0 ? BRIGHT_GREEN : score < 0 ? BRIGHT_RED : BRIGHT_YELLOW;
-                lines.add(WHITE + c.getName() + RESET + MUTED + " [" + status.label + "] " + RESET + col + score + RESET);
-                if (c instanceof models.character.NPCCharacter npc && npc.getDescription() != null && !npc.getDescription().isBlank()) {
-                    lines.add(MUTED + "  " + npc.getDescription() + RESET);
-                }
-            }
-        }
-        return lines;
-    }
-
-    // ── Actions panel ─────────────────────────────────────────────────────────
-    /**
-     * Builds the centre actions panel containing the context-sensitive menu.
-     *
-     * <p>
-     * The content rendered depends on the current {@link PlayController.Step}:
-     * <ul>
-     * <li>{@code MAIN} – top-level action menu.</li>
-     * <li>{@code INTERACTABLES} – list of {@link Furniture} items at the
-     * location.</li>
-     * <li>{@code INTERACTABLE_ACTION} – actions available for the selected
-     * furniture, including need effects, skill XP gains, monetary cost, and
-     * time required.</li>
-     * <li>{@code SOCIALISE} – list of characters at the location with their
-     * relationship status.</li>
-     * <li>{@code SOCIALISE_ACTION} – interaction types available for the
-     * selected character.</li>
-     * <li>{@code CHANGE_LOCATION} – all world locations, with the current one
-     * highlighted.</li>
-     * <li>{@code SWITCH_CHARACTER} – all player Sims, with the active one
-     * highlighted.</li>
-     * <li>{@code PICK_CAREER} – available careers with salary, hours, and
-     * related skills.</li>
-     * <li>{@code SHOP} – main shop menu (browse houses, furniture, sell
-     * furniture).</li>
-     * <li>{@code SHOP_HOUSES} – list of purchasable houses with tier and
-     * price.</li>
-     * <li>{@code SHOP_FURNITURE} – list of purchasable furniture with
-     * price.</li>
-     * <li>{@code SELL_FURNITURE} – list of furniture in player's house with
-     * sell refund amount (50% of purchase price).</li>
-     * </ul>
-     *
-     * @param step the current {@link PlayController.Step} determining which
-     * sub-menu to display
-     * @param loc the {@link Location} the active Sim currently occupies
-     * @param player the active {@link SimCharacter}
-     * @param state the {@link GameState} providing Sim list and relationship
-     * data
-     * @param world the {@link WorldRegistry} used to enumerate all locations
-     * @return an ordered list of ANSI-formatted strings representing the panel
-     * rows
-     */
-    private static List<String> buildActionsPanel(PlayController.Step step, Location loc,
-            SimCharacter player, GameState state, WorldRegistry world) {
-        List<String> lines = new ArrayList<>();
-
-        switch (step) {
-            case MAIN -> {
-                lines.add(menuTitle("Actions"));
-                lines.add(menuItem("1", "Interact Objects"));
-                lines.add(menuItem("2", "Socialise"));
-                lines.add(menuItem("3", "Change Location"));
-                lines.add(menuItem("4", "Switch Character"));
-                lines.add(menuItem("5", "Shop"));
-                lines.add(menuItem("6", "Exit Game"));
-            }
-            case INTERACTABLES -> {
-                lines.add(menuTitle("Interact Objects"));
-                List<Furniture> flist = loc.getFurnitures();
-                for (int i = 0; i < flist.size(); i++) {
-                    lines.add(menuItem(String.valueOf(i + 1), flist.get(i).getName()));
-                }
-                lines.add(backItem());
-            }
-            case INTERACTABLE_ACTION -> {
-                Furniture f = PlayController.getSelectedFurniture();
-                lines.add(menuTitle(f.getName()));
-                List<FurnitureAction> acts = new ArrayList<>(f.getActions());
-                acts.sort((a, b) -> a.getName().compareTo(b.getName()));
-                for (int i = 0; i < acts.size(); i++) {
-                    FurnitureAction act = acts.get(i);
-                    lines.add(menuItem(String.valueOf(i + 1), act.getName()));
-                    addEffectLines(lines, "  needs", act.affectedNeedsByActionMap(), true);
-                    addEffectLines(lines, " skills", act.affectedSkillsByActionMap(), false);
-                    if (act.moneyDeducted() > 0) {
-                        lines.add(MUTED + "   cost: " + RESET + BRIGHT_YELLOW + "$" + String.format("%.0f", act.moneyDeducted()) + RESET);
-                    }
-                    if (act.getTimeRequired() > 0) {
-                        lines.add(MUTED + "   time: " + RESET + BRIGHT_WHITE + formatHours(act.getTimeRequired()) + RESET);
-                    }
-                }
-                lines.add(backItem());
-            }
-            case SOCIALISE -> {
-                lines.add(menuTitle("Socialise"));
-                List<models.character.Character> chars = PlayController.charsAt(loc, state, world);
-                if (chars.isEmpty()) {
-                    lines.add(MUTED + "Nobody here." + RESET);
-                } else {
-                    for (int i = 0; i < chars.size(); i++) {
-                        RelationshipList status = state.getRelationshipService().getStatus(player, chars.get(i));
-                        lines.add(menuItem(String.valueOf(i + 1),
-                                chars.get(i).getName() + " " + MUTED + "[" + status.label + "]" + RESET));
-                    }
-                }
-                lines.add(backItem());
-            }
-            case SOCIALISE_ACTION -> {
-                lines.add(menuTitle("Interact: " + PlayController.getSelectedCharacter().getName()));
-                InteractionList[] types = InteractionList.values();
-                for (int i = 0; i < types.length; i++) {
-                    lines.add(menuItem(String.valueOf(i + 1), types[i].getLabel()));
-                }
-                lines.add(backItem());
-            }
-            case CHANGE_LOCATION -> {
-                lines.add(menuTitle("Go to..."));
-                List<Location> locs = new ArrayList<>(world.getAllLocations());
-                for (int i = 0; i < locs.size(); i++) {
-                    String label = locs.get(i).getLocationName()
-                            + (locs.get(i).equals(loc) ? " " + BRIGHT_CYAN + "← here" + RESET : "");
-                    lines.add(menuItem(String.valueOf(i + 1), label));
-                }
-                lines.add(backItem());
-            }
-            case SWITCH_CHARACTER -> {
-                lines.add(menuTitle("Switch Sim"));
-                List<SimCharacter> sims = state.getSims();
-                for (int i = 0; i < sims.size(); i++) {
-                    String label = sims.get(i).getName()
-                            + (sims.get(i).equals(player) ? " " + BRIGHT_GREEN + "← active" + RESET : "");
-                    lines.add(menuItem(String.valueOf(i + 1), label));
-                }
-                lines.add(backItem());
-            }
-            case PICK_CAREER -> {
-                lines.add(menuTitle("Choose Career"));
-                lines.add("");
-                List<CareerList> careers = PlayController.getAvailableCareers();
-                int tw = careers.stream().mapToInt(c -> c.getTitle().length()).max().orElse(10) + 2;
-                lines.add(MUTED + "    " + pad("Career", tw) + "  " + pad("Salary", 9)
-                        + "  " + pad("Hours", 5) + "  Skills" + RESET);
-                lines.add(MUTED + "    " + "─".repeat(tw + 36) + RESET);
-                for (int i = 0; i < careers.size(); i++) {
-                    CareerList c = careers.get(i);
-                    lines.add(BRIGHT_YELLOW + (i + 1) + ". " + RESET
-                            + BRIGHT_WHITE + pad(c.getTitle(), tw) + RESET
-                            + "  " + MUTED + pad(String.format("$%.0f/d", c.getBaseSalary()), 9) + RESET
-                            + "  " + MUTED + pad(c.getWorkingHours() > 0 ? (int) c.getWorkingHours() + "h" : "", 5) + RESET
-                            + "  " + BRIGHT_BLACK + String.join(", ", c.getRelatedSkills()) + RESET);
-                }
-                lines.add("");
-                lines.add(backItem());
-            }
-            case SHOP -> {
-                lines.add(menuTitle("Shop"));
-                lines.add(menuItem("1", "Browse Houses"));
-                lines.add(menuItem("2", "Browse Furniture"));
-                lines.add(menuItem("3", "Sell Furniture"));
-                lines.add(menuItem("0", "Back to Main Menu"));
-            }
-
-            case SHOP_HOUSES -> {
-                List<House> houses = PlayController.getCurrentHouses();
-                lines.add(menuTitle("Houses for Sale"));
-                for (int i = 0; i < houses.size(); i++) {
-                    House h = houses.get(i);
-                    lines.add(menuItem(String.valueOf(i + 1),
-                            h.getLocationName() + " (Tier " + h.getHouseTier() + ") - $" + (int) h.getHousePrice()));
-                }
-                lines.add(menuItem("0", "Back to Shop"));
-            }
-
-            case SHOP_FURNITURE -> {
-                List<Furniture> furniture = PlayController.getCurrentFurniture();
-                lines.add(menuTitle("Furniture for Sale"));
-                for (int i = 0; i < furniture.size(); i++) {
-                    Furniture f = furniture.get(i);
-                    lines.add(menuItem(String.valueOf(i + 1),
-                            f.getName() + " - $" + (int) f.getPrice()));
-                }
-                lines.add(menuItem("0", "Back to Shop"));
-            }
-
-            case SELL_FURNITURE -> {
-                List<Furniture> furniture = PlayController.getCurrentFurniture();
-                lines.add(menuTitle("Sell Furniture from Your House"));
-                for (int i = 0; i < furniture.size(); i++) {
-                    Furniture f = furniture.get(i);
-                    double refundAmount = f.getPrice() * 0.5;
-                    String formattedRefund = String.format("%.2f", refundAmount);
-                    lines.add(menuItem(String.valueOf(i + 1),
-                            f.getName() + " - Refund: $" + formattedRefund));
-                }
-                lines.add(menuItem("0", "Back to Shop"));
-            }
-        }
-        return lines;
-    }
-
-    // ── Skills panel ──────────────────────────────────────────────────────────
-    /**
-     * Builds the skills panel showing the active Sim's skill levels as progress
-     * bars.
-     *
-     * <p>
-     * Each {@link Skill} entry is rendered as a labelled bar where the fill
-     * percentage represents progress towards the next level. Colour thresholds
-     * are: green ≥ 70 %, yellow ≥ 40 %, blue below 40 %. The current level is
-     * shown as a muted suffix (e.g. {@code Lv3}).
-     *
-     * @param player the active {@link SimCharacter} whose skills are rendered
-     * @return an ordered list of ANSI-formatted strings representing the panel
-     * rows
-     */
-    private static List<String> buildSkillsPanel(SimCharacter player) {
-        List<String> lines = new ArrayList<>();
-        lines.add(menuTitle("Skills"));
-        for (Skill skill : player.getSkillViews()) {
-            int pct = (int) Math.min(100, (skill.getProgress() / skill.getRequiredXP()) * 100);
-            lines.add(bar(skill.getName(), 11, pct, 100,
-                    pct >= 70 ? BRIGHT_GREEN : pct >= 40 ? BRIGHT_YELLOW : BRIGHT_BLUE,
-                    MUTED + "Lv" + skill.getLevel() + RESET));
-        }
-        return lines;
-    }
-
-    // ── Notifications panel ───────────────────────────────────────────────────
-    /**
-     * Builds the notifications panel displaying recent game events for the
-     * active Sim.
-     *
-     * <p>
-     * Notifications are retrieved from {@link NotificationService} and
-     * colour-coded by {@link #classifyNotification(String)}. Each notification
-     * is word-wrapped to fit the panel width ({@link #NOTIF_W}). Trailing blank
-     * lines are trimmed before the list is returned.
-     *
-     * @param player the active {@link SimCharacter} whose notifications are
-     * displayed
-     * @return an ordered list of ANSI-formatted strings representing the panel
-     * rows
-     */
-    private static List<String> buildNotificationsPanel(SimCharacter player) {
-        List<String> lines = new ArrayList<>();
-        lines.add(menuTitle("Notifications"));
-        List<String> notes = NotificationService.get(player);
-        if (notes.isEmpty()) {
-            lines.add(MUTED + "None." + RESET);
-            return lines;
-        }
-        for (String note : notes) {
-            String colour = classifyNotification(note);
-            for (String seg : note.split("\n")) {
-                String clean = seg.trim();
-                if (!clean.isEmpty()) {
-                    wordWrap(clean, NOTIF_W).forEach(l -> lines.add(colour + l + RESET));
-                }
-            }
-            lines.add("");
-        }
-        while (!lines.isEmpty() && stripAnsi(lines.get(lines.size() - 1)).isBlank()) {
-            lines.remove(lines.size() - 1);
-        }
-        return lines;
-    }
-
     // ── Shared helpers ────────────────────────────────────────────────────────
-    /**
-     * Appends effect lines (need deltas or skill XP gains) to an existing line
-     * list.
-     *
-     * <p>
-     * The first entry is prefixed with the {@code labelKey} (e.g.
-     * {@code "needs"} or {@code "skills"}); subsequent entries are indented to
-     * align with the first. Need deltas are coloured green for positive and red
-     * for negative values. Skill XP gains are always shown in cyan. Entries are
-     * sorted alphabetically by effect name for consistent display.
-     *
-     * @param lines the line list to append to; must not be {@code null}
-     * @param labelKey the display label for the first entry (e.g.
-     * {@code "  needs"})
-     * @param effects a map of effect name to numeric delta/XP value; may be
-     * {@code null} or empty, in which case nothing is added
-     * @param isNeeds {@code true} if the effects represent need deltas
-     * (colour-coded by sign); {@code false} if they represent skill XP gains
-     * (cyan)
-     */
-    private static void addEffectLines(List<String> lines, String labelKey,
-            Map<String, Double> effects, boolean isNeeds) {
-        if (effects == null || effects.isEmpty()) {
-            return;
-        }
-        boolean first = true;
-        for (Map.Entry<String, Double> e : new TreeMap<>(effects).entrySet()) {
-            double v = e.getValue();
-            String prefix = first ? MUTED + labelKey + ": " + RESET : "         ";
-            String value = isNeeds
-                    ? (v > 0 ? BRIGHT_GREEN : BRIGHT_RED) + (v > 0 ? "+" : "") + (int) v + " " + e.getKey() + RESET
-                    : BRIGHT_CYAN + "+" + (int) v + "xp " + e.getKey() + RESET;
-            lines.add(prefix + value);
-            first = false;
-        }
-    }
-
-    /**
-     * Renders a labelled, colour-coded progress bar as a single formatted
-     * string.
-     *
-     * <p>
-     * The bar uses {@code #} characters for the filled portion and {@code -}
-     * for the empty portion, surrounded by muted brackets. The total fill
-     * length is always {@link #BAR_WIDTH} characters.
-     *
-     * <p>
-     * Example output: {@code Hunger   [####------]  40%}
-     *
-     * @param name the label displayed to the left of the bar
-     * @param nameWidth the column width reserved for the label (left-padded
-     * with spaces)
-     * @param value the current value of the stat being represented
-     * @param max the maximum possible value; used to compute the fill ratio
-     * @param colour the ANSI colour code applied to the filled portion and
-     * suffix
-     * @param suffix additional text appended after the closing bracket (e.g. a
-     * percentage)
-     * @return a single ANSI-formatted string representing the complete bar row
-     */
-    private static String bar(String name, int nameWidth, int value, int max, String colour, String suffix) {
-        int filled = value * BAR_WIDTH / max;
-        int empty = BAR_WIDTH - filled;
-        return LABEL + String.format("%-" + nameWidth + "s", name) + RESET
-                + " " + MUTED + "[" + RESET + colour + "#".repeat(filled) + RESET
-                + MUTED + "-".repeat(empty) + "]" + RESET
-                + " " + colour + suffix + RESET;
-    }
-
-    /**
-     * Determines the ANSI colour code for a notification message based on
-     * keywords.
-     *
-     * <p>
-     * Colour rules (evaluated in priority order):
-     * <ul>
-     * <li><b>Green</b> – positive events: "levelled up", "improved",
-     * "promoted", "earned", "started career".</li>
-     * <li><b>Red</b> – negative events: "failed", "starving", "exhausted",
-     * "cannot", "not enough".</li>
-     * <li><b>Yellow</b> – warning events: "warning", "low", "lonely", "bored",
-     * "dirty", "cost".</li>
-     * <li><b>White</b> – all other notifications.</li>
-     * </ul>
-     *
-     * @param note the notification text to classify; case-insensitive matching
-     * is used
-     * @return the ANSI colour escape sequence appropriate for the
-     * notification's severity
-     */
-    private static String classifyNotification(String note) {
-        String l = note.toLowerCase();
-        if (l.contains("levelled up") || l.contains("improved") || l.contains("promoted")
-                || l.contains("earned") || l.contains("started career")) {
-            return BRIGHT_GREEN;
-        }
-        if (l.contains("failed") || l.contains("starving") || l.contains("exhausted")
-                || l.contains("cannot") || l.contains("not enough") || l.contains("worsened")) {
-            return BRIGHT_RED;
-        }
-        if (l.contains("warning") || l.contains("low") || l.contains("lonely")
-                || l.contains("bored") || l.contains("dirty") || l.contains("cost")) {
-            return BRIGHT_YELLOW;
-        }
-        return BRIGHT_WHITE;
-    }
 
     /**
      * Wraps a menu section title with the {@link #TITLE} colour style.
@@ -726,7 +298,7 @@ public class Renderer {
      * @param t the title text to format
      * @return the title string with ANSI colour codes applied
      */
-    private static String menuTitle(String t) {
+    public static String menuTitle(String t) {
         return TITLE + t + RESET;
     }
 
@@ -737,7 +309,7 @@ public class Renderer {
      * @param l the descriptive label for the menu option
      * @return the formatted menu item string with ANSI colour codes applied
      */
-    private static String menuItem(String n, String l) {
+    public static String menuItem(String n, String l) {
         return BRIGHT_YELLOW + n + "." + RESET + " " + WHITE + l + RESET;
     }
 
@@ -746,7 +318,7 @@ public class Renderer {
      *
      * @return the formatted back-navigation menu item
      */
-    private static String backItem() {
+    public static String backItem() {
         return MUTED + "0. Back" + RESET;
     }
 
