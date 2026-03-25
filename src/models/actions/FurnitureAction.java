@@ -135,16 +135,16 @@ public class FurnitureAction implements ActivityInterface {
         }
 
         // ── Apply effects ─────────────────────────────────────────────────────
-        character.setMoney(-activityCost);
+        character.spendMoney(activityCost);
 
         for (Map.Entry<String, Double> effect : affectedNeedsMap.entrySet()) {
-            character.adjustNeedNS(character, NeedType.getType(effect.getKey()), effect.getValue());
+            character.adjustNeed(NeedType.getType(effect.getKey()), effect.getValue());
         }
 
         for (Map.Entry<String, Double> effect : affectedSkillsMap.entrySet()) {
-            String result = character.addSkillProgress(character, SkillType.getType(effect.getKey()), effect.getValue());
-            if (result != null && result.contains("levelled up")) {
-                NotificationService.add(character, result);
+            int levelUpCount = character.adjustSkillXp(SkillType.getType(effect.getKey()), effect.getValue());
+            if (levelUpCount > 0) {
+                NotificationService.add(character, "Levelled Up by " + levelUpCount);
             }
         }
 
