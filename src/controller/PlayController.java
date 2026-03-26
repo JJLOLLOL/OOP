@@ -1,49 +1,24 @@
 package controller;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import controller.play.*;
+import data.ShopInventory;
 
-import core.ActionResult;
-import core.GameEngine;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+
 import core.GameState;
 import core.WorldRegistry;
-import data.ShopInventory;
-import models.action.ActionType;
-import models.career.CareerList;
 import models.character.SimCharacter;
-import models.debuffs.DebuffRegistry;
-import models.furniture.Furniture;
-import models.location.House;
 import models.location.Location;
-import models.need.NeedType;
 import models.skill.SkillType;
 import services.NotificationService;
 import types.AchievementList;
-import types.InteractionList;
 import ui.Renderer;
 
-/**
- * Handles all player input during the {@link GameState.Phase#PLAYING} phase.
- *
- * <p>
- * Drives a numbered-menu flow through a {@link Step} enum. The current step
- * determines what the {@link ui.Renderer} displays in the middle panel and how
- * input is interpreted.
- *
- * <p>
- * {@link #handleInput} returns {@code true} when the step changed so
- * {@link GameEngine} knows to trigger a redraw, and {@code false} when an
- * inline error was shown instead (so the error stays visible).
- */
-public class PlayController {
+public class PlayController implements PlayContext {
 
-    // ── Step enum ─────────────────────────────────────────────────────────────
-    /**
-     * The active sub-menu within the playing phase. {@link ui.Renderer}
-     * switches on this to display the correct panel.
-     */
     public enum Step {
         MAIN,
         INTERACTABLES, INTERACTABLE_ACTION,
@@ -51,446 +26,60 @@ public class PlayController {
         CHANGE_LOCATION,
         SWITCH_CHARACTER,
         PICK_CAREER, // Career selection — triggered by interacting with the Work Desk
-        SHOP, SHOP_HOUSES, SHOP_FURNITURE, 
-        /**
-         * Furniture selling step: allows player to select furniture from their house to sell.
-         * Routes to {@link #handleSellFurniture}.
-         */
+        SHOP, SHOP_HOUSES, SHOP_FURNITURE,
         SELL_FURNITURE, // Shop sub-menus
     }
 
-    // ── Session state ─────────────────────────────────────────────────────────
-    private static Step step = Step.MAIN;
-    private static Furniture selectedFurniture = null;
-    private static models.character.Character selectedCharacter = null;
-    private static List<House> currentHouses = null;
-    private static List<Furniture> currentFurniture = null;
-    private static ShopInventory shopInventory;
+    private final Map<HandlerType, PlayInputHandler> handlers = new EnumMap<>(HandlerType.class);
+    private PlayInputHandler activeHandler;
+    private GameState gameState;
+    private WorldRegistry worldRegistry;
+    private final ShopInventory shopInventory;
 
-    /**
-     * Available careers shown in the PICK_CAREER screen (excludes JOBLESS).
-     */
-    private static final List<CareerList> AVAILABLE_CAREERS = Arrays.stream(CareerList.values())
-            .filter(c -> c != CareerList.JOBLESS)
-            .collect(Collectors.toList());
-
-    public static void setShopInventory(ShopInventory inventory) {
-        shopInventory = inventory;
+    public boolean handleInput(String input, GameState state, WorldRegistry world) {
+        this.gameState = state;
+        this.worldRegistry = world;
+        return activeHandler.handleInput(input, this);
     }
 
-    // ── Entry point ───────────────────────────────────────────────────────────
-    /**
-     * Processes one line of player input for the current menu step.
-     *
-     * @param input the trimmed player input line
-     * @param state the live game state
-     * @param world the world registry
-     * @return {@code true} if the step changed and the screen should redraw;
-     * {@code false} if an inline error was shown
-     */
-    public static boolean handleInput(String input, GameState state, WorldRegistry world) {
-        // Advance notification timer on every player action
-        NotificationService.tick(state.getActivePlayer());
+    public PlayController(ShopInventory shopInventory) {
+        this.shopInventory = shopInventory;
 
-        SimCharacter player = state.getActivePlayer();
-        Location loc = player.getLocation();
+        handlers.put(HandlerType.MAIN_MENU, new MainMenuHandler());
+        handlers.put(HandlerType.INTERACTION, new InteractionHandler());
+        handlers.put(HandlerType.SOCIAL, new SocialHandler());
+        handlers.put(HandlerType.LOCATION_CHANGE, new LocationChangeHandler());
+        handlers.put(HandlerType.SWITCH_CHARACTER, new SwitchCharacterHandler());
+        handlers.put(HandlerType.PICK_CAREER, new PickCareerHandler());
+        handlers.put(HandlerType.SHOP, new ShopHandler());
 
-        return switch (step) {
-            case MAIN ->
-                handleMain(input, state);
-            case INTERACTABLES ->
-                handleInteractables(input, loc);
-            case INTERACTABLE_ACTION ->
-                handleInteractableAction(input, player, state);
-            case SOCIALISE ->
-                handleSocialise(input, loc, state, world);
-            case SOCIALISE_ACTION ->
-                handleSocialiseAction(input, player, state, world);
-            case CHANGE_LOCATION ->
-                handleChangeLocation(input, player, world);
-            case SWITCH_CHARACTER ->
-                handleSwitchCharacter(input, state);
-            case PICK_CAREER ->
-                handlePickCareer(input, player, state);
-            case SHOP ->
-                handleShop(input, player, state);
-            case SHOP_HOUSES ->
-                handleShopHouses(input, player, state, world);
-            case SHOP_FURNITURE ->
-                handleShopFurniture(input, player, state);
-            case SELL_FURNITURE ->
-                handleSellFurniture(input, player, state);
-        };
+        // Set initial handler
+        this.activeHandler = handlers.get(HandlerType.MAIN_MENU);
     }
 
-    // ── Sub-handlers ──────────────────────────────────────────────────────────
-    /**
-     * Main menu: handles top-level player actions.
-     *
-     * <p>
-     * Routes input to the following sub-menus or actions:
-     * <ul>
-     * <li>Option 1 → {@link Step#INTERACTABLES}: interact with location objects.</li>
-     * <li>Option 2 → {@link Step#SOCIALISE}: socialize with nearby characters.</li>
-     * <li>Option 3 → {@link Step#CHANGE_LOCATION}: move to a different location.</li>
-     * <li>Option 4 → {@link Step#SWITCH_CHARACTER}: switch active player Sim.</li>
-     * <li>Option 5 → {@link Step#SHOP}: access the shop menu.</li>
-     * <li>Option 6 → Exits the game via {@link GameState.Phase#QUIT}.</li>
-     * </ul>
-     *
-     * @param input the player's menu selection ("1"-"6")
-     * @param state the {@link GameState}
-     * @return {@code true} if the step changed; {@code false} if input was invalid
-     */
-    private static boolean handleMain(String input, GameState state) {
-        switch (input) {
-            case "1" ->
-                setStep(Step.INTERACTABLES);
-            case "2" ->
-                setStep(Step.SOCIALISE);
-            case "3" ->
-                setStep(Step.CHANGE_LOCATION);
-            case "4" ->
-                setStep(Step.SWITCH_CHARACTER);
-            case "5" ->
-                setStep(Step.SHOP);
-            case "6" ->
-                state.setPhase(GameState.Phase.QUIT);
-            default -> {
-                Renderer.showError("Invalid choice. Enter 1-5.");
-                return false;
-            }
+    @Override
+    public GameState getGameState() { return gameState; }
+
+    @Override
+    public WorldRegistry getWorldRegistry() { return worldRegistry; }
+
+    @Override
+    public ShopInventory getShopInventory() { return shopInventory; }
+
+    @Override
+    public SimCharacter getActivePlayer() { return gameState.getActivePlayer(); }
+
+    @Override
+    public void switchTo(HandlerType type) {
+        this.activeHandler = handlers.get(type);
+        if (this.activeHandler == null) {
+            throw new IllegalStateException("No handler registered for type: " + type);
         }
-        return true;
+        // Call onEnter to reset the handler's state
+        this.activeHandler.onEnter(this);
     }
 
-    /**
-     * Career selection menu: shown when a jobless Sim interacts with the Work Desk.
-     *
-     * <p>
-     * Displays all available careers from {@link CareerList} (excluding JOBLESS),
-     * with salary, working hours, and related skills. Selecting a career immediately
-     * joins it via {@link SimCharacter#joinCareer(CareerList)} and triggers achievement
-     * evaluation. Input {@code "0"} cancels back to {@link Step#MAIN}.
-     *
-     * @param input the player's career selection (career number or "0")
-     * @param player the active {@link SimCharacter}
-     * @param state the {@link GameState}
-     * @return {@code true} if the step changed; {@code false} if input was invalid
-     */
-    private static boolean handlePickCareer(String input, SimCharacter player, GameState state) {
-        if (input.equals("0")) {
-            setStep(Step.MAIN);
-            return true;
-        }
-        return pickFromList(input, AVAILABLE_CAREERS, idx -> {
-            CareerList chosen = AVAILABLE_CAREERS.get(idx);
-            player.joinCareer(chosen);
-            addAchievementNotifications(
-                    player,
-                    state.getAchievementService().evaluateCareerAchievements(player));
-            NotificationService.add(player, "Career started: " + chosen.getTitle()
-                    + ". Head to the Office to work!");
-            setStep(Step.MAIN);
-        });
-    }
-
-    /**
-     * Shop menu: handles house and furniture transactions.
-     *
-     * <p>
-     * Routes player input to the appropriate sub-menu:
-     * <ul>
-     * <li>Option 1 → {@link Step#SHOP_HOUSES}: browse available houses for purchase.</li>
-     * <li>Option 2 → {@link Step#SHOP_FURNITURE}: browse available furniture for purchase.</li>
-     * <li>Option 3 → {@link Step#SELL_FURNITURE}: sell furniture from the player's current house.</li>
-     * <li>Option 0 → {@link Step#MAIN}: return to main menu.</li>
-     * </ul>
-     *
-     * @param input the player's menu selection
-     * @param player the active {@link SimCharacter}
-     * @param state the {@link GameState}
-     * @return {@code true} if the step changed; {@code false} if validation failed
-     */
-    private static boolean handleShop(String input, SimCharacter player, GameState state) {
-        if (input.equals("0")) {
-            setStep(Step.MAIN);
-            return true;
-        }
-
-        switch (input) {
-            case "1" -> {
-                currentHouses = shopInventory.getAvailableHouses().stream()
-                        .collect(Collectors.toList());
-                if (currentHouses.isEmpty()) {
-                    NotificationService.add(player, "No houses available for purchase.");
-                    return false;
-                }
-                setStep(Step.SHOP_HOUSES);
-                return true;
-            }
-            case "2" -> {
-                if (player.getCurrentHouse() == null) {
-                    NotificationService.add(player, "You must own a house to purchase furniture! Buy a house first.");
-                    return false;
-                }
-                // Furniture
-                currentFurniture = shopInventory.getAvailableFurniture();
-                setStep(Step.SHOP_FURNITURE);
-                return true;
-            }
-            case "3" -> {
-                // Sell furniture from current house
-                if (player.getCurrentHouse() == null) {
-                    NotificationService.add(player, "You must own a house to sell furniture!");
-                    return false;
-                }
-                currentFurniture = new ArrayList<>(player.getCurrentHouse().getFurnitureViews());
-                if (currentFurniture.isEmpty()) {
-                    NotificationService.add(player, "Your house has no furniture to sell.");
-                    return false;
-                }
-                setStep(Step.SELL_FURNITURE);
-                return true;
-            }
-            default -> {
-                Renderer.showError("Enter 1, 2, 3, or 0 to go back.");
-                return false;
-            }
-        }
-    }
-
-    private static boolean handleShopHouses(String input, SimCharacter player, GameState state, WorldRegistry world) {
-        if (input.equals("0")) {
-            currentHouses = null;
-            setStep(Step.SHOP);
-            return true;
-        }
-
-        return pickFromList(input, currentHouses, idx -> {
-            House house = currentHouses.get(idx);
-            ActionResult result = player.purchaseHouse(house);
-            NotificationService.add(player, result.getMessage());
-            setStep(Step.SHOP);
-            currentHouses = null;
-        });
-    }
-
-    private static boolean handleShopFurniture(String input, SimCharacter player, GameState state) {
-        if (input.equals("0")) {
-            currentFurniture = null;
-            setStep(Step.SHOP);
-            return true;
-        }
-
-        return pickFromList(input, currentFurniture, idx -> {
-            Furniture furniture = currentFurniture.get(idx);
-            ActionResult result = player.buyFurniture(furniture);
-            NotificationService.add(player, result.getMessage());
-            setStep(Step.SHOP);
-            currentFurniture = null;
-        });
-    }
-
-    /**
-     * Furniture seller: handles selling furniture from the player's house.
-     *
-     * <p>
-     * Lists all furniture in the player's current house and allows selection by number.
-     *
-     * @param input the player's selection (furniture number or "0")
-     * @param player the active {@link SimCharacter}
-     * @param state the {@link GameState}
-     * @return {@code true} if the step changed; {@code false} if selection was invalid
-     */
-    private static boolean handleSellFurniture(String input, SimCharacter player, GameState state) {
-        if (input.equals("0")) {
-            currentFurniture = null;
-            setStep(Step.SHOP);
-            return true;
-        }
-
-        return pickFromList(input, currentFurniture, idx -> {
-            Furniture furniture = currentFurniture.get(idx);
-
-            ActionResult result = player.sellFurniture(furniture);
-            NotificationService.add(player, result.getMessage());
-            setStep(Step.SHOP);
-            currentFurniture = null;
-        });
-    }
-
-    /**
-     * Interactables list: displays all furniture at the player's current location.
-     *
-     * <p>
-     * Lists available {@link Furniture} items that the Sim can interact with.
-     * Selecting an item by number routes to {@link Step#INTERACTABLE_ACTION} where
-     * the player can choose a specific action (e.g., Sleep, Eat, Use). Input {@code "0"}
-     * returns to {@link Step#MAIN}.
-     *
-     * @param input the player's furniture selection (furniture number or "0")
-     * @param loc the {@link Location} where the Sim currently is
-     * @return {@code true} if the step changed; {@code false} if input was invalid
-     */
-    private static boolean handleInteractables(String input, Location loc) {
-        if (input.equals("0")) {
-            setStep(Step.MAIN);
-            return true;
-        }
-        return pickFromList(input, loc.getFurnitureViews(), idx -> {
-            selectedFurniture = loc.getFurnitureViews().get(idx);
-            setStep(Step.INTERACTABLE_ACTION);
-        });
-    }
-
-    /**
-     * Furniture action: perform chosen action. {@code "0"} → interactables.
-     */
-    /**
-     * Furniture action: performs the chosen action on the selected furniture.
-     *
-     * <p>
-     * Special case — the Work Desk "Work" action is intercepted here:
-     * <ul>
-     * <li>Jobless sim → routes to {@link Step#PICK_CAREER}</li>
-     * <li>Employed sim → calls {@link WorkService#work} directly</li>
-     * </ul>
-     * Input {@code "0"} goes back to the furniture list.
-     */
-    private static boolean handleInteractableAction(String input, SimCharacter player,
-            GameState state) {
-        if (input.equals("0")) {
-            selectedFurniture = null;
-            setStep(Step.INTERACTABLES);
-            return true;
-        }
-        List<String> actions = new ArrayList<>(selectedFurniture.getActionNames());
-        actions.sort(String::compareTo);
-        return pickFromList(input, actions, idx -> {
-            String actionName = actions.get(idx);
-
-            // Intercept the Work Desk action
-            if ("Work Desk".equals(selectedFurniture.getName()) && "Work".equals(actionName)) {
-                if (player.isJobless()) {
-                    setStep(Step.PICK_CAREER);
-                } else {
-                    ActionResult result = player.work(state.getGameClock());
-                    addAchievementNotifications(
-                            player,
-                            state.getAchievementService().evaluateWorkAchievements(player));
-                    NotificationService.add(player, result.getMessage());
-                    setStep(Step.MAIN);
-                }
-            } else {
-                // Pass the clock so timeRequired advances in-game time
-                models.furniture.FurnitureAction action = selectedFurniture.getAction(actionName);
-                boolean ok = (action != null)
-                        && action.perform(player, state.getGameClock());
-                if (!ok) {
-                    NotificationService.add(player, "Action failed: not enough money or needs too low.");
-                } else if (action != null) {
-                    addSkillAchievementNotifications(
-                            player,
-                            action,
-                            state);
-                }
-                setStep(Step.MAIN);
-            }
-            selectedFurniture = null;
-        });
-    }
-
-    /**
-     * Socialise list: select a nearby character. {@code "0"} → main.
-     */
-    private static boolean handleSocialise(String input, Location loc,
-            GameState state, WorldRegistry world) {
-        if (input.equals("0")) {
-            setStep(Step.MAIN);
-            return true;
-        }
-        List<models.character.Character> chars = charsAt(loc, state, world);
-        return pickFromList(input, chars, idx -> {
-            selectedCharacter = chars.get(idx);
-            setStep(Step.SOCIALISE_ACTION);
-        });
-    }
-
-    /**
-     * Socialise action: apply chosen interaction. {@code "0"} → socialise.
-     */
-    private static boolean handleSocialiseAction(String input, SimCharacter player,
-            GameState state, WorldRegistry world) {
-        if (input.equals("0")) {
-            selectedCharacter = null;
-            setStep(Step.SOCIALISE);
-            return true;
-        }
-        InteractionList[] types = InteractionList.values();
-        return pickFromList(input, List.of(types), idx -> {
-            InteractionList chosen = types[idx];
-
-            String blockReason = DebuffRegistry.getInteractionBlockReason(player, ActionType.SOCIALISE);
-            if (blockReason != null) {
-                NotificationService.add(player, selectedCharacter.getName() + " refused to interact! " + blockReason);
-                selectedCharacter = null;
-                setStep(Step.MAIN);
-                return;
-            }
-
-            String result = state.getRelationshipService().interact(player, selectedCharacter, chosen);
-            player.adjustNeed(NeedType.SOCIAL, chosen.getEffect());
-            addAchievementNotifications(
-                    player,
-                    state.getAchievementService().evaluateSocialAchievements(
-                            player,
-                            getAllCharacters(state, world),
-                            state.getRelationshipService()));
-            NotificationService.add(player, result);
-            selectedCharacter = null;
-            setStep(Step.MAIN);
-        });
-    }
-
-    /**
-     * Location selection menu: move the Sim to a different location.
-     *
-     * <p>
-     * Displays all available world locations. Selecting a location by number updates
-     * the Sim's location via {@link SimCharacter#setLocation(Location)} and returns to
-     * {@link Step#MAIN}. The current location is highlighted in the menu. Input {@code "0"}
-     * returns to {@link Step#MAIN}.
-     *
-     * @param input the player's location selection (location number or "0")
-     * @param player the active {@link SimCharacter}
-     * @param world the {@link WorldRegistry} providing the list of all locations
-     * @return {@code true} if the step changed; {@code false} if input was invalid
-     */
-    private static boolean handleChangeLocation(String input, SimCharacter player,
-            WorldRegistry world) {
-        if (input.equals("0")) {
-            setStep(Step.MAIN);
-            return true;
-        }
-        List<Location> locs = new ArrayList<>(world.getAllLocations());
-        return pickFromList(input, locs, idx -> {
-            player.setLocation(locs.get(idx));
-            setStep(Step.MAIN);
-        });
-    }
-
-    /**
-     * Sends achievement unlock notifications to the player.
-     *
-     * <p>
-     * For each newly unlocked {@link AchievementList}, adds a formatted notification
-     * message via {@link NotificationService#add(SimCharacter, String)}.
-     *
-     * @param player the {@link SimCharacter} who unlocked the achievements
-     * @param unlockedAchievements a list of {@link AchievementList} values that were just unlocked
-     */
-    private static void addAchievementNotifications(
+    public static void addAchievementNotifications(
             SimCharacter player,
             List<AchievementList> unlockedAchievements) {
         for (AchievementList achievement : unlockedAchievements) {
@@ -498,19 +87,7 @@ public class PlayController {
         }
     }
 
-    /**
-     * Sends achievement notifications for skill milestones triggered by an action.
-     *
-     * <p>
-     * For each skill affected by the {@link models.furniture.FurnitureAction},
-     * evaluates whether a first-time skill achievement was unlocked and sends
-     * notifications via {@link #addAchievementNotifications}.
-     *
-     * @param player the {@link SimCharacter} who performed the action
-     * @param action the {@link models.furniture.FurnitureAction} that was performed
-     * @param state the {@link GameState} for achievement evaluation
-     */
-    private static void addSkillAchievementNotifications(
+    public static void addSkillAchievementNotifications(
             SimCharacter player,
             models.furniture.FurnitureAction action,
             GameState state) {
@@ -521,60 +98,14 @@ public class PlayController {
         }
     }
 
-    /**
-     * Returns a combined list of all player Sims and NPCs in the world.
-     *
-     * @param state the {@link GameState} providing player Sims
-     * @param world the {@link WorldRegistry} providing all NPCs
-     * @return a {@link List} containing all {@link SimCharacter}s and {@link models.character.NPCCharacter}s
-     */
-    private static List<models.character.Character> getAllCharacters(GameState state, WorldRegistry world) {
+    public static List<models.character.Character> getAllCharacters(GameState state, WorldRegistry world) {
         List<models.character.Character> characters = new ArrayList<>();
         characters.addAll(state.getSims());
         characters.addAll(world.getAllNPCs());
         return characters;
     }
 
-    /**
-     * Character switcher: change the active player Sim.
-     *
-     * <p>
-     * Displays all player Sims with the currently active one highlighted.
-     * Selecting a Sim by number updates the active player via {@link GameState#setActivePlayer(SimCharacter)}
-     * and returns to {@link Step#MAIN}. Input {@code "0"} cancels back to {@link Step#MAIN}.
-     *
-     * @param input the player's Sim selection (Sim number or "0")
-     * @param state the {@link GameState}
-     * @return {@code true} if the step changed; {@code false} if input was invalid
-     */
-    private static boolean handleSwitchCharacter(String input, GameState state) {
-        if (input.equals("0")) {
-            setStep(Step.MAIN);
-            return true;
-        }
-        List<SimCharacter> sims = state.getSims();
-        return pickFromList(input, sims, idx -> {
-            state.setActivePlayer(sims.get(idx));
-            setStep(Step.MAIN);
-        });
-    }
-
-    // ── Shared input helper ───────────────────────────────────────────────────
-    /**
-     * Generic list selection helper: parses user input and executes the specified action.
-     *
-     * <p>
-     * Interprets {@code input} as a 1-based list index, validates it falls within the
-     * list bounds, and executes the {@link IndexAction} callback on the selected index.
-     * If parsing fails or the index is out of bounds, displays an inline error message
-     * via {@link Renderer#showError}.
-     *
-     * @param input the player's selection (1-based list index)
-     * @param list the {@link List} of selectable items
-     * @param action the {@link IndexAction} callback to execute with the selected index
-     * @return {@code true} if selection was successful; {@code false} if input was invalid
-     */
-    private static boolean pickFromList(String input, List<?> list, IndexAction action) {
+    public static boolean pickFromList(String input, List<?> list, IndexAction action) {
         try {
             int idx = Integer.parseInt(input) - 1;
             if (idx < 0 || idx >= list.size()) {
@@ -588,70 +119,15 @@ public class PlayController {
         }
     }
 
-    /**
-     * Functional interface for handling list index selection actions.
-     *
-     * <p>
-     * Implementations define what happens when a user selects an item from a list.
-     * Used by {@link #pickFromList} to decouple list handling from action logic.
-     */
     @FunctionalInterface
-    private interface IndexAction {
-        /**
-         * Execute the action for the selected list item.
-         *
-         * @param idx the 0-based index of the selected item
-         */
+    public interface IndexAction {
         void run(int idx);
     }
 
-    // ── Accessors for Renderer ────────────────────────────────────────────────
-    /**
-     * Returns the current menu step.
-     */
-    public static Step getStep() {
-        return step;
+    public PlayInputHandler getActiveHandler() {
+        return activeHandler;
     }
 
-    /**
-     * Returns the furniture selected in INTERACTABLE_ACTION, or {@code null}.
-     */
-    public static Furniture getSelectedFurniture() {
-        return selectedFurniture;
-    }
-
-    /**
-     * Returns the character selected in SOCIALISE_ACTION, or {@code null}.
-     */
-    public static models.character.Character getSelectedCharacter() {
-        return selectedCharacter;
-    }
-
-    /**
-     * Returns the list of selectable careers (excludes JOBLESS).
-     */
-    public static List<CareerList> getAvailableCareers() {
-        return AVAILABLE_CAREERS;
-    }
-
-    /**
-     * Returns the list of houses in the current world.
-     */
-    public static List<House> getCurrentHouses() {
-        return currentHouses;
-    }
-
-    /**
-     * Returns the list of furniture available for purchase in the current world.
-     */
-    public static List<Furniture> getCurrentFurniture() {
-        return currentFurniture;
-    }
-
-    /**
-     * Returns all characters present at {@code loc}: other player sims first,
-     * then NPCs. Excludes the active player.
-     */
     public static List<models.character.Character> charsAt(Location loc, GameState state,
             WorldRegistry world) {
         SimCharacter player = state.getActivePlayer();
@@ -663,14 +139,5 @@ public class PlayController {
                 .filter(n -> n.getLocation().equals(loc))
                 .forEach(chars::add);
         return chars;
-    }
-
-    /**
-     * Updates the current menu step and triggers a UI redraw on next render.
-     *
-     * @param next the {@link Step} to transition to
-     */
-    private static void setStep(Step next) {
-        step = next;
     }
 }

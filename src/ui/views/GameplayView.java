@@ -25,14 +25,15 @@ public class GameplayView {
      *
      * @param state the current {@link GameState}
      * @param world the {@link WorldRegistry}
+     * @param playController the {@link PlayController}
      */
-    public static void render(GameState state, WorldRegistry world) {
+    public static void render(GameState state, WorldRegistry world, PlayController playController) {
         SimCharacter player = state.getActivePlayer();
         Location loc = player.getLocation();
-        PlayController.Step step = PlayController.getStep();
+        PlayController.Step step = playController.getActiveHandler().getStep();
 
         List<String> stats = StatsPanelView.build(player, loc, state, world);
-        List<String> actions = ActionsPanelView.build(step, loc, player, state, world);
+        List<String> actions = ActionsPanelView.build(step, loc, player, state, world, playController);
         List<String> skills = SkillsPanelView.build(player);
         List<String> notifs = NotificationsPanelView.build(player);
 
