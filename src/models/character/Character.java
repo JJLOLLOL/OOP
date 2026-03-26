@@ -1,6 +1,7 @@
 package models.character;
 
 
+import Types.Gender;
 import Types.RelationshipList;
 import models.character.relationship.CharacterRelationship;
 import models.location.Location;
@@ -8,11 +9,11 @@ import models.location.Location;
 public abstract class Character {
     private final String name;
     private final int age;
-    private final String gender;
+    private final Gender gender;
     private Location currentLocation;
     private final CharacterRelationship relationships;
 
-    protected Character(String name, int age, String gender, Location defaultLocation) {
+    protected Character(String name, int age, Gender gender, Location defaultLocation) {
         this.name = name;
         this.age = age;
         this.gender = gender;
@@ -24,7 +25,7 @@ public abstract class Character {
         return age;
     }
 
-    public String getGender() {
+    public Gender getGender() {
         return gender;
     }
     public String getName() {

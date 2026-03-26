@@ -6,6 +6,8 @@ import models.character.SimCharacter;
 
 import java.util.List;
 
+import Types.Gender;
+
 import static ui.ConsoleUtils.*;
 import static ui.Renderer.*;
 
@@ -55,7 +57,7 @@ public class CreateSimView {
                 System.out.println("  " + TITLE + "Choose your active Sim:" + RESET + "\n");
                 for (int i = 0; i < state.getSims().size(); i++) {
                     SimCharacter s = state.getSims().get(i);
-                    System.out.printf("    " + BRIGHT_YELLOW + "%d. " + RESET + BRIGHT_WHITE + "%s" + RESET + "%n", i + 1, simLabel(s.getName(), String.valueOf(s.getAge()), s.getGender()));
+                    System.out.printf("    " + BRIGHT_YELLOW + "%d. " + RESET + BRIGHT_WHITE + "%s" + RESET + "%n", i + 1, simLabel(s.getName(), String.valueOf(s.getAge()), s.getGender().getLabel()));
                 }
             }
         }
@@ -77,7 +79,7 @@ public class CreateSimView {
     }
 
     private static String simLabel(String name, String age, String gender) {
-        return BRIGHT_WHITE + name + RESET + MUTED + " (" + age + gender.charAt(0) + ")" + RESET;
+        return BRIGHT_WHITE + name + RESET + MUTED + " (" + age + gender + ")" + RESET;
     }
 
     private static void showCommitted(List<String[]> committed) {

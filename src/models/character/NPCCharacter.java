@@ -2,6 +2,7 @@ package models.character;
 
 import java.util.TreeMap;
 
+import Types.Gender;
 import models.location.Location;
 
 /**
@@ -24,7 +25,7 @@ public class NPCCharacter extends Character {
      * @param description a short description of the NPC
      * @param schedule    a map representing the NPC's schedule (Time in HHMM format mapped to a Location)
      */
-    public NPCCharacter(String name, int age, String gender, String description, TreeMap<Integer, Location> schedule) {
+    public NPCCharacter(String name, int age, Gender gender, String description, TreeMap<Integer, Location> schedule) {
         super(name, age, gender, schedule.firstEntry().getValue());
         this.description = description;
         this.schedule = schedule;

@@ -2,8 +2,7 @@ package models.character;
 
 import java.util.Map;
 
-import javax.swing.Action;
-
+import Types.Gender;
 import core.ActionResult;
 import core.GameClock;
 import models.actions.Furniture;
@@ -33,7 +32,7 @@ public class SimCharacter extends Character {
 
     private static FurnitureAction WORK_ACTION;
 
-    public SimCharacter(String name, int age, String gender, Location defaultLocation) {
+    public SimCharacter(String name, int age, Gender gender, Location defaultLocation) {
         super(name, age, gender, defaultLocation);
 
         this.stats = new CharacterStats();
@@ -53,9 +52,6 @@ public class SimCharacter extends Character {
     // ======== ????
     public int getAge() {
         return super.getAge();
-    }
-    public String getGender() {
-        return super.getGender();
     }
 
     // ======== STATS
