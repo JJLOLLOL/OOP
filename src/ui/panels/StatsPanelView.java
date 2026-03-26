@@ -7,6 +7,8 @@ import core.WorldRegistry;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.management.relation.Relation;
+
 import models.career.CareerList;
 import models.character.NPCCharacter;
 import models.character.SimCharacter;
@@ -61,8 +63,8 @@ public class StatsPanelView {
         } else {
             lines.add(LABEL + "nearby:" + RESET);
             for (models.character.Character c : chars) {
-                RelationshipList status = state.getRelationshipService().getStatus(player, c);
-                int score = state.getRelationshipService().getScore(player, c);
+                RelationshipList status = player.getRelationshipStatus(c);
+                int score = player.getRelationshipScoreWith(c);
                 String col = score > 0 ? BRIGHT_GREEN : score < 0 ? BRIGHT_RED : BRIGHT_YELLOW;
                 lines.add(WHITE + c.getName() + RESET + MUTED + " [" + status.label + "] " + RESET + col + score + RESET);
                 if (c instanceof NPCCharacter npc && npc.getDescription() != null && !npc.getDescription().isBlank()) {

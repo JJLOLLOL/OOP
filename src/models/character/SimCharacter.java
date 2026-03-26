@@ -32,6 +32,14 @@ public class SimCharacter extends Character {
 
     }
 
+    // ======== ????
+    public int getAge() {
+        return super.getAge();
+    }
+    public String getGender() {
+        return super.getGender();
+    }
+
     // ======== STATS
     public CharacterStats getStats() {
         return stats;

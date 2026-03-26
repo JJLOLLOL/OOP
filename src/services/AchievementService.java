@@ -16,10 +16,7 @@ import models.character.SimCharacter;
 import models.skill.Skill;
 import models.skill.SkillType;
 
-/**
- * Manages the tracking and unlocking of achievements for Sims.
- * Handles different categories of achievements such as skills, careers, and social interactions.
- */
+
 public class AchievementService {
 
     private static final Map<SimCharacter, Set<AchievementList>> unlocked
@@ -42,8 +39,7 @@ public class AchievementService {
         return set == null ? Collections.emptySet() : Collections.unmodifiableSet(set);
     }
 
-    // ── Evaluators ────────────────────────────────────────────────────────────
-    public List<AchievementList> evaluateFirstTimeSkillAchievement(SimCharacter sim, String skillName) {
+    public List<AchievementList> evaluateFirstTimeSkillAchievement(SimCharacter sim, SkillType type) {
         List<AchievementList> gained = new ArrayList<>();
         if (sim == null || type == null) {
             return gained;
@@ -60,6 +56,7 @@ public class AchievementService {
         }
         return gained;
     }
+
 
     public List<AchievementList> evaluateCareerAchievements(SimCharacter sim) {
         List<AchievementList> gained = new ArrayList<>();
@@ -117,7 +114,7 @@ public class AchievementService {
             if (other == sim) {
                 continue;
             }
-            RelationshipList status = relationships.getStatus(sim, other);
+            RelationshipList status = sim.getRelationshipStatus(other);
             if (status != RelationshipList.FRIEND && status != RelationshipList.BEST_FRIEND) {
                 allFriends = false;
             }
