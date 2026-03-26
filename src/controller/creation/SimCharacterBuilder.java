@@ -1,6 +1,6 @@
 package controller.creation;
 
-import Types.Gender;
+import types.Gender;
 import models.character.SimCharacter;
 import models.location.Location;
 
@@ -43,5 +43,5 @@ public class SimCharacterBuilder {
 
     public int getAge() { return age; }
 
-    public String getGenderDisplayName() { return gender != null ? gender.getDisplayName() : ""; }
+    public String getGenderLabel() { return gender != null ? gender.getLabel() : ""; }
 }

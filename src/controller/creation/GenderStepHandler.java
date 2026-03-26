@@ -1,6 +1,6 @@
 package controller.creation;
 
-import Types.Gender;
+import types.Gender;
 import controller.CreateSimController;
 import ui.Renderer;
 
