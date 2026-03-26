@@ -6,6 +6,9 @@ import models.need.NeedType;
 import models.skill.SkillType;
 
 public interface Debuff {
+    
+    boolean isActive(SimCharacter sim);
+
     default double modifyNeedChange(SimCharacter sim, NeedType type, double amount) {
         return amount;
     }

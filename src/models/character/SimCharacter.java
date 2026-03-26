@@ -46,11 +46,7 @@ public class SimCharacter extends Character {
         if (amount == 0) {
             return 0;
         }
-        double finalAmount = amount;
-        if (true) {
-        // TODO: implement checker isDebuffActive()
-            finalAmount = DebuffRegistry.applySkillModifiers(this, type, amount);
-        }
+        double finalAmount = DebuffRegistry.applySkillModifiers(this, type, amount);
         return stats.adjustSkillXpRaw(type, finalAmount);
     }
     public void adjustNeed(NeedType type, double amount) {
@@ -60,30 +56,14 @@ public class SimCharacter extends Character {
         if (amount == 0) {
             return;
         }
-        double finalAmount = amount;
-        if (true) {
-        // TODO: implement checker isDebuffActive()
-            finalAmount = DebuffRegistry.applyNeedModifiers(this, type, amount);
-        }
+        double finalAmount = DebuffRegistry.applyNeedModifiers(this, type, amount);
         stats.adjustNeedRaw(type, finalAmount);
     }
 
-    @Deprecated
-    // TODO: move it else where and refactor to simplify
     public void updateNeeds(double deltaTime) {
-        for (Need need : getStats().getNeedViews()) {
-            double modifiedDecay = DebuffRegistry.applyDecayModifiers(
-                    this, need.getType(), need.getBaseDecayRate());
-            need.setDecayRate(modifiedDecay);
-            need.decay(deltaTime);
-            if (need.isCritical()) {
-                if (!need.hasCriticalNotificationBeenSent()) {
-                    need.onCriticallyLow(this);
-                    need.setCriticalNotificationSent(true);
-                }
-            } else {
-                need.setCriticalNotificationSent(false);
-            }
+        for (Need need : stats.getNeedViews()) {
+            double effectiveDecay = DebuffRegistry.applyDecayModifiers(this, need.getType(), need.getBaseDecayRate());
+            need.update(this, deltaTime, effectiveDecay);
         }
     }
 
