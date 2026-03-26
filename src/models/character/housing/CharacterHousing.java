@@ -69,6 +69,9 @@ public class CharacterHousing {
         if (finances == null) {
             throw new IllegalArgumentException("Finances cannot be null.");
         }
+        if (currentHouse == null) {
+            throw new IllegalArgumentException("House cannot be null.");
+        }
         if (!finances.canAfford(targetHouse.getPrice())) {
             return HousingResult.INSUFFICIENT_FUNDS;
         }

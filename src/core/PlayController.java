@@ -18,7 +18,6 @@ import models.location.Location;
 import models.need.NeedType;
 import models.skill.SkillType;
 import services.NotificationService;
-import services.WorkService;
 import ui.Renderer;
 
 /**
@@ -372,18 +371,14 @@ public class PlayController {
 
             // Intercept the Work Desk action
             if ("Work Desk".equals(selectedFurniture.getName()) && "Work".equals(actionName)) {
-                if (player.getCareer().getCurrentCareer() == CareerList.JOBLESS) {
-                    // No job yet — route to career picker
+                if (player.isJobless()) {
                     setStep(Step.PICK_CAREER);
                 } else {
-                    // Has a job — run the shift
-                    String result = WorkService.work(
-                            player,
-                            state.getGameClock());
+                    ActionResult result = player.work(state.getGameClock());
                     addAchievementNotifications(
                             player,
                             state.getAchievementService().evaluateWorkAchievements(player));
-                    NotificationService.add(player, result);
+                    NotificationService.add(player, result.getMessage());
                     setStep(Step.MAIN);
                 }
             } else {
