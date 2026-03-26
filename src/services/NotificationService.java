@@ -32,12 +32,6 @@ public class NotificationService {
     private NotificationService() {
     }
 
-    /**
-     * Adds a new notification for a Sim.
-     *
-     * @param sim     the {@link SimCharacter} receiving the notification
-     * @param message the notification text
-     */
     public static void add(SimCharacter sim, String message) {
         Deque<Entry> queue = store.computeIfAbsent(sim, k -> new ArrayDeque<>());
         queue.addLast(new Entry(message, ticks.getOrDefault(sim, 0L)));
@@ -46,12 +40,6 @@ public class NotificationService {
         }
     }
 
-    /**
-     * Advances the notification timer for a Sim and removes expired notifications.
-     * Should be called every time the player performs an action.
-     *
-     * @param sim the {@link SimCharacter} to update
-     */
     public static void tick(SimCharacter sim) {
         long next = ticks.getOrDefault(sim, 0L) + 1;
         ticks.put(sim, next);
@@ -61,12 +49,6 @@ public class NotificationService {
         }
     }
 
-    /**
-     * Retrieves all current notifications for a Sim, prioritizing achievements.
-     *
-     * @param sim the {@link SimCharacter} to retrieve notifications for
-     * @return a list of notification strings
-     */
     public static List<String> get(SimCharacter sim) {
         Deque<Entry> queue = store.get(sim);
         if (queue == null) {

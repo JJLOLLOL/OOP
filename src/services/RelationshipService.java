@@ -11,20 +11,10 @@ import models.character.NPCCharacter;
 import models.character.Relationship;
 import models.character.SimCharacter;
 
-/**
- * Manages relationships and interactions between all characters in the game.
- */
 public class RelationshipService {
 
     private final Map<Character, Map<Character, Relationship>> relationships = new HashMap<>();
 
-    /**
-     * Registers a new Sim into the relationship tracking system.
-     *
-     * @param newSim the newly created {@link SimCharacter}
-     * @param sims   the list of all existing player Sims
-     * @param npcs   the list of all NPCs
-     */
     public void registerNewSim(SimCharacter newSim, List<SimCharacter> sims, List<NPCCharacter> npcs) {
         link(newSim, npcs);
         for (SimCharacter sim : sims) {
@@ -34,14 +24,6 @@ public class RelationshipService {
         }
     }
 
-    /**
-     * Processes a social interaction between two characters and updates their relationship.
-     *
-     * @param from the {@link Character} initiating the interaction
-     * @param to   the target {@link Character}
-     * @param type the {@link InteractionList} type defining the interaction
-     * @return a formatted string describing the outcome of the interaction
-     */
     public String interact(Character from, Character to, InteractionList type) {
         Relationship r = getOrCreate(from, to);
         r.changeScore(type.getEffect());
@@ -52,13 +34,6 @@ public class RelationshipService {
                 + " to " + r.getScore();
     }
 
-    /**
-     * Retrieves the exact numerical relationship score between two characters.
-     *
-     * @param from the first {@link Character}
-     * @param to   the second {@link Character}
-     * @return the relationship score
-     */
     public int getScore(Character from, Character to) {
         Map<Character, Relationship> map = relationships.get(from);
         if (map == null) {
@@ -68,13 +43,6 @@ public class RelationshipService {
         return r == null ? 0 : r.getScore();
     }
 
-    /**
-     * Retrieves the relationship status tier between two characters.
-     *
-     * @param from the first {@link Character}
-     * @param to   the second {@link Character}
-     * @return the {@link RelationshipList} status
-     */
     public RelationshipList getStatus(Character from, Character to) {
         Map<Character, Relationship> map = relationships.get(from);
         if (map == null) {

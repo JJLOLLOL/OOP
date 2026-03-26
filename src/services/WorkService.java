@@ -10,9 +10,6 @@ import models.character.SimCharacter;
 import models.need.NeedType;
 import models.skill.SkillType;
 
-/**
- * Provides services to manage career work shifts for Sims.
- */
 public class WorkService {
 
     public static final int SHIFT_START_HOUR = 9;

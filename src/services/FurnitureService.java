@@ -4,23 +4,12 @@ import models.actions.Furniture;
 import models.character.SimCharacter;
 import models.location.House;
 
-/**
- * Provides services for purchasing, selling, and managing furniture items within a house.
- */
 public class FurnitureService {
 
     private FurnitureService() {
 
     }
 
-    /**
-     * Handles the purchase of a new furniture item by a Sim for their house.
-     *
-     * @param buyer     the {@link SimCharacter} purchasing the furniture
-     * @param house     the {@link House} where the furniture will be placed
-     * @param furniture the {@link Furniture} to purchase
-     * @return {@code true} if the purchase was successful; {@code false} if insufficient funds or space
-     */
     public static boolean purchaseFurniture(SimCharacter buyer, House house, Furniture furniture) {
         // Check if the buyer has enough money
         if (buyer.getMoney() < furniture.getPrice()) {
@@ -38,15 +27,6 @@ public class FurnitureService {
         return true; // Furniture purchased successfully
     }
 
-    /**
-     * Generates a message describing the result of a furniture purchase attempt.
-     *
-     * @param buyer     the {@link SimCharacter} attempting the purchase
-     * @param house     the target {@link House}
-     * @param furniture the {@link Furniture} being purchased
-     * @param success   {@code true} if the purchase succeeded; {@code false} otherwise
-     * @return a descriptive message string
-     */
     public static String getPurchaseMessage(SimCharacter buyer, House house, Furniture furniture, boolean success) {
         if (!success) {
             if (buyer.getMoney() < furniture.getPrice()) {
@@ -58,13 +38,6 @@ public class FurnitureService {
         return buyer.getName() + " purchased " + furniture.getName() + " for $" + furniture.getPrice();
     }
 
-    /**
-     * Removes a specific furniture item from a house without a refund.
-     *
-     * @param house     the {@link House} to remove the furniture from
-     * @param furniture the {@link Furniture} to remove
-     * @return {@code true} if the furniture was successfully removed; {@code false} if it wasn't found
-     */
     public static boolean removeFurniture(House house, Furniture furniture) {
         if (house.getFurnitureViews().contains(furniture)) {
             house.getFurnitureViews().remove(furniture);
