@@ -5,19 +5,23 @@ import models.need.Need;
 import models.need.NeedType;
 import models.skill.SkillType;
 
-/**
- * A debuff that reduces skill progression when the Energy need is critically low.
- * Simulates the difficulty of learning and focusing while exhausted.
- */
 public class EnergySkillDebuff implements Debuff {
+
+    private static final double SKILL_GAIN_MULTIPLIER = 0.5;
+
+    @Override
+    public boolean isActive(SimCharacter sim) {
+        Need energy = sim.getNeed(NeedType.ENERGY);
+        if (energy == null) {
+            throw new IllegalArgumentException("Energy cannot be null.");
+        }
+        return energy.isCritical();
+    }
+    
     @Override
     public double modifySkillChange(SimCharacter sim, SkillType type, double amount) {
-        // Debuff: Energy -> Skills (low energy -> slower skill gain)
         if (amount > 0) {
-            Need energy = sim.getNeed(NeedType.ENERGY);
-            if (energy != null && energy.isCritical()) {
-                return amount * 0.5; // 50% slower skill progression
-            }
+            return amount * SKILL_GAIN_MULTIPLIER;
         }
         return amount;
     }

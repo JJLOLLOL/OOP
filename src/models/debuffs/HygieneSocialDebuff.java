@@ -10,6 +10,14 @@ import models.need.NeedType;
  */
 public class HygieneSocialDebuff implements Debuff {
     @Override
+    public boolean isActive(SimCharacter sim) {
+        Need hygiene = sim.getNeed(NeedType.HYGIENE);
+        if (hygiene == null) {
+            throw new IllegalArgumentException("Hygiene cannot be null.");
+        }
+        return hygiene.isCritical();
+    }
+    @Override
     public boolean blocksInteraction(SimCharacter sim, String interactionType) {
         // Debuff: Hygiene -> NPC (low hygiene -> NPC rejects interaction)
         if ("Socialise".equals(interactionType)) {
