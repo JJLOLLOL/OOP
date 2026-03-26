@@ -1,6 +1,7 @@
 package models.character;
 
 import Types.CareerList;
+import core.ActionResult;
 import models.actions.Furniture;
 import models.career.Career;
 import models.character.finances.CharacterFinances;
@@ -118,23 +119,32 @@ public class SimCharacter extends Character {
     public void assignHouse(House house) {
         housing.assignHouse(house);;
     }
-    public boolean purchaseHouse(House targetHouse) {
-        if (targetHouse == null) {
-            throw new IllegalArgumentException("House cannot be null.");
+
+    public ActionResult purchaseHouse(House targetHouse) {
+        CharacterHousing.HousingResult result = housing.buyHouse(targetHouse, finances);
+        switch (result) {
+            case SUCCESS: return ActionResult.success(getName() + " bought " + targetHouse.getLocationName() + " for $" + targetHouse.getPrice());
+            case INSUFFICIENT_FUNDS: return ActionResult.failure("Insufficient funds! Need $" + targetHouse.getPrice() + ", have: $" + getMoney());
+            default: throw new IllegalStateException("Unexpected result: " + result);
         }
-        if (getCurrentHouse() == null) {
-            return false;
-        }
-        if (!canAfford(targetHouse.getPrice())) {
-            return false;
-        }
-        housing.purchaseHouse(targetHouse, finances);
-        setLocation(getCurrentHouse());
-        return true;
     }
 
-    public boolean purchaseFurniture(Furniture furniture) {
-        return housing.purchaseFurniture(furniture, finances);
+    public ActionResult buyFurniture(Furniture furniture) {
+        CharacterHousing.HousingResult result = housing.buyFurniture(furniture, finances);
+        switch (result) {
+            case SUCCESS: return ActionResult.success(getName() + " bought " + furniture.getName() + " for $" + furniture.getPrice());
+            case HOUSE_FULL: return ActionResult.failure("Your house is at maximum furniture capacity.");
+            case INSUFFICIENT_FUNDS: return ActionResult.failure("Insufficient funds! Need $" + furniture.getPrice() + ", have: $" + getMoney());
+            default: throw new IllegalStateException("Unexpected result: " + result);
+        }
+    }
+    public ActionResult sellFurniture(Furniture furniture) {
+        CharacterHousing.HousingResult result = housing.sellFurniture(furniture, finances);
+        switch (result) {
+            case SUCCESS: return ActionResult.success(getName() + " sold " + furniture.getName() + " for $" + furniture.getPrice());
+            case HOUSE_EMPTY: return ActionResult.failure("Your house is empty.");
+            default: throw new IllegalStateException("Unexpected result: " + result);
+        }
     }
     
     public String getPurchaseMessage(House house, boolean success) {

@@ -71,6 +71,7 @@ public class House extends Location {
         }
         addFurnitureInternal(furniture);
     }
+
     
     public void removeFurniture(Furniture furniture) {
         if (furniture == null) {

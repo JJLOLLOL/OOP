@@ -13,6 +13,8 @@ import java.util.WeakHashMap;
 
 import models.character.Character;
 import models.character.SimCharacter;
+import models.skill.Skill;
+import models.skill.SkillType;
 
 /**
  * Manages the tracking and unlocking of achievements for Sims.
@@ -22,7 +24,7 @@ public class AchievementService {
 
     private static final Map<SimCharacter, Set<AchievementList>> unlocked
             = Collections.synchronizedMap(new WeakHashMap<>());
-    private static final Map<SimCharacter, Set<String>> firstTimeSkills
+    private static final Map<SimCharacter, Set<SkillType>> firstTimeSkills
             = Collections.synchronizedMap(new WeakHashMap<>());
 
     // ── Access ────────────────────────────────────────────────────────────────
@@ -68,19 +70,18 @@ public class AchievementService {
      * @param skillName the name of the skill being progressed
      * @return a list of newly unlocked {@link AchievementList} items
      */
-    public List<AchievementList> evaluateFirstTimeSkillAchievement(SimCharacter sim, String skillName) {
+    public List<AchievementList> evaluateFirstTimeSkillAchievement(SimCharacter sim, SkillType type) {
         List<AchievementList> gained = new ArrayList<>();
-        if (sim == null || skillName == null || skillName.isBlank()) {
+        if (sim == null || type == null) {
             return gained;
         }
 
-        String key = skillName.trim().toLowerCase();
-        AchievementList achievement = skillAchievement(key);
+        AchievementList achievement = skillAchievement(type);
         if (achievement == null) {
             return gained;
         }
 
-        if (firstTimeSkills.computeIfAbsent(sim, k -> new HashSet<>()).add(key)
+        if (firstTimeSkills.computeIfAbsent(sim, k -> new HashSet<>()).add(type)
                 && unlockAchievement(sim, achievement)) {
             gained.add(achievement);
         }
@@ -137,7 +138,7 @@ public class AchievementService {
             return gained;
         }
 
-        for (String skill : sim.getCareer().getCurrentCareer().getRelatedSkills()) {
+        for (SkillType skill : sim.getCareer().getCurrentCareer().getRelatedSkills()) {
             gained.addAll(evaluateFirstTimeSkillAchievement(sim, skill));
         }
         return gained;
@@ -191,27 +192,25 @@ public class AchievementService {
         }
     }
 
-    private static AchievementList skillAchievement(String key) {
-        return switch (key) {
-            case "cooking" ->
+    private static AchievementList skillAchievement(SkillType type) {
+        return switch (type) {
+            case SkillType.COOKING ->
                 AchievementList.FIRST_COOKING;
-            case "fitness" ->
+            case SkillType.FITNESS ->
                 AchievementList.FIRST_FITNESS;
-            case "programming" ->
+            case SkillType.PROGRAMMING ->
                 AchievementList.FIRST_PROGRAMMING;
-            case "charisma" ->
+            case SkillType.CHARISMA ->
                 AchievementList.FIRST_CHARISMA;
-            case "creativity" ->
+            case SkillType.CREATIVITY ->
                 AchievementList.FIRST_CREATIVITY;
-            case "logic" ->
+            case SkillType.LOGIC ->
                 AchievementList.FIRST_LOGIC;
-            case "gardening" ->
-                AchievementList.FIRST_GARDENING;
-            case "music" ->
+            case SkillType.MUSIC ->
                 AchievementList.FIRST_MUSIC;
-            case "writing" ->
+            case SkillType.WRITING ->
                 AchievementList.FIRST_WRITING;
-            case "painting" ->
+            case SkillType.PAINTING ->
                 AchievementList.FIRST_PAINTING;
             default ->
                 null;
