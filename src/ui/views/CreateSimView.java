@@ -2,6 +2,7 @@ package ui.views;
 
 import controller.CreateSimController;
 import core.GameState;
+import controller.creation.SimCharacterBuilder;
 import models.character.SimCharacter;
 
 import java.util.List;
@@ -44,10 +45,10 @@ public class CreateSimView {
             }
             case CONFIRM -> {
                 System.out.println("  " + TITLE + "Review your Sims:" + RESET + "\n");
-                List<String[]> committed = controller.getCommitted();
+                List<SimCharacterBuilder> committed = controller.getCommitted();
                 for (int i = 0; i < committed.size(); i++) {
-                    String[] data = committed.get(i);
-                    System.out.printf("    " + BRIGHT_YELLOW + "%d. " + RESET + BRIGHT_WHITE + "%s" + RESET + "%n", i + 1, simLabel(data[0], data[1], data[2]));
+                    SimCharacterBuilder builder = committed.get(i);
+                    System.out.printf("    " + BRIGHT_YELLOW + "%d. " + RESET + BRIGHT_WHITE + "%s" + RESET + "%n", i + 1, simLabel(builder.getName(), String.valueOf(builder.getAge()), builder.getGenderLabel()));
                 }
                 System.out.println("\n  " + LABEL + "Confirm? " + RESET + BRIGHT_GREEN + "(Y)" + RESET + " / " + BRIGHT_RED + "(N)" + RESET);
             }
@@ -80,13 +81,17 @@ public class CreateSimView {
         return BRIGHT_WHITE + name + RESET + MUTED + " (" + age + gender + ")" + RESET;
     }
 
-    private static void showCommitted(List<String[]> committed) {
+    private static void showCommitted(List<SimCharacterBuilder> committed) {
         if (committed.isEmpty()) {
             return;
         }
         System.out.println("  " + MUTED + "Sims added so far:" + RESET);
-        for (String[] d : committed) {
-            System.out.println("    " + BRIGHT_BLACK + "•" + RESET + " " + simLabel(d[0], d[1], d[2]));
+        for (SimCharacterBuilder builder : committed) {
+            // Only show builders that have been fully defined (i.e., have a gender)
+            String genderLabel = builder.getGenderLabel();
+            if (genderLabel != null && !genderLabel.isEmpty()) {
+                System.out.println("    " + BRIGHT_BLACK + "•" + RESET + " " + simLabel(builder.getName(), String.valueOf(builder.getAge()), genderLabel));
+            }
         }
         System.out.println();
     }

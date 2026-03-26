@@ -2,11 +2,16 @@ package ui.panels;
 
 import core.GameState;
 import controller.PlayController;
+import controller.play.InteractionHandler;
+import controller.play.ShopHandler;
+import controller.play.SocialHandler;
 import core.WorldRegistry;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import models.career.CareerList;
 import models.character.SimCharacter;
@@ -34,10 +39,11 @@ public class ActionsPanelView {
      * @param player the active {@link SimCharacter}
      * @param state the {@link GameState} providing Sim list and relationship data
      * @param world the {@link WorldRegistry} used to enumerate all locations
+     * @param playController the {@link PlayController} providing the active state
      * @return an ordered list of ANSI-formatted strings representing the panel rows
      */
     public static List<String> build(PlayController.Step step, Location loc,
-            SimCharacter player, GameState state, WorldRegistry world) {
+            SimCharacter player, GameState state, WorldRegistry world, PlayController playController) {
         List<String> lines = new ArrayList<>();
 
         switch (step) {
@@ -59,7 +65,7 @@ public class ActionsPanelView {
                 lines.add(backItem());
             }
             case INTERACTABLE_ACTION -> {
-                Furniture f = PlayController.getSelectedFurniture();
+                Furniture f = ((InteractionHandler) playController.getActiveHandler()).getSelectedFurniture();
                 lines.add(menuTitle(f.getName()));
                 List<FurnitureAction> acts = new ArrayList<>(f.getActions());
                 acts.sort((a, b) -> a.getName().compareTo(b.getName()));
@@ -92,7 +98,7 @@ public class ActionsPanelView {
                 lines.add(backItem());
             }
             case SOCIALISE_ACTION -> {
-                lines.add(menuTitle("Interact: " + PlayController.getSelectedCharacter().getName()));
+                lines.add(menuTitle("Interact: " + ((SocialHandler) playController.getActiveHandler()).getSelectedCharacter().getName()));
                 InteractionList[] types = InteractionList.values();
                 for (int i = 0; i < types.length; i++) {
                     lines.add(menuItem(String.valueOf(i + 1), types[i].getLabel()));
@@ -123,7 +129,9 @@ public class ActionsPanelView {
                 lines.add(menuTitle("Choose Career"));
                 lines.add("");
             
-                List<CareerList> careers = PlayController.getAvailableCareers();
+                List<CareerList> careers = Arrays.stream(CareerList.values())
+                        .filter(c -> c != CareerList.JOBLESS)
+                        .collect(Collectors.toList());
             
                 int indexWidth = String.valueOf(careers.size()).length() + 2; // e.g. "12."
                 int titleWidth = careers.stream()
@@ -188,7 +196,7 @@ public class ActionsPanelView {
                 lines.add(menuItem("0", "Back to Main Menu"));
             }
             case SHOP_HOUSES -> {
-                List<House> houses = PlayController.getCurrentHouses();
+                List<House> houses = ((ShopHandler) playController.getActiveHandler()).getHousesForSale();
                 lines.add(menuTitle("Houses for Sale"));
                 for (int i = 0; i < houses.size(); i++) {
                     House h = houses.get(i);
@@ -198,7 +206,7 @@ public class ActionsPanelView {
                 lines.add(menuItem("0", "Back to Shop"));
             }
             case SHOP_FURNITURE -> {
-                List<Furniture> furniture = PlayController.getCurrentFurniture();
+                List<Furniture> furniture = ((ShopHandler) playController.getActiveHandler()).getFurnitureForSale();
                 lines.add(menuTitle("Furniture for Sale"));
                 for (int i = 0; i < furniture.size(); i++) {
                     Furniture f = furniture.get(i);
@@ -208,7 +216,7 @@ public class ActionsPanelView {
                 lines.add(menuItem("0", "Back to Shop"));
             }
             case SELL_FURNITURE -> {
-                List<Furniture> furniture = PlayController.getCurrentFurniture();
+                List<Furniture> furniture = ((ShopHandler) playController.getActiveHandler()).getFurnitureForSale();
                 lines.add(menuTitle("Sell Furniture from Your House"));
                 for (int i = 0; i < furniture.size(); i++) {
                     Furniture f = furniture.get(i);
