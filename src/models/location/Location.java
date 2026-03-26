@@ -2,8 +2,9 @@ package models.location;
 
 import java.util.ArrayList;
 import java.util.List;
-import models.actions.Furniture;
+
 import models.character.NPCCharacter;
+import models.furniture.Furniture;
 
 public class Location {
 

@@ -9,10 +9,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import data.ShopInventory;
-import models.actions.Furniture;
+import models.action.ActionType;
 import models.career.CareerList;
 import models.character.SimCharacter;
 import models.debuffs.DebuffRegistry;
+import models.furniture.Furniture;
 import models.location.House;
 import models.location.Location;
 import models.need.NeedType;
@@ -380,7 +381,7 @@ public class PlayController {
                 }
             } else {
                 // Pass the clock so timeRequired advances in-game time
-                models.actions.FurnitureAction action = selectedFurniture.getAction(actionName);
+                models.furniture.FurnitureAction action = selectedFurniture.getAction(actionName);
                 boolean ok = (action != null)
                         && action.perform(player, state.getGameClock());
                 if (!ok) {
@@ -427,7 +428,7 @@ public class PlayController {
         return pickFromList(input, List.of(types), idx -> {
             InteractionList chosen = types[idx];
 
-            String blockReason = DebuffRegistry.getInteractionBlockReason(player, "Socialise");
+            String blockReason = DebuffRegistry.getInteractionBlockReason(player, ActionType.SOCIALISE);
             if (blockReason != null) {
                 NotificationService.add(player, selectedCharacter.getName() + " refused to interact! " + blockReason);
                 selectedCharacter = null;
@@ -498,17 +499,17 @@ public class PlayController {
      * Sends achievement notifications for skill milestones triggered by an action.
      *
      * <p>
-     * For each skill affected by the {@link models.actions.FurnitureAction},
+     * For each skill affected by the {@link models.furniture.FurnitureAction},
      * evaluates whether a first-time skill achievement was unlocked and sends
      * notifications via {@link #addAchievementNotifications}.
      *
      * @param player the {@link SimCharacter} who performed the action
-     * @param action the {@link models.actions.FurnitureAction} that was performed
+     * @param action the {@link models.furniture.FurnitureAction} that was performed
      * @param state the {@link GameState} for achievement evaluation
      */
     private static void addSkillAchievementNotifications(
             SimCharacter player,
-            models.actions.FurnitureAction action,
+            models.furniture.FurnitureAction action,
             GameState state) {
         for (SkillType skill : action.affectedSkillsByActionMap().keySet()) {
             addAchievementNotifications(

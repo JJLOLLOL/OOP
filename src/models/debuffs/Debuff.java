@@ -1,5 +1,6 @@
 package models.debuffs;
 
+import models.action.ActionType;
 import models.character.SimCharacter;
 
 import models.need.NeedType;
@@ -18,7 +19,7 @@ public interface Debuff {
     default double modifyNeedDecay(SimCharacter sim, NeedType type, double baseDecay) {
         return baseDecay;
     }
-    default boolean blocksInteraction(SimCharacter sim, String interactionType) {
+    default boolean blockAction(SimCharacter sim, ActionType actionType) {
         return false;
     }
     default String getBlockMessage(SimCharacter sim) {

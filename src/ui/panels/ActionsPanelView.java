@@ -6,16 +6,14 @@ import core.GameState;
 import core.PlayController;
 import core.WorldRegistry;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 
-import models.actions.Furniture;
-import models.actions.FurnitureAction;
 import models.career.CareerList;
 import models.character.SimCharacter;
+import models.furniture.Furniture;
+import models.furniture.FurnitureAction;
 import models.location.House;
 import models.location.Location;
 import models.skill.SkillType;

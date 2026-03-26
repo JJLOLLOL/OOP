@@ -5,6 +5,7 @@ import java.util.List;
 
 import models.character.SimCharacter;
 import models.location.Location;
+import Types.Gender;
 import ui.Renderer;
 
 /**
@@ -51,7 +52,8 @@ public class CreateSimController {
     /**
      * In-flight fields for the sim currently being entered.
      */
-    private String name = "", age = "", gender = "";
+    private String name = "", age = "";
+    private Gender gender = null;
 
     /**
      * Sims confirmed so far, stored as {name, age, gender} string arrays.
@@ -112,17 +114,17 @@ public class CreateSimController {
             }
 
             case GENDER -> {
-                String g = input.trim().toUpperCase();
-                if (!g.equals("M") && !g.equals("F")) {
+                try {
+                    gender = Gender.fromUserInput(input);
+                    committed.add(new String[]{name, age, gender.getDisplayName()});
+                    name = "";
+                    age = "";
+                    gender = null;
+                    setStep(++currentIndex < totalSims ? Step.NAME : Step.CONFIRM);
+                } catch (IllegalArgumentException e) {
                     Renderer.showError("Enter M for Male or F for Female.");
                     return false;
                 }
-                gender = g.equals("M") ? "Male" : "Female";
-                committed.add(new String[]{name, age, gender});
-                name = "";
-                age = "";
-                gender = "";
-                setStep(++currentIndex < totalSims ? Step.NAME : Step.CONFIRM);
             }
 
             case CONFIRM -> {
@@ -169,16 +171,14 @@ public class CreateSimController {
      */
     private void finaliseSims(GameState state, WorldRegistry world) {
         Location home = world.getLocation("Home");
-
         for (String[] data : committed) {
-            SimCharacter sim = new SimCharacter(data[0], Integer.parseInt(data[1]), data[2], home);
+            int age = Integer.parseInt(data[1]);
+            Gender gender = Gender.fromDataValue(data[2]);
+            SimCharacter sim = new SimCharacter(data[0], age, gender, home);
             state.getRelationshipService().registerNewSim(sim, state.getSims(), world.getAllNPCs());
             state.addSim(sim);
-            
-            // Assign the shared global Home as the player's house
             sim.assignHouse((models.location.House) home);
         }
-
         if (state.getSims().size() == 1) {
             state.setActivePlayer(state.getSims().get(0));
             state.setPhase(GameState.Phase.PLAYING);

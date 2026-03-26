@@ -2,12 +2,9 @@ package models.character;
 
 import java.util.Map;
 
-import javax.swing.Action;
-
+import Types.Gender;
 import core.ActionResult;
 import core.GameClock;
-import models.actions.Furniture;
-import models.actions.FurnitureAction;
 import models.career.Career;
 import models.career.CareerList;
 import models.career.PromotionStatus;
@@ -15,6 +12,8 @@ import models.character.finances.CharacterFinances;
 import models.character.housing.CharacterHousing;
 import models.character.stats.CharacterStats;
 import models.debuffs.DebuffRegistry;
+import models.furniture.Furniture;
+import models.furniture.FurnitureAction;
 import models.location.House;
 import models.location.Location;
 import models.need.*;
@@ -33,7 +32,7 @@ public class SimCharacter extends Character {
 
     private static FurnitureAction WORK_ACTION;
 
-    public SimCharacter(String name, int age, String gender, Location defaultLocation) {
+    public SimCharacter(String name, int age, Gender gender, Location defaultLocation) {
         super(name, age, gender, defaultLocation);
 
         this.stats = new CharacterStats();
@@ -53,9 +52,6 @@ public class SimCharacter extends Character {
     // ======== ????
     public int getAge() {
         return super.getAge();
-    }
-    public String getGender() {
-        return super.getGender();
     }
 
     // ======== STATS

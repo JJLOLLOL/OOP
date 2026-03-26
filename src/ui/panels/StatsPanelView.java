@@ -7,8 +7,6 @@ import core.WorldRegistry;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.management.relation.Relation;
-
 import models.career.CareerList;
 import models.character.NPCCharacter;
 import models.character.SimCharacter;
@@ -37,7 +35,7 @@ public class StatsPanelView {
         List<String> lines = new ArrayList<>();
 
         lines.add(SIM_NAME + player.getName() + RESET
-                + MUTED + " (" + player.getAge() + player.getGender().charAt(0) + ")" + RESET);
+                + MUTED + " (" + player.getAge() + player.getGender().getLabel() + ")" + RESET);
 
         models.career.Career career = player.getCareer();
         lines.add(career.getCurrentCareer() != CareerList.JOBLESS

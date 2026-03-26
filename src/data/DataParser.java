@@ -12,10 +12,11 @@ import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import models.actions.Furniture;
-import models.actions.FurnitureAction;
+import Types.Gender;
 import models.character.NPCCharacter;
 import models.character.SimCharacter;
+import models.furniture.Furniture;
+import models.furniture.FurnitureAction;
 import models.need.NeedType;
 import models.skill.SkillType;
 import models.location.House;
@@ -160,7 +161,7 @@ public class DataParser {
     private NPCCharacter buildNpc(Map<String, String> properties, Map<String, Location> locations) {
         String name = properties.get("NAME");
         int age = Integer.parseInt(properties.get("AGE"));
-        String gender = properties.get("GENDER");
+        Gender gender = Gender.fromDataValue(properties.get("GENDER"));
         String desc = properties.get("DESC");
         String scheduleStr = properties.get("SCHEDULE");
 

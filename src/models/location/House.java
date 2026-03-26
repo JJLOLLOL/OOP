@@ -1,7 +1,8 @@
 package models.location;
 
 import java.util.ArrayList;
-import models.actions.Furniture;
+
+import models.furniture.Furniture;
 
 public class House extends Location {
 

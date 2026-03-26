@@ -1,7 +1,8 @@
 package data;
 
 import java.util.List;
-import models.actions.Furniture;
+
+import models.furniture.Furniture;
 import models.location.House;
 
 /**
