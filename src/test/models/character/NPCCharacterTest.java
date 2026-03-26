@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.TreeMap;
 
 import models.location.Location;
-import types.Gender;
+import testTypes.Gender;
 
 import org.junit.jupiter.api.Test;
 

@@ -66,7 +66,7 @@ class FurnitureTest {
         models.character.SimCharacter sim = new models.character.SimCharacter(
                 "Alex",
                 20,
-                types.Gender.MALE,
+                testTypes.Gender.MALE,
                 new models.location.Location("Home", new java.util.ArrayList<>())
         );
 
@@ -87,7 +87,7 @@ class FurnitureTest {
         models.character.SimCharacter sim = new models.character.SimCharacter(
                 "Alex",
                 20,
-                types.Gender.MALE,
+                testTypes.Gender.MALE,
                 new models.location.Location("Home", new java.util.ArrayList<>())
         );
 

@@ -11,7 +11,7 @@ import models.character.NPCCharacter;
 import models.character.SimCharacter;
 import models.location.Location;
 import models.need.Need;
-import types.RelationshipList;
+import testTypes.RelationshipList;
 
 import static ui.ConsoleUtils.*;
 import static ui.Renderer.*;

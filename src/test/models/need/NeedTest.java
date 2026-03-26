@@ -140,7 +140,7 @@ class NeedTest {
     @Test
     void update_triggersOnCriticallyLowOnlyOnceUntilRecovered() {
         TestNeed need = new TestNeed(NeedType.HUNGER, 8.0);
-        SimCharacter sim = new SimCharacter("Alex", 20, types.Gender.MALE,
+        SimCharacter sim = new SimCharacter("Alex", 20, testTypes.Gender.MALE,
                 new Location("Home", null));
 
         need.adjustValue(-60.0); // 80 -> 20, critical
@@ -170,7 +170,7 @@ class NeedTest {
     @Test
     void update_usesPassedDecayRateInsteadOfStoredDecayRate() {
         TestNeed need = new TestNeed(NeedType.ENERGY, 8.0);
-        SimCharacter sim = new SimCharacter("Jamie", 21, types.Gender.FEMALE,
+        SimCharacter sim = new SimCharacter("Jamie", 21, testTypes.Gender.FEMALE,
                 new Location("Room", null));
 
         need.update(sim, 2.0, 5.0);

@@ -7,8 +7,8 @@ import java.util.ArrayList;
 
 import models.character.relationship.CharacterRelationship;
 import models.location.Location;
-import types.Gender;
-import types.RelationshipList;
+import testTypes.Gender;
+import testTypes.RelationshipList;
 
 import org.junit.jupiter.api.Test;
 

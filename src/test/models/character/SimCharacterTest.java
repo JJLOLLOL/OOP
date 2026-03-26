@@ -18,7 +18,7 @@ import models.location.House;
 import models.location.Location;
 import models.need.NeedType;
 import models.skill.SkillType;
-import types.Gender;
+import testTypes.Gender;
 
 class SimCharacterTest {
 

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import models.character.Character;
 import models.character.Relationship;
-import types.RelationshipList;
+import testTypes.RelationshipList;
 
 public class CharacterRelationship {
     private final Character owner;

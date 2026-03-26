@@ -4,7 +4,7 @@ import java.util.List;
 import models.character.Character;
 import models.character.NPCCharacter;
 import models.character.SimCharacter;
-import types.InteractionList;
+import testTypes.InteractionList;
 
 public class RelationshipService {
 

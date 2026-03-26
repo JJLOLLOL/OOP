@@ -12,8 +12,8 @@ import models.career.CareerList;
 import models.character.Character;
 import models.character.SimCharacter;
 import models.skill.SkillType;
-import types.AchievementList;
-import types.RelationshipList;
+import testTypes.AchievementList;
+import testTypes.RelationshipList;
 
 
 public class AchievementService {

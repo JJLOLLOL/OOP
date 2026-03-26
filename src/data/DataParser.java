@@ -18,7 +18,7 @@ import models.furniture.Furniture;
 import models.furniture.FurnitureAction;
 import models.need.NeedType;
 import models.skill.SkillType;
-import types.Gender;
+import testTypes.Gender;
 import models.location.House;
 import models.location.Location;
 

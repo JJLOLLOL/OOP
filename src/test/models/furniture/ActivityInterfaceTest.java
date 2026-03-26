@@ -66,7 +66,7 @@ class ActivityInterfaceTest {
         Object result = activity.perform(new models.character.SimCharacter(
                 "Alex",
                 20,
-                types.Gender.MALE,
+                testTypes.Gender.MALE,
                 new models.location.Location("Home", new java.util.ArrayList<>())));
 
         assertSame(Boolean.TRUE, result);

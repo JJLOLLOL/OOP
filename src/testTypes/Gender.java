@@ -1,4 +1,4 @@
-package types;
+package testTypes;
 
 public enum Gender {
     MALE("Male", "M"),
