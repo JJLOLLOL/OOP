@@ -38,14 +38,7 @@ public class House extends Location {
 
 
     public int getMaxFurnitureCapacity() {
-        return switch(this.houseTier) {
-            case 1 -> 6;
-            case 2 -> 7;
-            case 3 -> 8;
-            case 4 -> 9;
-            case 5 -> 10;
-            default -> Math.max(6, this.houseTier + 5);
-        };
+        return Math.max(6, this.houseTier + 5);
     }
 
     public void upgradeTo(House purchasedHouse) {
