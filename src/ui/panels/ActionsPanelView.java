@@ -86,7 +86,7 @@ public class ActionsPanelView {
                     lines.add(MUTED + "Nobody here." + RESET);
                 } else {
                     for (int i = 0; i < chars.size(); i++) {
-                        RelationshipList status = state.getRelationshipService().getStatus(player, chars.get(i));
+                        RelationshipList status = player.getRelationshipStatus(chars.get(i));
                         lines.add(menuItem(String.valueOf(i + 1),
                                 chars.get(i).getName() + " " + MUTED + "[" + status.label + "]" + RESET));
                     }

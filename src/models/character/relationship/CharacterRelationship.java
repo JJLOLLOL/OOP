@@ -1,33 +1,57 @@
 package models.character.relationship;
 
 import Types.RelationshipList;
-import models.character.Relationship;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import models.character.Character;
+import models.character.Relationship;
 
 public class CharacterRelationship {
+    private final Character owner;
+    private final Map<Character, Relationship> relationships = new HashMap<>();
 
-    private final Map<models.character.Character, Relationship> relationships = new HashMap<>();
+    public CharacterRelationship(Character owner) {
+        if (owner == null) {
+            throw new IllegalArgumentException("Owner cannot be null.");
+        }
+        this.owner = owner;
+    }
 
-    public void initializeWith(models.character.Character other) {
+    public void initializeWith(Character other) {
         validateTarget(other);
-        relationships.putIfAbsent(other, new Relationship());
+        if (other == owner) {
+            throw new IllegalArgumentException("Character cannot relate to itself.");
+        }
+
+        if (relationships.containsKey(other)) {
+            return;
+        }
+
+        Relationship shared = new Relationship();
+        relationships.put(other, shared);
+        other.getRelationships().attachRelationship(owner, shared);
     }
 
-    public void changeRelationshipWith(models.character.Character target, int delta) {
+    void attachRelationship(Character other, Relationship relationship) {
+        relationships.put(other, relationship);
+    }
+
+    public void changeRelationshipWith(Character target, int delta) {
         validateTarget(target);
-        relationships.computeIfAbsent(target, key -> new Relationship()).adjust(delta);
+        if (!relationships.containsKey(target)) {
+            initializeWith(target);
+        }
+        relationships.get(target).adjust(delta);
     }
 
-    public int getScoreWith(models.character.Character target) {
+    public int getScoreWith(Character target) {
         validateTarget(target);
         Relationship relationship = relationships.get(target);
         return relationship == null ? 0 : relationship.getScore();
     }
 
-    public RelationshipList getStatusWith(models.character.Character target) {
+    public RelationshipList getStatusWith(Character target) {
         validateTarget(target);
         Relationship relationship = relationships.get(target);
         return relationship == null
@@ -35,16 +59,11 @@ public class CharacterRelationship {
                 : relationship.getStatus();
     }
 
-    public boolean hasRelationshipWith(models.character.Character target) {
-        validateTarget(target);
-        return relationships.containsKey(target);
-    }
-
-    public Map<models.character.Character, Relationship> getRelationshipViews() {
+    public Map<Character, Relationship> getRelationshipViews() {
         return Collections.unmodifiableMap(relationships);
     }
 
-    private void validateTarget(models.character.Character target) {
+    private void validateTarget(Character target) {
         if (target == null) {
             throw new IllegalArgumentException("Relationship target cannot be null.");
         }

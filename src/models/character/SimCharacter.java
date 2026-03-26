@@ -31,6 +31,14 @@ public class SimCharacter extends Character {
         this.career = new Career(CareerList.JOBLESS);
 
     }
+
+    // ======== ????
+    public int getAge() {
+        return super.getAge();
+    }
+    public String getGender() {
+        return super.getGender();
+    }
     
     // ======== STATS
     public CharacterStats getStats() {
