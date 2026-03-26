@@ -2,13 +2,14 @@ package core;
 
 import Types.AchievementList;
 import Types.InteractionList;
-import Types.ShopInventory;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import models.actions.Furniture;
+import models.actions.ShopInventory;
 import models.career.CareerList;
 import models.character.SimCharacter;
 import models.debuffs.DebuffRegistry;
