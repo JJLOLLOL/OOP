@@ -36,8 +36,6 @@ public class GameEngine {
     private final GameState state;
     private final WorldRegistry world;
     private final NpcService npcService;
-    private final CreateSimController createSimController;
-    private final PlayController playController;
 
     private final InputQueue inputQueue;
     private final InputThread inputThread;
@@ -48,8 +46,6 @@ public class GameEngine {
         this.state = new GameState();
         this.world = new WorldRegistry();
         this.npcService = new NpcService(world);
-        this.createSimController = new CreateSimController();
-        this.playController = new PlayController();
 
         this.inputQueue = new InputQueue();
         this.inputThread = new InputThread(new Scanner(System.in), inputQueue);
@@ -131,9 +127,9 @@ public class GameEngine {
     private void handleInput(String input) {
         boolean changed = switch (state.getPhase()) {
             case CREATE_SIM ->
-                createSimController.handleInput(input, state, world);
+                CreateSimController.handleInput(input, state, world);
             case PLAYING ->
-                playController.handleInput(input, state, world);
+                PlayController.handleInput(input, state, world);
             default ->
                 false;
         };
