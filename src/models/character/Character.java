@@ -1,6 +1,8 @@
 package models.character;
 
 
+import java.util.Map;
+
 import Types.RelationshipList;
 import models.character.relationship.CharacterRelationship;
 import models.location.Location;
@@ -29,6 +31,10 @@ public abstract class Character {
     }
     public String getName() {
         return name;
+    }
+
+    public Map<Character, Relationship> getRelationshipViews() {
+        return relationships.getRelationshipViews();
     }
 
     public CharacterRelationship getRelationships() {
