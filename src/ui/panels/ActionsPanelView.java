@@ -1,7 +1,5 @@
 package ui.panels;
 
-import Types.InteractionList;
-import Types.RelationshipList;
 import core.GameState;
 import controller.PlayController;
 import core.WorldRegistry;
@@ -17,6 +15,8 @@ import models.furniture.FurnitureAction;
 import models.location.House;
 import models.location.Location;
 import models.skill.SkillType;
+import types.InteractionList;
+import types.RelationshipList;
 
 import static ui.ConsoleUtils.*;
 import static ui.Renderer.*;

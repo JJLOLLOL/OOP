@@ -1,11 +1,11 @@
 package models.character.relationship;
 
-import Types.RelationshipList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import models.character.Character;
 import models.character.Relationship;
+import types.RelationshipList;
 
 public class CharacterRelationship {
     private final Character owner;

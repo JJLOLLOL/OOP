@@ -1,10 +1,10 @@
 package models.character;
 
 
-import Types.Gender;
-import Types.RelationshipList;
 import models.character.relationship.CharacterRelationship;
 import models.location.Location;
+import types.Gender;
+import types.RelationshipList;
 
 public abstract class Character {
     private final String name;

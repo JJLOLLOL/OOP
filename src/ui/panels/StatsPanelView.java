@@ -1,6 +1,5 @@
 package ui.panels;
 
-import Types.RelationshipList;
 import core.GameState;
 import controller.PlayController;
 import core.WorldRegistry;
@@ -12,6 +11,7 @@ import models.character.NPCCharacter;
 import models.character.SimCharacter;
 import models.location.Location;
 import models.need.Need;
+import types.RelationshipList;
 
 import static ui.ConsoleUtils.*;
 import static ui.Renderer.*;
