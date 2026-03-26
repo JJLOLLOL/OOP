@@ -1,10 +1,8 @@
-package Types;
+package models.actions;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import models.actions.Furniture;
-import models.actions.FurnitureFactory;
 import models.location.House;
 
 public class ShopInventory {
