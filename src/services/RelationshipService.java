@@ -8,10 +8,13 @@ import models.character.SimCharacter;
 
 public class RelationshipService {
 
+    @Deprecated
+    // TODO: move to game engine or controller
     public void registerNewSim(SimCharacter newSim, List<SimCharacter> sims, List<NPCCharacter> npcs) {
         for (NPCCharacter npc : npcs) {
             newSim.initializeRelationshipWith(npc);
         }
+
         for (SimCharacter sim : sims) {
             if (sim != newSim) {
                 newSim.initializeRelationshipWith(sim);
@@ -20,6 +23,8 @@ public class RelationshipService {
     }
 
 
+    @Deprecated
+    // TODO: move to printing, maybe to ui
     public String interact(Character from, Character to, InteractionList type) {
         from.changeRelationshipWith(to, type.getEffect());
 
