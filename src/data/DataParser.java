@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 import models.actions.Furniture;
 import models.actions.FurnitureAction;
 import models.character.NPCCharacter;
+import models.character.SimCharacter;
 import models.need.NeedType;
 import models.skill.SkillType;
 import models.location.House;
@@ -37,6 +38,16 @@ public class DataParser {
         try {
             // 1. Parse all furniture and their actions
             Map<String, Furniture> furnitureMap = parseFurniture("data/furniture.txt");
+
+            // Set the global work action for the SimCharacter class, removing the dependency on FurnitureFactory
+            Furniture workDesk = furnitureMap.get("WorkDesk");
+            if (workDesk != null && workDesk.getAction("Work") != null) {
+                SimCharacter.setWorkAction(workDesk.getAction("Work"));
+            } else {
+                // This will cause a crash later if work() is called, which is intended to highlight the missing data.
+                System.err.println("CRITICAL: Could not find 'Work' action for 'WorkDesk' in furniture.txt. The 'work' command will fail.");
+            }
+
             // 2. Parse locations, using the furniture map
             Map<String, Location> locations = parseLocations("data/locations.txt", furnitureMap);
             // 3. Parse NPCs, using the locations map
