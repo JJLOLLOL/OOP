@@ -1,4 +1,4 @@
-package Types;
+package models.career;
 
 /**
  * Represents the progression ranks within a career.

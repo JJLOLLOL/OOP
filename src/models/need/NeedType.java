@@ -18,7 +18,4 @@ public enum NeedType {
         return name;
     }
 
-    public static NeedType getType(String name) {
-        return NeedType.valueOf(name);
-    }
 }

@@ -1,8 +1,5 @@
 package models.career;
 
-import Types.CareerList;
-import Types.CareerRankList;
-
 /**
  * Represents a Sim's current occupation.
  * Tracks their selected career path, rank, and XP progress towards the next promotion.

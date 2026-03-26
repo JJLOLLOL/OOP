@@ -1,7 +1,6 @@
 package core;
 
 import Types.AchievementList;
-import Types.CareerList;
 import Types.InteractionList;
 import Types.ShopInventory;
 import java.util.ArrayList;
@@ -10,6 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import models.actions.Furniture;
+import models.career.CareerList;
 import models.character.SimCharacter;
 import models.debuffs.DebuffRegistry;
 import models.location.House;
@@ -281,10 +281,7 @@ public class PlayController {
 
         return pickFromList(input, currentFurniture, idx -> {
             Furniture furniture = currentFurniture.get(idx);
-            House house = player.getCurrentHouse();
-
             ActionResult result = player.buyFurniture(furniture);
-
             NotificationService.add(player, result.getMessage());
             setStep(Step.SHOP);
             currentFurniture = null;
@@ -446,7 +443,7 @@ public class PlayController {
             }
 
             String result = state.getRelationshipService().interact(player, selectedCharacter, chosen);
-            player.adjustNeed(NeedType.getType("Social"), chosen.getEffect());
+            player.adjustNeed(NeedType.SOCIAL, chosen.getEffect());
             addAchievementNotifications(
                     player,
                     state.getAchievementService().evaluateSocialAchievements(

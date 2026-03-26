@@ -1,4 +1,4 @@
-package Types;
+package models.career;
 
 import models.skill.SkillType;
 

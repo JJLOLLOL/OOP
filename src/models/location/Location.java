@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import models.actions.Furniture;
 import models.character.NPCCharacter;
-import ui.ActionResult;
 
 public class Location {
 
