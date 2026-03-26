@@ -1,7 +1,7 @@
 package app;
 
 import core.GameEngine;
-import core.PlayController;
+import controller.PlayController;
 import core.WorldRegistry;
 import data.DataParser;
 import data.WorldData;

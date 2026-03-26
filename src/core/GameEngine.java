@@ -1,6 +1,9 @@
 package core;
 
 import java.util.Scanner;
+
+import controller.CreateSimController;
+import controller.PlayController;
 import services.NpcService;
 import ui.Renderer;
 

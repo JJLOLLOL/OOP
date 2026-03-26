@@ -1,6 +1,6 @@
 package ui.views;
 
-import core.CreateSimController;
+import controller.CreateSimController;
 import core.GameState;
 import models.character.SimCharacter;
 
