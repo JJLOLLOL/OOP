@@ -7,69 +7,26 @@ import models.character.SimCharacter;
 import models.location.Location;
 import ui.Renderer;
 
-/**
- * Handles all player input during the {@link GameState.Phase#CREATE_SIM} phase.
- *
- * <p>
- * Drives a linear multi-step form:
- * <pre>
- *   COUNT → NAME → AGE → GENDER → (repeat for each sim) → CONFIRM → PICK_PLAYER
- * </pre>
- *
- * <p>
- * State is held in static fields because only one creation session can exist
- * per run. The {@link ui.Renderer} reads the accessors at the bottom of this
- * class to know what to display at each step.
- *
- * <p>
- * {@link #handleInput} returns {@code true} when the step advanced so
- * {@link GameEngine} knows to trigger a redraw, and {@code false} when an
- * inline error was shown instead (so the error stays visible).
- */
 public class CreateSimController {
 
-    // ── Step enum ─────────────────────────────────────────────────────────────
-    /**
-     * The sequential steps of the sim-creation wizard. {@link ui.Renderer}
-     * switches on this to display the right prompt.
-     */
+
     public enum Step {
         COUNT, NAME, AGE, GENDER, CONFIRM, PICK_PLAYER
     }
 
-    // ── Constants ────────────────────────────────────────────────────────────
-    /**
-     * Maximum number of Sims that can be created in one session.
-     */
-    private static final int MAX_SIMS = 5;
 
-    // ── Session state ─────────────────────────────────────────────────────────
-    private static Step step = Step.COUNT;
-    private static int totalSims = 0;
-    private static int currentIndex = 0;
+    private  final int MAX_SIMS = 5;
 
-    /**
-     * In-flight fields for the sim currently being entered.
-     */
-    private static String name = "", age = "", gender = "";
+    private  Step step = Step.COUNT;
+    private  int totalSims = 0;
+    private  int currentIndex = 0;
 
-    /**
-     * Sims confirmed so far, stored as {name, age, gender} string arrays.
-     */
-    private static final List<String[]> committed = new ArrayList<>();
 
-    // ── Entry point ───────────────────────────────────────────────────────────
-    /**
-     * Processes one line of player input for the current wizard step.
-     *
-     * @param input the trimmed player input line
-     * @param state the live game state
-     * @param world the world registry
-     * @return {@code true} if the step advanced and the screen should redraw;
-     * {@code false} if an inline error was shown and the screen should remain
-     * as-is so the player can read it
-     */
-    public static boolean handleInput(String input, GameState state, WorldRegistry world) {
+    private  String name = "", age = "", gender = "";
+
+    private  final List<String[]> committed = new ArrayList<>();
+
+    public  boolean handleInput(String input, GameState state, WorldRegistry world) {
         switch (step) {
 
             case COUNT -> {
@@ -159,15 +116,7 @@ public class CreateSimController {
         return true;
     }
 
-    // ── Private helpers ───────────────────────────────────────────────────────
-    /**
-     * Converts all committed sim data into {@link SimCharacter} objects,
-     * registers their relationships, and adds them to the game state.
-     * All sims are assigned to the shared global Home location from the world.
-     * Transitions to {@link Step#PICK_PLAYER} if multiple sims were created, or
-     * directly to {@link GameState.Phase#PLAYING} for a single sim.
-     */
-    private static void finaliseSims(GameState state, WorldRegistry world) {
+    private  void finaliseSims(GameState state, WorldRegistry world) {
         Location home = world.getLocation("Home");
 
         for (String[] data : committed) {
@@ -187,51 +136,29 @@ public class CreateSimController {
         }
     }
 
-    private static void setStep(Step next) {
+    private  void setStep(Step next) {
         step = next;
     }
 
-    // ── Accessors for Renderer ────────────────────────────────────────────────
-    /**
-     * Returns the current wizard step.
-     */
-    public static Step getStep() {
+    public  Step getStep() {
         return step;
     }
-
-    /**
-     * Returns the total number of sims to create this session.
-     */
-    public static int getTotalSims() {
+    public  int getTotalSims() {
         return totalSims;
     }
-
-    /**
-     * Returns the zero-based index of the sim currently being entered.
-     */
-    public static int getCurrentIndex() {
+    public  int getCurrentIndex() {
         return currentIndex;
     }
 
-    /**
-     * Returns the list of sims confirmed so far as {@code {name, age, gender}}
-     * arrays.
-     */
-    public static List<String[]> getCommitted() {
+    public  List<String[]> getCommitted() {
         return committed;
     }
 
-    /**
-     * Returns the name typed for the sim currently in progress.
-     */
-    public static String getInFlightName() {
+    public  String getInFlightName() {
         return name;
     }
 
-    /**
-     * Returns the age typed for the sim currently in progress.
-     */
-    public static String getInFlightAge() {
+    public  String getInFlightAge() {
         return age;
     }
 }
