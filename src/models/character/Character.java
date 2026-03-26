@@ -3,8 +3,8 @@ package models.character;
 
 import models.character.relationship.CharacterRelationship;
 import models.location.Location;
-import testTypes.Gender;
-import testTypes.RelationshipList;
+import types.Gender;
+import types.RelationshipList;
 
 public abstract class Character {
     private final String name;

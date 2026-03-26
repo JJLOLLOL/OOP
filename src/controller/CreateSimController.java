@@ -8,7 +8,7 @@ import core.GameState;
 import core.WorldRegistry;
 import models.character.SimCharacter;
 import models.location.Location;
-import testTypes.Gender;
+import types.Gender;
 import ui.Renderer;
 
 /**

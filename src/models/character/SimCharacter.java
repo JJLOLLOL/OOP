@@ -17,7 +17,7 @@ import models.location.House;
 import models.location.Location;
 import models.need.*;
 import models.skill.SkillType;
-import testTypes.Gender;
+import types.Gender;
 
 
 

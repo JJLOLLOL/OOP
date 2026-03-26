@@ -6,8 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import java.util.ArrayList;
 
 import models.location.Location;
-import testTypes.Gender;
-import testTypes.RelationshipList;
+import types.Gender;
+import types.RelationshipList;
 
 import org.junit.jupiter.api.Test;
 

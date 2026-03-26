@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import models.character.SimCharacter;
 import models.location.Location;
 import models.need.NeedType;
-import testTypes.Gender;
+import types.Gender;
 
 import org.junit.jupiter.api.Test;
 

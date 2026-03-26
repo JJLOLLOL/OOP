@@ -20,8 +20,8 @@ import models.location.Location;
 import models.need.NeedType;
 import models.skill.SkillType;
 import services.NotificationService;
-import testTypes.AchievementList;
-import testTypes.InteractionList;
+import types.AchievementList;
+import types.InteractionList;
 import ui.Renderer;
 
 /**
