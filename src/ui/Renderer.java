@@ -1,7 +1,7 @@
 package ui;
 
 import core.GameState;
-import core.CreateSimController;
+import controller.CreateSimController;
 import core.WorldRegistry;
 import ui.views.CreateSimView;
 import ui.views.GameplayView;

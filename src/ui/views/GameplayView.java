@@ -1,7 +1,7 @@
 package ui.views;
 
 import core.GameState;
-import core.PlayController;
+import controller.PlayController;
 import core.WorldRegistry;
 import models.character.SimCharacter;
 import models.location.Location;

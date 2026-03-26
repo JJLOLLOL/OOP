@@ -3,7 +3,7 @@ package ui.panels;
 import Types.InteractionList;
 import Types.RelationshipList;
 import core.GameState;
-import core.PlayController;
+import controller.PlayController;
 import core.WorldRegistry;
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package core;
+package controller;
 
 import Types.AchievementList;
 import Types.InteractionList;
@@ -8,6 +8,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import core.ActionResult;
+import core.GameEngine;
+import core.GameState;
+import core.WorldRegistry;
 import data.ShopInventory;
 import models.action.ActionType;
 import models.career.CareerList;

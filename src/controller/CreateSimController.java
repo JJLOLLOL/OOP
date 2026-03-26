@@ -1,8 +1,11 @@
-package core;
+package controller;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import core.GameEngine;
+import core.GameState;
+import core.WorldRegistry;
 import models.character.SimCharacter;
 import models.location.Location;
 import Types.Gender;
