@@ -1,4 +1,4 @@
-package Types;
+package models.career;
 
 public enum CareerList {
     SOFTWARE_DEVELOPER("Software Developer", 225.0, 8.0, new SkillType[]{SkillType.PROGRAMMING, SkillType.LOGIC, SkillType.CREATIVITY}),

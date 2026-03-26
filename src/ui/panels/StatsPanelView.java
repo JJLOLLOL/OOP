@@ -1,12 +1,13 @@
 package ui.panels;
 
-import Types.CareerList;
 import Types.RelationshipList;
 import core.GameState;
 import core.PlayController;
 import core.WorldRegistry;
 import java.util.ArrayList;
 import java.util.List;
+
+import models.career.CareerList;
 import models.character.NPCCharacter;
 import models.character.SimCharacter;
 import models.location.Location;

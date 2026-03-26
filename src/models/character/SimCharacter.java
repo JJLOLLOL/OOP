@@ -1,9 +1,9 @@
 package models.character;
 
-import Types.CareerList;
 import core.ActionResult;
 import models.actions.Furniture;
 import models.career.Career;
+import models.career.CareerList;
 import models.character.finances.CharacterFinances;
 import models.character.housing.CharacterHousing;
 import models.character.stats.CharacterStats;

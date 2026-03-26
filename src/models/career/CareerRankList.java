@@ -1,4 +1,4 @@
-package Types;
+package models.career;
 
 public enum CareerRankList {
     INTERN("Intern", 0.5),

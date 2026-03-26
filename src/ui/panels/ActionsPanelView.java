@@ -1,6 +1,5 @@
 package ui.panels;
 
-import Types.CareerList;
 import Types.InteractionList;
 import Types.RelationshipList;
 import core.GameState;
@@ -15,6 +14,7 @@ import java.util.stream.Collectors;
 
 import models.actions.Furniture;
 import models.actions.FurnitureAction;
+import models.career.CareerList;
 import models.character.SimCharacter;
 import models.location.House;
 import models.location.Location;
@@ -124,44 +124,64 @@ public class ActionsPanelView {
             case PICK_CAREER -> {
                 lines.add(menuTitle("Choose Career"));
                 lines.add("");
-
+            
                 List<CareerList> careers = PlayController.getAvailableCareers();
-
+            
+                int indexWidth = String.valueOf(careers.size()).length() + 2; // e.g. "12."
                 int titleWidth = careers.stream()
                         .mapToInt(c -> c.getTitle().length())
                         .max()
                         .orElse(10) + 2;
-
-                lines.add(MUTED + "    "
-                        + pad("Career", titleWidth) + "  "
-                        + pad("Salary", 9) + "  "
-                        + pad("Hours", 5) + "  "
-                        + "Skills" + RESET);
-
-                lines.add(MUTED + "    " + "─".repeat(titleWidth + 36) + RESET);
-
+            
+                String headerIndent = "  ";
+                String rowPrefix = headerIndent
+                        + pad("", indexWidth) + " "
+                        + pad("", titleWidth) + " "
+                        + pad("", 9) + "  "
+                        + pad("", 5) + "  ";
+            
+                lines.add(MUTED + headerIndent
+                    + pad("", indexWidth)
+                    + pad("Career", titleWidth) + " "
+                    + pad("Salary", 9) + " "
+                    + pad("Hours", 6) + " "
+                    + "Skills" + RESET);
+            
+                lines.add(MUTED + "    " + "─".repeat(rowPrefix.length() - headerIndent.length() + "Skills".length()) + RESET);
+            
                 for (int i = 0; i < careers.size(); i++) {
                     CareerList career = careers.get(i);
-
+            
+                    String numberText = pad((i + 1) + ".", indexWidth);
                     String salaryText = String.format("$%.0f/d", career.getBaseSalary());
                     String hoursText = career.getWorkingHours() > 0
                             ? (int) career.getWorkingHours() + "h"
                             : "";
-
-                    String skillsText = Arrays.stream(career.getRelatedSkills())
-                            .map(SkillType::getName)   // or SkillType::name if you do not have getName()
-                            .collect(Collectors.joining(", "));
-
-                    lines.add(BRIGHT_YELLOW + (i + 1) + ". " + RESET
-                            + BRIGHT_WHITE + pad(career.getTitle(), titleWidth) + RESET
-                            + "  " + MUTED + pad(salaryText, 9) + RESET
-                            + "  " + MUTED + pad(hoursText, 5) + RESET
-                            + "  " + BRIGHT_BLACK + skillsText + RESET);
+            
+                    SkillType[] skills = career.getRelatedSkills();
+            
+                    for (int j = 0; j < skills.length; j++) {
+                        String skillText = skills[j].getName();
+            
+                        if (j == 0) {
+                            lines.add(BRIGHT_YELLOW + numberText + RESET + " "
+                                    + BRIGHT_WHITE + pad(career.getTitle(), titleWidth) + RESET
+                                    + "  " + MUTED + pad(salaryText, 9) + RESET
+                                    + "  " + MUTED + pad(hoursText, 5) + RESET
+                                    + "  " + BRIGHT_BLACK + skillText + RESET);
+                        } else {
+                            lines.add(" ".repeat(indexWidth + 1)
+                                    + pad("", titleWidth)
+                                    + "  " + pad("", 9)
+                                    + "  " + pad("", 5)
+                                    + "  " + BRIGHT_BLACK + skillText + RESET);
+                        }
+                    }
                 }
-
-    lines.add("");
-    lines.add(backItem());
-}
+            
+                lines.add("");
+                lines.add(backItem());
+            }
             case SHOP -> {
                 lines.add(menuTitle("Shop"));
                 lines.add(menuItem("1", "Browse Houses"));

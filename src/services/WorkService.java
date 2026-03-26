@@ -1,11 +1,11 @@
 package services;
 
-import Types.CareerList;
 import core.GameClock;
 import java.util.Map;
 
 import models.actions.FurnitureAction;
 import models.actions.FurnitureFactory;
+import models.career.CareerList;
 import models.character.SimCharacter;
 import models.need.NeedType;
 import models.skill.SkillType;

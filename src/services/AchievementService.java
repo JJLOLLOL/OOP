@@ -1,7 +1,6 @@
 package services;
 
 import Types.AchievementList;
-import Types.CareerList;
 import Types.RelationshipList;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -11,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
 
+import models.career.CareerList;
 import models.character.Character;
 import models.character.SimCharacter;
 import models.skill.Skill;
