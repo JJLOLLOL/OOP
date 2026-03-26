@@ -116,7 +116,7 @@ public class FurnitureAction implements ActivityInterface {
         }
 
         // ── Pre-checks ────────────────────────────────────────────────────────
-        if (character.getMoney() < activityCost) {
+        if (!character.canAfford(activityCost)) {
             return false;
         }
 
