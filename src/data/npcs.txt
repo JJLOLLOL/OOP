@@ -1,0 +1,176 @@
+# Non-Playable Characters
+# Format:
+# [NPC]
+# NAME: <Name>
+# AGE: <Age>
+# GENDER: <Gender>
+# DESC: <Description>
+# SCHEDULE: <Time1>,<Location1>;<Time2>,<Location2>;...
+
+[NPC]
+NAME: Nicholas
+AGE: 30
+GENDER: Male
+DESC: A friendly local.
+SCHEDULE: 0,Park;900,Park;1500,Gym;2100,Cafe
+
+[NPC]
+NAME: Jia Jing
+AGE: 25
+GENDER: Female
+DESC: A busy student.
+SCHEDULE: 0,Library;800,Library;1200,Cafe;1800,Gym
+
+[NPC]
+NAME: Mahesha
+AGE: 40
+GENDER: Male
+DESC: A frequent gym-goer.
+SCHEDULE: 0,Gym;600,Gym;1400,Library;2200,Park
+
+[NPC]
+NAME: Priya
+AGE: 34
+GENDER: Female
+DESC: A marketing executive who lunches late.
+SCHEDULE: 0,Restaurant;800,Cafe;1000,Office;1900,Restaurant
+
+[NPC]
+NAME: Damien
+AGE: 28
+GENDER: Male
+DESC: A personal trainer who eats big.
+SCHEDULE: 0,Restaurant;700,Gym;1300,Restaurant;2200,Club
+
+[NPC]
+NAME: Soo-Yeon
+AGE: 31
+GENDER: Female
+DESC: A food blogger with a love of reading.
+SCHEDULE: 0,Restaurant;900,Park;1200,Restaurant;1600,Library
+
+[NPC]
+NAME: Tariq
+AGE: 27
+GENDER: Male
+DESC: A disciplined software engineer.
+SCHEDULE: 0,Gym;600,Gym;900,Office;1800,Park
+
+[NPC]
+NAME: Ingrid
+AGE: 22
+GENDER: Female
+DESC: A fitness influencer between shoots.
+SCHEDULE: 0,Gym;800,Cafe;1400,Gym;2000,Restaurant
+
+[NPC]
+NAME: Bayo
+AGE: 35
+GENDER: Male
+DESC: An amateur boxer who reads philosophy.
+SCHEDULE: 0,Gym;700,Gym;1500,Library;2300,Club
+
+[NPC]
+NAME: Clara
+AGE: 29
+GENDER: Female
+DESC: A freelance illustrator who sketches outdoors.
+SCHEDULE: 0,Park;730,Park;1100,Cafe;1700,Library
+
+[NPC]
+NAME: Reuben
+AGE: 45
+GENDER: Male
+DESC: A retired teacher who stays active.
+SCHEDULE: 0,Park;800,Park;1200,Restaurant;1500,Gym
+
+[NPC]
+NAME: Min-Ji
+AGE: 23
+GENDER: Female
+DESC: A night-owl dancer who jogs to wake up.
+SCHEDULE: 0,Club;1400,Park;1900,Cafe;2200,Club
+
+[NPC]
+NAME: Oliver
+AGE: 38
+GENDER: Male
+DESC: A remote consultant glued to his laptop.
+SCHEDULE: 0,Cafe;830,Cafe;1500,Park;1930,Restaurant
+
+[NPC]
+NAME: Fatima
+AGE: 26
+GENDER: Female
+DESC: A PhD candidate fuelled entirely by espresso.
+SCHEDULE: 0,Cafe;900,Cafe;1300,Library;1900,Cafe
+
+[NPC]
+NAME: Leon
+AGE: 24
+GENDER: Male
+DESC: A musician who works on lyrics over coffee.
+SCHEDULE: 0,Cafe;800,Gym;1300,Cafe;2100,Club
+
+[NPC]
+NAME: Amara
+AGE: 33
+GENDER: Female
+DESC: A novelist working on her second book.
+SCHEDULE: 0,Library;900,Library;1300,Restaurant;1500,Library
+
+[NPC]
+NAME: Henrik
+AGE: 52
+GENDER: Male
+DESC: A retired professor who can't stop researching.
+SCHEDULE: 0,Library;800,Cafe;1200,Library;1800,Park
+
+[NPC]
+NAME: Yuki
+AGE: 20
+GENDER: Female
+DESC: A quiet university student.
+SCHEDULE: 0,Library;900,Library;1500,Gym;2000,Cafe
+
+[NPC]
+NAME: Marco
+AGE: 26
+GENDER: Male
+DESC: A bartender on his nights off.
+SCHEDULE: 0,Club;1100,Cafe;1800,Restaurant;2200,Club
+
+[NPC]
+NAME: Zara
+AGE: 21
+GENDER: Female
+DESC: A university student who lives for weekends.
+SCHEDULE: 0,Club;1400,Gym;1900,Cafe;2300,Club
+
+[NPC]
+NAME: Desmond
+AGE: 30
+GENDER: Male
+DESC: An accountant who unwinds hard.
+SCHEDULE: 0,Club;800,Park;1000,Office;2100,Club
+
+[NPC]
+NAME: Nadia
+AGE: 37
+GENDER: Female
+DESC: A project manager always on deadline.
+SCHEDULE: 0,Office;800,Cafe;1000,Office;1900,Restaurant
+
+[NPC]
+NAME: Kwame
+AGE: 41
+GENDER: Male
+DESC: A senior analyst who mentors junior staff.
+SCHEDULE: 0,Office;630,Gym;900,Office;1800,Library
+
+[NPC]
+NAME: Sophie
+AGE: 32
+GENDER: Female
+DESC: A UX designer who needs fresh air to think.
+SCHEDULE: 0,Office;900,Office;1200,Restaurant;1600,Park

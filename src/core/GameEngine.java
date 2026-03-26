@@ -43,9 +43,9 @@ public class GameEngine {
     private final Thread inputThreadHandle;
 
     // ── Constructor ───────────────────────────────────────────────────────────
-    public GameEngine() {
+    public GameEngine(WorldRegistry world) {
         this.state = new GameState();
-        this.world = new WorldRegistry();
+        this.world = world;
         this.npcService = new NpcService(world);
         this.createSimController = new CreateSimController();
 
