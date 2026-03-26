@@ -2,6 +2,8 @@ package models.character;
 
 import java.util.Map;
 
+import javax.swing.Action;
+
 import core.ActionResult;
 import core.GameClock;
 import models.actions.Furniture;
@@ -203,6 +205,13 @@ public class SimCharacter extends Character {
             case HOUSE_EMPTY: return ActionResult.failure("Your house is empty.");
             default: throw new IllegalStateException("Unexpected result: " + result);
         }
+    }
+    
+    public String getPurchaseMessage(House house, boolean success) {
+        if (!success) {
+            return "Insufficient funds! You need $" + house.getPrice() + " to purchase this house.";
+        }
+        return getName() + " purchased " + house.getLocationName() + " for $" + house.getPrice() + "!";
     }
 
 }
