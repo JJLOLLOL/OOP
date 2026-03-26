@@ -56,17 +56,17 @@ public class PlayController {
     }
 
     // ── Session state ─────────────────────────────────────────────────────────
-    private static Step step = Step.MAIN;
-    private static Furniture selectedFurniture = null;
-    private static models.character.Character selectedCharacter = null;
-    private static List<House> currentHouses = null;
-    private static List<Furniture> currentFurniture = null;
-    private static List<House> shopInventoryHouses = null; // Persistent shop inventory (initialized once)
+    private  Step step = Step.MAIN;
+    private  Furniture selectedFurniture = null;
+    private  models.character.Character selectedCharacter = null;
+    private  List<House> currentHouses = null;
+    private  List<Furniture> currentFurniture = null;
+    private  List<House> shopInventoryHouses = null; // Persistent shop inventory (initialized once)
 
     /**
      * Available careers shown in the PICK_CAREER screen (excludes JOBLESS).
      */
-    private static final List<CareerList> AVAILABLE_CAREERS = Arrays.stream(CareerList.values())
+    private  final List<CareerList> AVAILABLE_CAREERS = Arrays.stream(CareerList.values())
             .filter(c -> c != CareerList.JOBLESS)
             .collect(Collectors.toList());
 
@@ -80,7 +80,7 @@ public class PlayController {
      * @return {@code true} if the step changed and the screen should redraw;
      * {@code false} if an inline error was shown
      */
-    public static boolean handleInput(String input, GameState state, WorldRegistry world) {
+    public  boolean handleInput(String input, GameState state, WorldRegistry world) {
         // Advance notification timer on every player action
         NotificationService.tick(state.getActivePlayer());
 
@@ -134,7 +134,7 @@ public class PlayController {
      * @param state the {@link GameState}
      * @return {@code true} if the step changed; {@code false} if input was invalid
      */
-    private static boolean handleMain(String input, GameState state) {
+    private  boolean handleMain(String input, GameState state) {
         switch (input) {
             case "1" ->
                 setStep(Step.INTERACTABLES);
@@ -170,7 +170,7 @@ public class PlayController {
      * @param state the {@link GameState}
      * @return {@code true} if the step changed; {@code false} if input was invalid
      */
-    private static boolean handlePickCareer(String input, SimCharacter player, GameState state) {
+    private  boolean handlePickCareer(String input, SimCharacter player, GameState state) {
         if (input.equals("0")) {
             setStep(Step.MAIN);
             return true;
@@ -204,7 +204,7 @@ public class PlayController {
      * @param state the {@link GameState}
      * @return {@code true} if the step changed; {@code false} if validation failed
      */
-    private static boolean handleShop(String input, SimCharacter player, GameState state) {
+    private  boolean handleShop(String input, SimCharacter player, GameState state) {
         if (input.equals("0")) {
             setStep(Step.MAIN);
             return true;
@@ -256,7 +256,7 @@ public class PlayController {
         }
     }
 
-    private static boolean handleShopHouses(String input, SimCharacter player, GameState state, WorldRegistry world) {
+    private  boolean handleShopHouses(String input, SimCharacter player, GameState state, WorldRegistry world) {
         if (input.equals("0")) {
             currentHouses = null;
             setStep(Step.SHOP);
@@ -272,7 +272,7 @@ public class PlayController {
         });
     }
 
-    private static boolean handleShopFurniture(String input, SimCharacter player, GameState state) {
+    private  boolean handleShopFurniture(String input, SimCharacter player, GameState state) {
         if (input.equals("0")) {
             currentFurniture = null;
             setStep(Step.SHOP);
@@ -302,7 +302,7 @@ public class PlayController {
      * @param state the {@link GameState}
      * @return {@code true} if the step changed; {@code false} if selection was invalid
      */
-    private static boolean handleSellFurniture(String input, SimCharacter player, GameState state) {
+    private  boolean handleSellFurniture(String input, SimCharacter player, GameState state) {
         if (input.equals("0")) {
             currentFurniture = null;
             setStep(Step.SHOP);
@@ -332,7 +332,7 @@ public class PlayController {
      * @param loc the {@link Location} where the Sim currently is
      * @return {@code true} if the step changed; {@code false} if input was invalid
      */
-    private static boolean handleInteractables(String input, Location loc) {
+    private  boolean handleInteractables(String input, Location loc) {
         if (input.equals("0")) {
             setStep(Step.MAIN);
             return true;
@@ -357,7 +357,7 @@ public class PlayController {
      * </ul>
      * Input {@code "0"} goes back to the furniture list.
      */
-    private static boolean handleInteractableAction(String input, SimCharacter player,
+    private  boolean handleInteractableAction(String input, SimCharacter player,
             GameState state) {
         if (input.equals("0")) {
             selectedFurniture = null;
@@ -403,7 +403,7 @@ public class PlayController {
     /**
      * Socialise list: select a nearby character. {@code "0"} → main.
      */
-    private static boolean handleSocialise(String input, Location loc,
+    private  boolean handleSocialise(String input, Location loc,
             GameState state, WorldRegistry world) {
         if (input.equals("0")) {
             setStep(Step.MAIN);
@@ -419,7 +419,7 @@ public class PlayController {
     /**
      * Socialise action: apply chosen interaction. {@code "0"} → socialise.
      */
-    private static boolean handleSocialiseAction(String input, SimCharacter player,
+    private  boolean handleSocialiseAction(String input, SimCharacter player,
             GameState state, WorldRegistry world) {
         if (input.equals("0")) {
             selectedCharacter = null;
@@ -466,7 +466,7 @@ public class PlayController {
      * @param world the {@link WorldRegistry} providing the list of all locations
      * @return {@code true} if the step changed; {@code false} if input was invalid
      */
-    private static boolean handleChangeLocation(String input, SimCharacter player,
+    private  boolean handleChangeLocation(String input, SimCharacter player,
             WorldRegistry world) {
         if (input.equals("0")) {
             setStep(Step.MAIN);
@@ -489,7 +489,7 @@ public class PlayController {
      * @param player the {@link SimCharacter} who unlocked the achievements
      * @param unlockedAchievements a list of {@link AchievementList} values that were just unlocked
      */
-    private static void addAchievementNotifications(
+    private  void addAchievementNotifications(
             SimCharacter player,
             List<AchievementList> unlockedAchievements) {
         for (AchievementList achievement : unlockedAchievements) {
@@ -509,7 +509,7 @@ public class PlayController {
      * @param action the {@link models.actions.FurnitureAction} that was performed
      * @param state the {@link GameState} for achievement evaluation
      */
-    private static void addSkillAchievementNotifications(
+    private  void addSkillAchievementNotifications(
             SimCharacter player,
             models.actions.FurnitureAction action,
             GameState state) {
@@ -527,7 +527,7 @@ public class PlayController {
      * @param world the {@link WorldRegistry} providing all NPCs
      * @return a {@link List} containing all {@link SimCharacter}s and {@link models.character.NPCCharacter}s
      */
-    private static List<models.character.Character> getAllCharacters(GameState state, WorldRegistry world) {
+    private  List<models.character.Character> getAllCharacters(GameState state, WorldRegistry world) {
         List<models.character.Character> characters = new ArrayList<>();
         characters.addAll(state.getSims());
         characters.addAll(world.getAllNPCs());
@@ -546,7 +546,7 @@ public class PlayController {
      * @param state the {@link GameState}
      * @return {@code true} if the step changed; {@code false} if input was invalid
      */
-    private static boolean handleSwitchCharacter(String input, GameState state) {
+    private  boolean handleSwitchCharacter(String input, GameState state) {
         if (input.equals("0")) {
             setStep(Step.MAIN);
             return true;
@@ -573,7 +573,7 @@ public class PlayController {
      * @param action the {@link IndexAction} callback to execute with the selected index
      * @return {@code true} if selection was successful; {@code false} if input was invalid
      */
-    private static boolean pickFromList(String input, List<?> list, IndexAction action) {
+    private  boolean pickFromList(String input, List<?> list, IndexAction action) {
         try {
             int idx = Integer.parseInt(input) - 1;
             if (idx < 0 || idx >= list.size()) {
@@ -608,42 +608,42 @@ public class PlayController {
     /**
      * Returns the current menu step.
      */
-    public static Step getStep() {
+    public  Step getStep() {
         return step;
     }
 
     /**
      * Returns the furniture selected in INTERACTABLE_ACTION, or {@code null}.
      */
-    public static Furniture getSelectedFurniture() {
+    public  Furniture getSelectedFurniture() {
         return selectedFurniture;
     }
 
     /**
      * Returns the character selected in SOCIALISE_ACTION, or {@code null}.
      */
-    public static models.character.Character getSelectedCharacter() {
+    public  models.character.Character getSelectedCharacter() {
         return selectedCharacter;
     }
 
     /**
      * Returns the list of selectable careers (excludes JOBLESS).
      */
-    public static List<CareerList> getAvailableCareers() {
+    public  List<CareerList> getAvailableCareers() {
         return AVAILABLE_CAREERS;
     }
 
     /**
      * Returns the list of houses in the current world.
      */
-    public static List<House> getCurrentHouses() {
+    public  List<House> getCurrentHouses() {
         return currentHouses;
     }
 
     /**
      * Returns the list of furniture available for purchase in the current world.
      */
-    public static List<Furniture> getCurrentFurniture() {
+    public  List<Furniture> getCurrentFurniture() {
         return currentFurniture;
     }
 
@@ -651,7 +651,7 @@ public class PlayController {
      * Returns all characters present at {@code loc}: other player sims first,
      * then NPCs. Excludes the active player.
      */
-    public static List<models.character.Character> charsAt(Location loc, GameState state,
+    public  List<models.character.Character> charsAt(Location loc, GameState state,
             WorldRegistry world) {
         SimCharacter player = state.getActivePlayer();
         List<models.character.Character> chars = new ArrayList<>();
@@ -669,7 +669,7 @@ public class PlayController {
      *
      * @param next the {@link Step} to transition to
      */
-    private static void setStep(Step next) {
+    private  void setStep(Step next) {
         step = next;
     }
 }
