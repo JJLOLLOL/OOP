@@ -2,7 +2,6 @@ package models.character;
 
 import java.util.Map;
 
-import Types.Gender;
 import core.ActionResult;
 import core.GameClock;
 import models.career.Career;
@@ -18,6 +17,7 @@ import models.location.House;
 import models.location.Location;
 import models.need.*;
 import models.skill.SkillType;
+import types.Gender;
 
 
 

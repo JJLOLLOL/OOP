@@ -1,10 +1,10 @@
 package services;
 
-import Types.InteractionList;
 import java.util.List;
 import models.character.Character;
 import models.character.NPCCharacter;
 import models.character.SimCharacter;
+import types.InteractionList;
 
 public class RelationshipService {
 

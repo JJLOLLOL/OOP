@@ -1,6 +1,6 @@
 package models.character;
 
-import Types.RelationshipList;
+import types.RelationshipList;
 
 /**
  * Represents one relationship bond between two characters.

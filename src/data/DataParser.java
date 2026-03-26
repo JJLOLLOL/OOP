@@ -12,13 +12,13 @@ import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import Types.Gender;
 import models.character.NPCCharacter;
 import models.character.SimCharacter;
 import models.furniture.Furniture;
 import models.furniture.FurnitureAction;
 import models.need.NeedType;
 import models.skill.SkillType;
+import types.Gender;
 import models.location.House;
 import models.location.Location;
 

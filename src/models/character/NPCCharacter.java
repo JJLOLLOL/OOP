@@ -2,8 +2,8 @@ package models.character;
 
 import java.util.TreeMap;
 
-import Types.Gender;
 import models.location.Location;
+import types.Gender;
 
 /**
  * Represents a Non-Playable Character (NPC) in the game world.

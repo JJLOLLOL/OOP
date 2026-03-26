@@ -1,7 +1,5 @@
 package services;
 
-import Types.AchievementList;
-import Types.RelationshipList;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -14,6 +12,8 @@ import models.career.CareerList;
 import models.character.Character;
 import models.character.SimCharacter;
 import models.skill.SkillType;
+import types.AchievementList;
+import types.RelationshipList;
 
 
 public class AchievementService {
