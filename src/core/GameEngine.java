@@ -36,16 +36,6 @@ public class GameEngine {
      */
     private static final double NS_PER_UPDATE = 1_000_000_000.0 / UPDATES_PER_SECOND;
 
-    /**
-     * Number of UI renders per real second.
-     */
-    private static final double RENDERS_PER_SECOND = 1.0;
-
-    /**
-     * Nanoseconds between each UI render.
-     */
-    private static final long NS_PER_RENDER = (long) (1_000_000_000.0 / RENDERS_PER_SECOND);
-
     // ── Fields ────────────────────────────────────────────────────────────────
     private final GameState state;
     private final WorldRegistry world;
@@ -85,7 +75,6 @@ public class GameEngine {
     private void run() {
         long lastTime = System.nanoTime();
         double unprocessed = 0;
-        long lastRenderTime = System.nanoTime(); // Track last render time for periodic updates
         Renderer.render(state, world, createSimController, playController); // show the initial create-sim screen
 
         while (state.isRunning()) {
@@ -105,11 +94,8 @@ public class GameEngine {
                 inputCausedRender = handleInput(input.trim());
             }
 
-            // Render periodically during PLAYING phase, or immediately if input caused a state change
-            // In CREATE_SIM phase, only render if inputCausedRender is true.
-            if (inputCausedRender || (state.getPhase() == GameState.Phase.PLAYING && (now - lastRenderTime >= NS_PER_RENDER))) {
+            if (inputCausedRender) {
                 Renderer.render(state, world, createSimController, playController);
-                lastRenderTime = now;
             }
 
             // Sleep to prevent busy-waiting and reduce CPU usage
