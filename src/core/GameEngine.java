@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 import controller.CreateSimController;
 import controller.PlayController;
+import data.DataParser;
 import services.NpcService;
 import ui.Renderer;
 
@@ -40,17 +41,19 @@ public class GameEngine {
     private final WorldRegistry world;
     private final NpcService npcService;
     private final CreateSimController createSimController;
+    private final PlayController playController;
 
     private final InputQueue inputQueue;
     private final InputThread inputThread;
     private final Thread inputThreadHandle;
 
     // ── Constructor ───────────────────────────────────────────────────────────
-    public GameEngine(WorldRegistry world) {
+    public GameEngine(WorldRegistry world, data.ShopInventory shopInventory) {
         this.state = new GameState();
         this.world = world;
         this.npcService = new NpcService(world);
         this.createSimController = new CreateSimController();
+        this.playController = new PlayController(shopInventory);
 
         this.inputQueue = new InputQueue();
         this.inputThread = new InputThread(new Scanner(System.in), inputQueue);
@@ -72,8 +75,7 @@ public class GameEngine {
     private void run() {
         long lastTime = System.nanoTime();
         double unprocessed = 0;
-
-        Renderer.render(state, world, createSimController); // show the initial create-sim screen
+        Renderer.render(state, world, createSimController, playController); // show the initial create-sim screen
 
         while (state.isRunning()) {
             long now = System.nanoTime();
@@ -87,10 +89,16 @@ public class GameEngine {
             }
 
             String input = inputQueue.poll();
+            boolean inputCausedRender = false;
             if (input != null) {
-                handleInput(input.trim());
+                inputCausedRender = handleInput(input.trim());
             }
 
+            if (inputCausedRender) {
+                Renderer.render(state, world, createSimController, playController);
+            }
+
+            // Sleep to prevent busy-waiting and reduce CPU usage
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {
@@ -116,6 +124,7 @@ public class GameEngine {
 
             for (models.character.SimCharacter sim : state.getSims()) {
                 sim.updateNeeds(dt / 60.0);
+                services.NotificationService.tick(sim); // Tick notifications for all Sims
             }
 
             npcService.updateNPCLocations(state.getGameClock());
@@ -128,19 +137,15 @@ public class GameEngine {
      * re-renders if the controller reports that the step changed. If the
      * controller showed an inline error instead, the render is skipped so the
      * error remains visible until the player types their next input.
+     *
+     * @return {@code true} if the UI needs to be re-rendered due to a state change, {@code false} otherwise.
      */
-    private void handleInput(String input) {
-        boolean changed = switch (state.getPhase()) {
-            case CREATE_SIM ->
-                createSimController.handleInput(input, state, world);
-            case PLAYING ->
-                PlayController.handleInput(input, state, world);
-            default ->
-                false;
+    private boolean handleInput(String input) { // Changed return type to boolean
+        return switch (state.getPhase()) {
+            case CREATE_SIM -> createSimController.handleInput(input, state, world);
+            case PLAYING -> playController.handleInput(input, state, world);
+            default -> false; // Should not happen if state.isRunning() is true
         };
-        if (changed) {
-            Renderer.render(state, world, createSimController);
-        }
     }
 
     // ── Shutdown ──────────────────────────────────────────────────────────────

@@ -20,7 +20,6 @@ public class Main {
         WorldData worldData = parser.loadWorldData();
 
         WorldRegistry world = new WorldRegistry(worldData.getLocations(), worldData.getNpcs());
-        PlayController.setShopInventory(worldData.getShopInventory());
-        new GameEngine(world).start();
+        new GameEngine(world, worldData.getShopInventory()).start();
     }
 }
