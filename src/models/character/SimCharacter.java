@@ -8,7 +8,6 @@ import core.ActionResult;
 import core.GameClock;
 import models.actions.Furniture;
 import models.actions.FurnitureAction;
-import models.actions.FurnitureFactory;
 import models.career.Career;
 import models.career.CareerList;
 import models.career.PromotionStatus;
@@ -32,8 +31,7 @@ public class SimCharacter extends Character {
     private static final double CAREER_XP_PER_SHIFT = 20.0;
     private static final double SKILL_XP_PER_HOUR = 5.0;
 
-    private static final FurnitureAction WORK_ACTION = FurnitureFactory.createWorkDesk().getAction("Work");
-
+    private static FurnitureAction WORK_ACTION;
 
     public SimCharacter(String name, int age, String gender, Location defaultLocation) {
         super(name, age, gender, defaultLocation);
@@ -42,6 +40,14 @@ public class SimCharacter extends Character {
         this.finances = new CharacterFinances();
         this.housing = new CharacterHousing();
         this.career = new Career(CareerList.JOBLESS);
+    }
+
+    /**
+     * Sets the global work action. This should be called once after data is loaded.
+     * @param action The action defining the effects of working a shift.
+     */
+    public static void setWorkAction(FurnitureAction action) {
+        WORK_ACTION = action;
     }
 
     // ======== ????
@@ -161,6 +167,9 @@ public class SimCharacter extends Character {
         return ActionResult.success(message.toString());
     }
     private void applyWorkNeedEffects(double workFraction) {
+        if (WORK_ACTION == null) {
+            throw new IllegalStateException("Work action has not been initialized. Ensure DataParser has set this value.");
+        }
         for (Map.Entry<NeedType, Double> entry : WORK_ACTION.affectedNeedsByActionMap().entrySet()) {
             adjustNeed(entry.getKey(), entry.getValue() * workFraction);
         }

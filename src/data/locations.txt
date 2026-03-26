@@ -1,0 +1,39 @@
+[LOCATION]
+TYPE: House
+NAME: Home
+FURNITURE: CheapMattress, SingleHotplate, OldShower, Toilet, OldCRTTV
+
+[LOCATION]
+TYPE: Location
+NAME: Restaurant
+FURNITURE: RestaurantTable, Toilet
+
+[LOCATION]
+TYPE: Location
+NAME: Gym
+FURNITURE: Treadmill, Dumbbells, VendingMachine
+
+[LOCATION]
+TYPE: Location
+NAME: Park
+FURNITURE: ParkPath, ParkLake, Bicycle, Toilet, PicnicTable
+
+[LOCATION]
+TYPE: Location
+NAME: Cafe
+FURNITURE: CafeTable, EspressoMachine, JukeBox, Toilet
+
+[LOCATION]
+TYPE: Location
+NAME: Library
+FURNITURE: Bookshelf, ComputerDesk, Toilet
+
+[LOCATION]
+TYPE: Location
+NAME: Club
+FURNITURE: Bar, DanceFloor, Toilet
+
+[LOCATION]
+TYPE: Location
+NAME: Office
+FURNITURE: WorkDesk

@@ -44,19 +44,19 @@ public class CreateSimController {
     private static final int MAX_SIMS = 5;
 
     // ── Session state ─────────────────────────────────────────────────────────
-    private static Step step = Step.COUNT;
-    private static int totalSims = 0;
-    private static int currentIndex = 0;
+    private Step step = Step.COUNT;
+    private int totalSims = 0;
+    private int currentIndex = 0;
 
     /**
      * In-flight fields for the sim currently being entered.
      */
-    private static String name = "", age = "", gender = "";
+    private String name = "", age = "", gender = "";
 
     /**
      * Sims confirmed so far, stored as {name, age, gender} string arrays.
      */
-    private static final List<String[]> committed = new ArrayList<>();
+    private final List<String[]> committed = new ArrayList<>();
 
     // ── Entry point ───────────────────────────────────────────────────────────
     /**
@@ -69,7 +69,7 @@ public class CreateSimController {
      * {@code false} if an inline error was shown and the screen should remain
      * as-is so the player can read it
      */
-    public static boolean handleInput(String input, GameState state, WorldRegistry world) {
+    public boolean handleInput(String input, GameState state, WorldRegistry world) {
         switch (step) {
 
             case COUNT -> {
@@ -167,7 +167,7 @@ public class CreateSimController {
      * Transitions to {@link Step#PICK_PLAYER} if multiple sims were created, or
      * directly to {@link GameState.Phase#PLAYING} for a single sim.
      */
-    private static void finaliseSims(GameState state, WorldRegistry world) {
+    private void finaliseSims(GameState state, WorldRegistry world) {
         Location home = world.getLocation("Home");
 
         for (String[] data : committed) {
@@ -187,7 +187,7 @@ public class CreateSimController {
         }
     }
 
-    private static void setStep(Step next) {
+    private void setStep(Step next) {
         step = next;
     }
 
@@ -195,21 +195,21 @@ public class CreateSimController {
     /**
      * Returns the current wizard step.
      */
-    public static Step getStep() {
+    public Step getStep() {
         return step;
     }
 
     /**
      * Returns the total number of sims to create this session.
      */
-    public static int getTotalSims() {
+    public int getTotalSims() {
         return totalSims;
     }
 
     /**
      * Returns the zero-based index of the sim currently being entered.
      */
-    public static int getCurrentIndex() {
+    public int getCurrentIndex() {
         return currentIndex;
     }
 
@@ -217,21 +217,21 @@ public class CreateSimController {
      * Returns the list of sims confirmed so far as {@code {name, age, gender}}
      * arrays.
      */
-    public static List<String[]> getCommitted() {
+    public List<String[]> getCommitted() {
         return committed;
     }
 
     /**
      * Returns the name typed for the sim currently in progress.
      */
-    public static String getInFlightName() {
+    public String getInFlightName() {
         return name;
     }
 
     /**
      * Returns the age typed for the sim currently in progress.
      */
-    public static String getInFlightAge() {
+    public String getInFlightAge() {
         return age;
     }
 }
