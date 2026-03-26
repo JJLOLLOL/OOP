@@ -1,6 +1,7 @@
 package ui;
 
 import core.GameState;
+import core.CreateSimController;
 import core.WorldRegistry;
 import ui.views.CreateSimView;
 import ui.views.GameplayView;
@@ -110,10 +111,10 @@ public class Renderer {
      * Clears the terminal and renders the appropriate screen for the current
      * game phase.
      */
-    public static void render(GameState state, WorldRegistry world) {
+    public static void render(GameState state, WorldRegistry world, CreateSimController createSimController) {
         clearScreen();
         switch (state.getPhase()) {
-            case CREATE_SIM -> CreateSimView.render(state);
+            case CREATE_SIM -> CreateSimView.render(state, createSimController);
             case PLAYING -> GameplayView.render(state, world);
             case QUIT -> {}
         }

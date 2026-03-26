@@ -1,0 +1,650 @@
+[FURNITURE]
+NAME: Cheap Mattress
+DESC: Tier 1 - A simple mattress for basic rest
+PRICE: 50.0
+
+[ACTION]
+FURNITURE: CheapMattress
+NAME: Nap
+DESC: A short rest to recover some energy.
+NEEDS: ENERGY,15.0;HUNGER,-5.0
+SKILLS:
+COST: 0.0
+TIME: 1.5
+
+[ACTION]
+FURNITURE: CheapMattress
+NAME: Sleep
+DESC: A full sleep for big energy recovery.
+NEEDS: ENERGY,70.0;HUNGER,-25.0
+SKILLS:
+COST: 0.0
+TIME: 8.0
+
+[FURNITURE]
+NAME: Single Bed
+DESC: Tier 2 - A comfortable single bed for a good night's sleep
+PRICE: 150.0
+
+[ACTION]
+FURNITURE: SingleBed
+NAME: Nap
+DESC: A short rest to recover energy.
+NEEDS: ENERGY,20.0;HUNGER,-5.0
+SKILLS:
+COST: 0.0
+TIME: 1.5
+
+[ACTION]
+FURNITURE: SingleBed
+NAME: Sleep
+DESC: A full sleep for big energy recovery.
+NEEDS: ENERGY,78.0;HUNGER,-22.0
+SKILLS:
+COST: 0.0
+TIME: 8.0
+
+[FURNITURE]
+NAME: Double Bed
+DESC: Tier 3 - A luxurious double bed for the better sleep experience
+PRICE: 250.0
+
+[ACTION]
+FURNITURE: DoubleBed
+NAME: Nap
+DESC: A short rest to recover energy.
+NEEDS: ENERGY,25.0;HUNGER,-5.0
+SKILLS:
+COST: 0.0
+TIME: 1.5
+
+[ACTION]
+FURNITURE: DoubleBed
+NAME: Sleep
+DESC: A full sleep for big energy recovery.
+NEEDS: ENERGY,85.0;HUNGER,-20.0
+SKILLS:
+COST: 0.0
+TIME: 8.0
+
+[FURNITURE]
+NAME: Queen Bed
+DESC: Tier 4 - A spacious queen bed for the ultimate sleep experience
+PRICE: 350.0
+
+[ACTION]
+FURNITURE: QueenBed
+NAME: Nap
+DESC: A short rest to recover energy.
+NEEDS: ENERGY,30.0;HUNGER,-4.0
+SKILLS:
+COST: 0.0
+TIME: 1.5
+
+[ACTION]
+FURNITURE: QueenBed
+NAME: Sleep
+DESC: A full sleep for big energy recovery.
+NEEDS: ENERGY,92.0;HUNGER,-17.0
+SKILLS:
+COST: 0.0
+TIME: 8.0
+
+[FURNITURE]
+NAME: King Bed
+DESC: Tier 5 - The ultimate king bed for the best sleep experience
+PRICE: 450.0
+
+[ACTION]
+FURNITURE: KingBed
+NAME: Nap
+DESC: A short rest to recover energy.
+NEEDS: ENERGY,35.0;HUNGER,-3.0
+SKILLS:
+COST: 0.0
+TIME: 1.5
+
+[ACTION]
+FURNITURE: KingBed
+NAME: Sleep
+DESC: A full sleep for big energy recovery.
+NEEDS: ENERGY,100.0;HUNGER,-14.0
+SKILLS:
+COST: 0.0
+TIME: 8.0
+
+# --- COOKING ---
+
+[FURNITURE]
+NAME: Single Hotplate
+DESC: Tier 1 - A simple hotplate for cooking
+PRICE: 50.0
+
+[ACTION]
+FURNITURE: SingleHotplate
+NAME: Cook Instant Noodles
+DESC: Cook a sad bowl of instant noodles.
+NEEDS: HUNGER,30.0;ENERGY,-5.0
+SKILLS: COOKING,8.0
+COST: 3.0
+TIME: 0.25
+
+[ACTION]
+FURNITURE: SingleHotplate
+NAME: Boil Eggs
+DESC: Boil some eggs for a quick snack.
+NEEDS: HUNGER,15.0;ENERGY,-3.0
+SKILLS: COOKING,5.0
+COST: 2.0
+TIME: 0.25
+
+[FURNITURE]
+NAME: Old Stove
+DESC: Tier 2 - An old stove for cooking
+PRICE: 100.0
+
+[ACTION]
+FURNITURE: OldStove
+NAME: Cook Nissin Cup Noodles
+DESC: Prepare a nice cup of Nissin noodles.
+NEEDS: HUNGER,25.0;ENERGY,-5.0
+SKILLS: COOKING,10.0
+COST: 3.0
+TIME: 0.25
+
+[ACTION]
+FURNITURE: OldStove
+NAME: Cook Spaghetti
+DESC: Cook a proper pasta dish.
+NEEDS: HUNGER,45.0;ENERGY,-8.0
+SKILLS: COOKING,20.0
+COST: 8.0
+TIME: 0.75
+
+[FURNITURE]
+NAME: Modern Stove
+DESC: Tier 3 - A modern stove for better cooking
+PRICE: 200.0
+
+[ACTION]
+FURNITURE: ModernStove
+NAME: Cook Ramen
+DESC: Cook a delicious bowl of ramen.
+NEEDS: HUNGER,35.0;ENERGY,-5.0
+SKILLS: COOKING,15.0
+COST: 8.0
+TIME: 0.75
+
+[ACTION]
+FURNITURE: ModernStove
+NAME: Cook Fried Rice
+DESC: Cook a delicious plate of fried rice.
+NEEDS: HUNGER,50.0;ENERGY,-10.0
+SKILLS: COOKING,25.0
+COST: 12.0
+TIME: 0.75
+
+[ACTION]
+FURNITURE: ModernStove
+NAME: Cook Steak
+DESC: Cook a juicy steak to perfection.
+NEEDS: HUNGER,60.0;ENERGY,-15.0
+SKILLS: COOKING,30.0
+COST: 20.0
+TIME: 1.0
+
+[FURNITURE]
+NAME: Gourmet Stove
+DESC: Tier 4 - A gourmet stove for the best cooking experience
+PRICE: 300.0
+
+[ACTION]
+FURNITURE: GourmetStove
+NAME: Cook Gourmet Ramen
+DESC: Cook a bowl of gourmet ramen with premium ingredients.
+NEEDS: HUNGER,45.0;ENERGY,-5.0
+SKILLS: COOKING,20.0
+COST: 15.0
+TIME: 1.0
+
+[ACTION]
+FURNITURE: GourmetStove
+NAME: Cook Paella
+DESC: Cook a flavorful and colorful paella.
+NEEDS: HUNGER,60.0;ENERGY,-10.0
+SKILLS: COOKING,30.0
+COST: 22.0
+TIME: 1.5
+
+[ACTION]
+FURNITURE: GourmetStove
+NAME: Cook Beef Wellington
+DESC: Cook a classic beef wellington to impress your guests.
+NEEDS: HUNGER,70.0;ENERGY,-15.0
+SKILLS: COOKING,40.0
+COST: 35.0
+TIME: 2.0
+
+# --- HYGIENE ---
+
+[FURNITURE]
+NAME: Old Shower
+DESC: Tier 1 - A basic shower for cleaning up
+PRICE: 50.0
+
+[ACTION]
+FURNITURE: OldShower
+NAME: Take Quick Shower
+DESC: A quick shower to freshen up.
+NEEDS: HYGIENE,45.0;ENERGY,-3.0
+COST: 0.0
+TIME: 0.25
+
+[ACTION]
+FURNITURE: OldShower
+NAME: Take Long Shower
+DESC: A long shower for better hygiene.
+NEEDS: HYGIENE,65.0;ENERGY,-5.0
+COST: 0.0
+TIME: 0.5
+
+[FURNITURE]
+NAME: Normal Shower
+DESC: Tier 2 - A normal shower for better cleaning
+PRICE: 100.0
+
+[ACTION]
+FURNITURE: NormalShower
+NAME: Take Quick Shower
+DESC: A quick shower to freshen up.
+NEEDS: HYGIENE,55.0;ENERGY,-3.0
+COST: 0.0
+TIME: 0.25
+
+[ACTION]
+FURNITURE: NormalShower
+NAME: Take Long Shower
+DESC: A long shower for better hygiene.
+NEEDS: HYGIENE,75.0;ENERGY,-5.0
+COST: 0.0
+TIME: 0.5
+
+[FURNITURE]
+NAME: Luxury Bathtub
+DESC: Tier 3 - A luxurious bathtub for the ultimate relaxation
+PRICE: 250.0
+
+[ACTION]
+FURNITURE: LuxuryBathtub
+NAME: Take Quick Shower
+DESC: A quick shower to freshen up.
+NEEDS: HYGIENE,55.0;ENERGY,-3.0
+COST: 0.0
+TIME: 0.25
+
+[ACTION]
+FURNITURE: LuxuryBathtub
+NAME: Take Long Shower
+DESC: A long shower for better hygiene.
+NEEDS: HYGIENE,75.0;ENERGY,-5.0
+COST: 0.0
+TIME: 0.5
+
+[ACTION]
+FURNITURE: LuxuryBathtub
+NAME: Take Aromatherapy Bath
+DESC: Enjoy an aromatherapy bath for maximum relaxation and hygiene.
+NEEDS: HYGIENE,90.0;ENERGY,10.0;FUN,40.0
+COST: 0.0
+TIME: 1.0
+
+[FURNITURE]
+NAME: Toilet
+DESC: Tier 1 - A basic toilet for your needs
+PRICE: 50.0
+
+[ACTION]
+FURNITURE: Toilet
+NAME: Use Toilet
+DESC: Take care of your business and wash up afterwards.
+NEEDS: HYGIENE,5.0
+COST: 0.0
+TIME: 0.1
+
+# --- ENTERTAINMENT ---
+
+[FURNITURE]
+NAME: Old CRT TV
+DESC: Tier 1 - An old CRT TV for basic entertainment
+PRICE: 100.0
+
+[ACTION]
+FURNITURE: OldCRTTV
+NAME: Watch TV
+DESC: Watch some TV to relax and improve mood.
+NEEDS: FUN,20.0;ENERGY,-5.0
+COST: 0.0
+TIME: 1.0
+
+[FURNITURE]
+NAME: Modern LCD TV
+DESC: Tier 2 - A modern LCD TV for better entertainment
+PRICE: 200.0
+
+[ACTION]
+FURNITURE: ModernLCDTV
+NAME: Watch TV
+DESC: Watch some TV to relax and improve mood.
+NEEDS: FUN,30.0;ENERGY,-5.0
+COST: 0.0
+TIME: 1.0
+
+[FURNITURE]
+NAME: OLED TV
+DESC: Tier 3 - A high-end OLED TV for the best entertainment experience
+PRICE: 300.0
+
+[ACTION]
+FURNITURE: OLEDTV
+NAME: Watch TV
+DESC: Watch some TV to relax and improve mood.
+NEEDS: FUN,40.0;ENERGY,-5.0
+COST: 0.0
+TIME: 1.0
+
+[FURNITURE]
+NAME: JukeBox
+DESC: A classic jukebox for playing music and improving mood
+PRICE: 150.0
+
+[ACTION]
+FURNITURE: JukeBox
+NAME: Play Music
+DESC: Select a song to play on the jukebox and enjoy the music.
+NEEDS: FUN,30.0;ENERGY,-5.0
+SKILLS: MUSIC,10.0;CREATIVITY,5.0
+COST: 2.0
+TIME: 0.5
+
+[FURNITURE]
+NAME: Bookshelf
+DESC: A bookshelf filled with books for reading and learning
+PRICE: 100.0
+
+[ACTION]
+FURNITURE: Bookshelf
+NAME: Read Book
+DESC: Pick a book from the shelf and read to improve knowledge and have fun.
+NEEDS: FUN,20.0;ENERGY,-5.0
+SKILLS: LOGIC,12.0;WRITING,8.0
+COST: 0.0
+TIME: 1.0
+
+[FURNITURE]
+NAME: Computer Desk
+DESC: A computer desk with a PC for gaming and work
+PRICE: 200.0
+
+[ACTION]
+FURNITURE: ComputerDesk
+NAME: Play Video Games
+DESC: Play some video games on the computer to have fun and relax.
+NEEDS: FUN,35.0;ENERGY,-8.0
+SKILLS: LOGIC,5.0
+COST: 0.0
+TIME: 1.0
+
+[ACTION]
+FURNITURE: ComputerDesk
+NAME: Work on Computer
+DESC: Use the computer for work or study to improve skills and earn money.
+NEEDS: ENERGY,-10.0;FUN,-5.0
+SKILLS: PROGRAMMING,15.0;LOGIC,8.0
+COST: 0.0
+TIME: 2.0
+
+# --- PUBLIC LOCATION ITEMS ---
+
+[FURNITURE]
+NAME: Restaurant Table
+DESC: A fancy restaurant table for the best dining experience
+PRICE: 150.0
+
+[ACTION]
+FURNITURE: RestaurantTable
+NAME: Eat Nice Meal
+DESC: Enjoy a delicious meal at the restaurant table.
+NEEDS: HUNGER,60.0;ENERGY,10.0;FUN,25.0
+SKILLS: CHARISMA,5.0
+COST: 30.0
+TIME: 1.0
+
+[ACTION]
+FURNITURE: RestaurantTable
+NAME: Drink Nice Wine
+DESC: Drink a nice glass of wine.
+NEEDS: FUN,40.0
+SKILLS: CHARISMA,5.0
+COST: 25.0
+TIME: 0.25
+
+[ACTION]
+FURNITURE: RestaurantTable
+NAME: Have Dessert
+DESC: Indulge in a delicious dessert.
+NEEDS: HUNGER,25.0;FUN,30.0
+COST: 15.0
+TIME: 0.25
+
+[FURNITURE]
+NAME: Treadmill
+DESC: A treadmill for staying fit and healthy
+PRICE: 200.0
+
+[ACTION]
+FURNITURE: Treadmill
+NAME: Run on Treadmill
+DESC: Get some exercise by running on the treadmill.
+NEEDS: ENERGY,-25.0;HUNGER,-10.0;FUN,15.0;HYGIENE,-25.0
+SKILLS: FITNESS,20.0
+COST: 5.0
+TIME: 1.0
+
+[ACTION]
+FURNITURE: Treadmill
+NAME: Walk on Treadmill
+DESC: Take a leisurely walk on the treadmill for light exercise.
+NEEDS: ENERGY,-10.0;HUNGER,-5.0;FUN,10.0;HYGIENE,-10.0
+SKILLS: FITNESS,8.0
+COST: 5.0
+TIME: 1.0
+
+[FURNITURE]
+NAME: Dumbbells
+DESC: A set of dumbbells for strength training
+PRICE: 150.0
+
+[ACTION]
+FURNITURE: Dumbbells
+NAME: Lift Dumbbells
+DESC: Strengthen your muscles by lifting dumbbells.
+NEEDS: ENERGY,-20.0;HUNGER,-10.0;FUN,10.0;HYGIENE,-20.0
+SKILLS: FITNESS,25.0
+COST: 5.0
+TIME: 1.0
+
+[FURNITURE]
+NAME: Vending Machine
+DESC: A vending machine for quick snacks and drinks
+PRICE: 100.0
+
+[ACTION]
+FURNITURE: VendingMachine
+NAME: Buy Snack
+DESC: Buy a quick snack from the vending machine.
+NEEDS: HUNGER,15.0;ENERGY,-2.0;FUN,5.0
+COST: 3.0
+TIME: 0.25
+
+[ACTION]
+FURNITURE: VendingMachine
+NAME: Buy Drink
+DESC: Buy a refreshing drink from the vending machine.
+NEEDS: HUNGER,5.0;ENERGY,5.0;FUN,5.0
+COST: 3.0
+TIME: 0.25
+
+[FURNITURE]
+NAME: Park Path
+DESC: A scenic park path for walking and enjoying nature
+PRICE: 0.0
+
+[ACTION]
+FURNITURE: ParkPath
+NAME: Take a Walk
+DESC: Take a leisurely walk along the park path to enjoy the scenery.
+NEEDS: ENERGY,-8.0;HUNGER,-5.0;FUN,25.0;HYGIENE,-5.0
+SKILLS: FITNESS,5.0
+COST: 0.0
+TIME: 1.0
+
+[ACTION]
+FURNITURE: ParkPath
+NAME: Go for a Jog
+DESC: Go for a jog along the park path to get some exercise.
+NEEDS: ENERGY,-22.0;HUNGER,-10.0;FUN,20.0;HYGIENE,-20.0
+SKILLS: FITNESS,18.0
+COST: 0.0
+TIME: 1.0
+
+[FURNITURE]
+NAME: Park Lake
+DESC: A peaceful lake you can swim in
+PRICE: 0.0
+
+[ACTION]
+FURNITURE: ParkLake
+NAME: Go for a Swim
+DESC: Take a refreshing swim in the park lake.
+NEEDS: ENERGY,-20.0;HUNGER,-10.0;FUN,35.0;HYGIENE,-20.0
+SKILLS: FITNESS,20.0
+COST: 0.0
+TIME: 1.0
+
+[FURNITURE]
+NAME: Bicycle
+DESC: A bicycle for transportation and exercise
+PRICE: 100.0
+
+[ACTION]
+FURNITURE: Bicycle
+NAME: Go for a Bike Ride
+DESC: Take a bike ride around the neighborhood for fun and exercise.
+NEEDS: ENERGY,-18.0;HUNGER,-8.0;FUN,30.0;HYGIENE,-15.0
+SKILLS: FITNESS,15.0
+COST: 0.0
+TIME: 1.0
+
+[FURNITURE]
+NAME: Picnic Table
+DESC: A picnic table for outdoor dining and relaxation
+PRICE: 50.0
+
+[ACTION]
+FURNITURE: PicnicTable
+NAME: Have a Picnic
+DESC: Enjoy a picnic at the table with some delicious food.
+NEEDS: HUNGER,45.0;ENERGY,15.0;FUN,35.0
+COST: 15.0
+TIME: 1.0
+
+[ACTION]
+FURNITURE: PicnicTable
+NAME: Eat Muffin
+DESC: Eat a muffin
+NEEDS: HUNGER,20.0;FUN,5.0
+COST: 4.0
+TIME: 0.1
+
+[FURNITURE]
+NAME: Cafe Table
+DESC: A cozy cafe table for enjoying coffee and snacks
+PRICE: 75.0
+
+[ACTION]
+FURNITURE: CafeTable
+NAME: Drink Coffee
+DESC: Enjoy a cup of coffee at the cafe table.
+NEEDS: ENERGY,25.0;FUN,15.0
+COST: 6.0
+TIME: 0.25
+
+[ACTION]
+FURNITURE: CafeTable
+NAME: Eat Pastry
+DESC: Indulge in a delicious pastry at the cafe table.
+NEEDS: HUNGER,30.0;FUN,20.0
+COST: 8.0
+TIME: 0.25
+
+[FURNITURE]
+NAME: Espresso Machine
+DESC: A high-end espresso machine for the best coffee experience
+PRICE: 200.0
+
+[ACTION]
+FURNITURE: EspressoMachine
+NAME: Make Espresso
+DESC: Brew a strong and delicious espresso shot.
+NEEDS: ENERGY,30.0;FUN,10.0
+COST: 4.0
+TIME: 0.25
+
+[ACTION]
+FURNITURE: EspressoMachine
+NAME: Make Cappuccino
+DESC: Create a creamy cappuccino with steamed milk.
+NEEDS: ENERGY,22.0;FUN,20.0
+COST: 5.0
+TIME: 0.25
+
+[FURNITURE]
+NAME: Bar
+DESC: A bar for socializing and enjoying drinks
+PRICE: 150.0
+
+[ACTION]
+FURNITURE: Bar
+NAME: Have a Drink
+DESC: Enjoy a drink at the bar to relax and have fun.
+NEEDS: FUN,35.0;ENERGY,-5.0
+SKILLS: CHARISMA,8.0
+COST: 12.0
+TIME: 1.0
+
+[FURNITURE]
+NAME: Dance Floor
+DESC: A dance floor for dancing and having fun
+PRICE: 200.0
+
+[ACTION]
+FURNITURE: DanceFloor
+NAME: Dance
+DESC: Dance on the dance floor to have fun and improve fitness.
+NEEDS: FUN,50.0;ENERGY,-25.0;HYGIENE,-30.0
+SKILLS: FITNESS,20.0;CHARISMA,10.0
+COST: 0.0
+TIME: 1.0
+
+[FURNITURE]
+NAME: Work Desk
+DESC: Your workstation for the day.
+PRICE: 150.0
+
+[ACTION]
+FURNITURE: WorkDesk
+NAME: Work
+DESC: Put in a full day's work.
+NEEDS: HUNGER,-40.0;ENERGY,-40.0;HYGIENE,-20.0;FUN,-25.0;SOCIAL,20.0
+COST: 0.0
+TIME: 8.0

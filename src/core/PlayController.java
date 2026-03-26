@@ -8,8 +8,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import data.ShopInventory;
 import models.actions.Furniture;
-import models.actions.ShopInventory;
 import models.career.CareerList;
 import models.character.SimCharacter;
 import models.debuffs.DebuffRegistry;
@@ -61,7 +61,7 @@ public class PlayController {
     private static models.character.Character selectedCharacter = null;
     private static List<House> currentHouses = null;
     private static List<Furniture> currentFurniture = null;
-    private static List<House> shopInventoryHouses = null; // Persistent shop inventory (initialized once)
+    private static ShopInventory shopInventory;
 
     /**
      * Available careers shown in the PICK_CAREER screen (excludes JOBLESS).
@@ -69,6 +69,10 @@ public class PlayController {
     private static final List<CareerList> AVAILABLE_CAREERS = Arrays.stream(CareerList.values())
             .filter(c -> c != CareerList.JOBLESS)
             .collect(Collectors.toList());
+
+    public static void setShopInventory(ShopInventory inventory) {
+        shopInventory = inventory;
+    }
 
     // ── Entry point ───────────────────────────────────────────────────────────
     /**
@@ -212,11 +216,7 @@ public class PlayController {
 
         switch (input) {
             case "1" -> {
-                // Houses (initialize persistent inventory only once)
-                if (shopInventoryHouses == null) {
-                    shopInventoryHouses = ShopInventory.getAvailableHouses();
-                }
-                currentHouses = shopInventoryHouses.stream()
+                currentHouses = shopInventory.getAvailableHouses().stream()
                         .collect(Collectors.toList());
                 if (currentHouses.isEmpty()) {
                     NotificationService.add(player, "No houses available for purchase.");
@@ -231,7 +231,7 @@ public class PlayController {
                     return false;
                 }
                 // Furniture
-                currentFurniture = ShopInventory.getAvailableFurniture();
+                currentFurniture = shopInventory.getAvailableFurniture();
                 setStep(Step.SHOP_FURNITURE);
                 return true;
             }
@@ -293,9 +293,6 @@ public class PlayController {
      *
      * <p>
      * Lists all furniture in the player's current house and allows selection by number.
-     * When a furniture item is selected, {@link FurnitureService#sellFurniture} is called
-     * to process the sale, refunding 50% of the original purchase price. The furniture
-     * is removed from the house inventory. Input {@code "0"} returns to the shop menu.
      *
      * @param input the player's selection (furniture number or "0")
      * @param player the active {@link SimCharacter}

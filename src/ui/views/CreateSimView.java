@@ -19,32 +19,32 @@ public class CreateSimView {
      *
      * @param state the current {@link GameState}
      */
-    public static void render(GameState state) {
+    public static void render(GameState state, CreateSimController controller) {
         printBanner("CREATE YOUR SIMS");
         System.out.println();
-        switch (CreateSimController.getStep()) {
+        switch (controller.getStep()) {
             case COUNT ->
                 prompt("How many Sims do you want to create?");
             case NAME -> {
-                showCommitted(CreateSimController.getCommitted());
+                showCommitted(controller.getCommitted());
                 System.out.printf("  " + MUTED + "Creating Sim %d of %d%n" + RESET,
-                        CreateSimController.getCurrentIndex() + 1, CreateSimController.getTotalSims());
+                        controller.getCurrentIndex() + 1, controller.getTotalSims());
                 prompt("Enter name:");
             }
             case AGE -> {
-                showCommitted(CreateSimController.getCommitted());
-                field("Name", CreateSimController.getInFlightName());
+                showCommitted(controller.getCommitted());
+                field("Name", controller.getInFlightName());
                 prompt("Enter age:");
             }
             case GENDER -> {
-                showCommitted(CreateSimController.getCommitted());
-                field("Name", CreateSimController.getInFlightName());
-                field("Age", CreateSimController.getInFlightAge());
+                showCommitted(controller.getCommitted());
+                field("Name", controller.getInFlightName());
+                field("Age", controller.getInFlightAge());
                 prompt("Enter gender (M / F):");
             }
             case CONFIRM -> {
                 System.out.println("  " + TITLE + "Review your Sims:" + RESET + "\n");
-                List<String[]> committed = CreateSimController.getCommitted();
+                List<String[]> committed = controller.getCommitted();
                 for (int i = 0; i < committed.size(); i++) {
                     String[] data = committed.get(i);
                     System.out.printf("    " + BRIGHT_YELLOW + "%d. " + RESET + BRIGHT_WHITE + "%s" + RESET + "%n", i + 1, simLabel(data[0], data[1], data[2]));
