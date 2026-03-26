@@ -1,24 +1,23 @@
 package core;
 
 import Types.AchievementList;
-import Types.CareerList;
 import Types.InteractionList;
-import Types.ShopInventory;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import data.ShopInventory;
 import models.actions.Furniture;
+import models.career.CareerList;
 import models.character.SimCharacter;
 import models.debuffs.DebuffRegistry;
 import models.location.House;
 import models.location.Location;
 import models.need.NeedType;
-import services.FurnitureService;
-import services.HouseService;
+import models.skill.SkillType;
 import services.NotificationService;
-import services.WorkService;
 import ui.Renderer;
 
 /**
@@ -62,7 +61,7 @@ public class PlayController {
     private static models.character.Character selectedCharacter = null;
     private static List<House> currentHouses = null;
     private static List<Furniture> currentFurniture = null;
-    private static List<House> shopInventoryHouses = null; // Persistent shop inventory (initialized once)
+    private static ShopInventory shopInventory;
 
     /**
      * Available careers shown in the PICK_CAREER screen (excludes JOBLESS).
@@ -70,6 +69,10 @@ public class PlayController {
     private static final List<CareerList> AVAILABLE_CAREERS = Arrays.stream(CareerList.values())
             .filter(c -> c != CareerList.JOBLESS)
             .collect(Collectors.toList());
+
+    public static void setShopInventory(ShopInventory inventory) {
+        shopInventory = inventory;
+    }
 
     // ── Entry point ───────────────────────────────────────────────────────────
     /**
@@ -213,11 +216,7 @@ public class PlayController {
 
         switch (input) {
             case "1" -> {
-                // Houses (initialize persistent inventory only once)
-                if (shopInventoryHouses == null) {
-                    shopInventoryHouses = ShopInventory.getAvailableHouses();
-                }
-                currentHouses = shopInventoryHouses.stream()
+                currentHouses = shopInventory.getAvailableHouses().stream()
                         .collect(Collectors.toList());
                 if (currentHouses.isEmpty()) {
                     NotificationService.add(player, "No houses available for purchase.");
@@ -232,7 +231,7 @@ public class PlayController {
                     return false;
                 }
                 // Furniture
-                currentFurniture = ShopInventory.getAvailableFurniture();
+                currentFurniture = shopInventory.getAvailableFurniture();
                 setStep(Step.SHOP_FURNITURE);
                 return true;
             }
@@ -266,17 +265,10 @@ public class PlayController {
 
         return pickFromList(input, currentHouses, idx -> {
             House house = currentHouses.get(idx);
-            boolean success = HouseService.purchaseHouse(player, house);
-
-            if (success) {
-                player.setLocation(player.getCurrentHouse());
-                NotificationService.add(player, HouseService.getPurchaseMessage(player, house, true));
-            } else {
-                NotificationService.add(player, HouseService.getPurchaseMessage(player, house, false));
-            }
+            ActionResult result = player.purchaseHouse(house);
+            NotificationService.add(player, result.getMessage());
             setStep(Step.SHOP);
             currentHouses = null;
-
         });
     }
 
@@ -289,15 +281,8 @@ public class PlayController {
 
         return pickFromList(input, currentFurniture, idx -> {
             Furniture furniture = currentFurniture.get(idx);
-            House house = player.getCurrentHouse();
-
-            boolean success = FurnitureService.purchaseFurniture(player, house, furniture);
-
-            if (success) {
-                NotificationService.add(player, FurnitureService.getPurchaseMessage(player, house, furniture, true));
-            } else {
-                NotificationService.add(player, FurnitureService.getPurchaseMessage(player, house, furniture, false));
-            }
+            ActionResult result = player.buyFurniture(furniture);
+            NotificationService.add(player, result.getMessage());
             setStep(Step.SHOP);
             currentFurniture = null;
         });
@@ -308,9 +293,6 @@ public class PlayController {
      *
      * <p>
      * Lists all furniture in the player's current house and allows selection by number.
-     * When a furniture item is selected, {@link FurnitureService#sellFurniture} is called
-     * to process the sale, refunding 50% of the original purchase price. The furniture
-     * is removed from the house inventory. Input {@code "0"} returns to the shop menu.
      *
      * @param input the player's selection (furniture number or "0")
      * @param player the active {@link SimCharacter}
@@ -326,15 +308,9 @@ public class PlayController {
 
         return pickFromList(input, currentFurniture, idx -> {
             Furniture furniture = currentFurniture.get(idx);
-            House house = player.getCurrentHouse();
 
-            boolean success = FurnitureService.sellFurniture(player, house, furniture);
-
-            if (success) {
-                NotificationService.add(player, FurnitureService.getSellMessage(player, house, furniture, true));
-            } else {
-                NotificationService.add(player, FurnitureService.getSellMessage(player, house, furniture, false));
-            }
+            ActionResult result = player.sellFurniture(furniture);
+            NotificationService.add(player, result.getMessage());
             setStep(Step.SHOP);
             currentFurniture = null;
         });
@@ -392,18 +368,14 @@ public class PlayController {
 
             // Intercept the Work Desk action
             if ("Work Desk".equals(selectedFurniture.getName()) && "Work".equals(actionName)) {
-                if (player.getCareer().getCurrentCareer() == CareerList.JOBLESS) {
-                    // No job yet — route to career picker
+                if (player.isJobless()) {
                     setStep(Step.PICK_CAREER);
                 } else {
-                    // Has a job — run the shift
-                    String result = WorkService.work(
-                            player,
-                            state.getGameClock());
+                    ActionResult result = player.work(state.getGameClock());
                     addAchievementNotifications(
                             player,
                             state.getAchievementService().evaluateWorkAchievements(player));
-                    NotificationService.add(player, result);
+                    NotificationService.add(player, result.getMessage());
                     setStep(Step.MAIN);
                 }
             } else {
@@ -464,7 +436,7 @@ public class PlayController {
             }
 
             String result = state.getRelationshipService().interact(player, selectedCharacter, chosen);
-            player.adjustNeed(NeedType.getType("Social"), chosen.getEffect());
+            player.adjustNeed(NeedType.SOCIAL, chosen.getEffect());
             addAchievementNotifications(
                     player,
                     state.getAchievementService().evaluateSocialAchievements(
@@ -538,7 +510,7 @@ public class PlayController {
             SimCharacter player,
             models.actions.FurnitureAction action,
             GameState state) {
-        for (String skill : action.affectedSkillsByActionMap().keySet()) {
+        for (SkillType skill : action.affectedSkillsByActionMap().keySet()) {
             addAchievementNotifications(
                     player,
                     state.getAchievementService().evaluateFirstTimeSkillAchievement(player, skill));

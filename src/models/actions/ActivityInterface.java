@@ -3,6 +3,8 @@ package models.actions;
 import java.util.Map;
 
 import models.character.SimCharacter;
+import models.need.NeedType;
+import models.skill.SkillType;
 
 /**
  * Represents an activity or action that a {@link SimCharacter} can perform.
@@ -39,7 +41,7 @@ public interface ActivityInterface {
      *
      * @return a map of affected needs and their change amounts
      */
-    Map<String, Double> affectedNeedsByActionMap();
+    Map<NeedType, Double> affectedNeedsByActionMap();
 
     /**
      * Returns a map of skills affected by the action.
@@ -48,7 +50,7 @@ public interface ActivityInterface {
      *
      * @return a map of affected skills and their change amounts
      */
-    Map<String, Double> affectedSkillsByActionMap();
+    Map<SkillType, Double> affectedSkillsByActionMap();
 
     /**
      * Retrieves the monetary cost deducted when the activity is performed.

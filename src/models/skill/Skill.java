@@ -86,7 +86,7 @@ public class Skill {
     private double calculateRequiredXP(int level) {
         return 100.0 * Math.pow(1.5, level - 1);
     }
-    
+
     @Override
     public String toString() {
         return type + " | Level: " + level + " | XP: " + getProgress() + "/" + getRequiredXP();

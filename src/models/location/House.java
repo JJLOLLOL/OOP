@@ -61,7 +61,7 @@ public class House extends Location {
     public boolean canAddFurniture() {
         return getFurnitureCount() < getMaxFurnitureCapacity();
     }
-    
+
     public void addFurniture(Furniture furniture) {
         if (furniture == null) {
             throw new IllegalArgumentException("Furniture cannot be null.");
@@ -71,14 +71,14 @@ public class House extends Location {
         }
         addFurnitureInternal(furniture);
     }
-    
+
     public void removeFurniture(Furniture furniture) {
         if (furniture == null) {
             throw new IllegalArgumentException("Furniture cannot be null.");
         }
         removeFurnitureInternal(furniture);
     }
-    
+
     public int getFurnitureCount() {
         return getFurnitureViews().size();
     }

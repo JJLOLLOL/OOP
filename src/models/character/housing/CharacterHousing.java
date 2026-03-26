@@ -6,6 +6,13 @@ import models.character.finances.CharacterFinances;
 
 public class CharacterHousing {
     private House currentHouse;
+
+    public enum HousingResult {
+        SUCCESS,
+        HOUSE_FULL,
+        HOUSE_EMPTY,
+        INSUFFICIENT_FUNDS
+    }
     
     public boolean hasHouse() {
         return currentHouse != null;
@@ -22,7 +29,7 @@ public class CharacterHousing {
         this.currentHouse = house;
     }
     
-    public void purchaseFurniture(Furniture furniture, CharacterFinances finances) {
+    public HousingResult buyFurniture(Furniture furniture, CharacterFinances finances) {
         if (furniture == null) {
             throw new IllegalArgumentException("Furniture cannot be null.");
         }
@@ -33,16 +40,29 @@ public class CharacterHousing {
             throw new IllegalArgumentException("House cannot be null.");
         }
         if (!currentHouse.canAddFurniture()) {
-            throw new IllegalStateException("Furniture capacity reached.");
+            return HousingResult.HOUSE_FULL;
         }
         if (!finances.canAfford(furniture.getPrice())) {
-            throw new IllegalStateException("Not enough money.");
+            return HousingResult.INSUFFICIENT_FUNDS;
         }
         currentHouse.addFurniture(furniture);
         finances.spendMoney(furniture.getPrice());
+        return HousingResult.SUCCESS;
+    }
+    public HousingResult sellFurniture(Furniture furniture, CharacterFinances finances) {
+        if (furniture == null) {
+            throw new IllegalArgumentException("furniture cannot be null.");
+        }
+        if (!currentHouse.containsFurniture(furniture)) {
+            return HousingResult.HOUSE_EMPTY;
+        }
+
+        currentHouse.removeFurniture(furniture);
+        finances.earnMoney(furniture.getPrice() * 0.5);
+        return HousingResult.SUCCESS;
     }
     
-    public void purchaseHouse(House targetHouse, CharacterFinances finances) {
+    public HousingResult buyHouse(House targetHouse, CharacterFinances finances) {
         if (targetHouse == null) {
             throw new IllegalArgumentException("House cannot be null.");
         }
@@ -50,13 +70,13 @@ public class CharacterHousing {
             throw new IllegalArgumentException("Finances cannot be null.");
         }
         if (currentHouse == null) {
-            throw new IllegalStateException("Sim must already have a current house.");
+            throw new IllegalArgumentException("House cannot be null.");
         }
         if (!finances.canAfford(targetHouse.getPrice())) {
-            throw new IllegalStateException("Insufficient funds.");
+            return HousingResult.INSUFFICIENT_FUNDS;
         }
-        
         currentHouse.upgradeTo(targetHouse);
         finances.spendMoney(targetHouse.getPrice());
+        return HousingResult.SUCCESS;
     }
 }

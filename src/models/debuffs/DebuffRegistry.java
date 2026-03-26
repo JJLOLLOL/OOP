@@ -34,7 +34,9 @@ public class DebuffRegistry {
     public static double applyNeedModifiers(SimCharacter sim, NeedType type, double amount) {
         double modifiedAmount = amount;
         for (Debuff debuff : DEBUFFS) {
-            modifiedAmount = debuff.modifyNeedChange(sim, type, modifiedAmount);
+            if (debuff.isActive(sim)) {
+                modifiedAmount = debuff.modifyNeedChange(sim, type, modifiedAmount);
+            }
         }
         return modifiedAmount;
     }
@@ -50,11 +52,12 @@ public class DebuffRegistry {
     public static double applySkillModifiers(SimCharacter sim, SkillType type, double amount) {
         double modifiedAmount = amount;
         for (Debuff debuff : DEBUFFS) {
-            modifiedAmount = debuff.modifySkillChange(sim, type, modifiedAmount);
+            if (debuff.isActive(sim)) {
+                modifiedAmount = debuff.modifySkillChange(sim, type, modifiedAmount);
+            }
         }
         return modifiedAmount;
     }
-
     /**
      * Applies all active debuff modifiers to a need's decay rate.
      *
@@ -66,7 +69,9 @@ public class DebuffRegistry {
     public static double applyDecayModifiers(SimCharacter sim, NeedType type, double baseDecay) {
         double modifiedDecay = baseDecay;
         for (Debuff debuff : DEBUFFS) {
-            modifiedDecay = debuff.modifyNeedDecay(sim, type, modifiedDecay);
+            if (debuff.isActive(sim)) {
+                modifiedDecay = debuff.modifyNeedDecay(sim, type, modifiedDecay);
+            }
         }
         return modifiedDecay;
     }
@@ -78,9 +83,11 @@ public class DebuffRegistry {
      * @param interactionType the type of interaction
      * @return the message explaining why the interaction is blocked, or {@code null} if it is allowed
      */
+
+    // TODO: improve string interactiontype, best not to use string
     public static String getInteractionBlockReason(SimCharacter sim, String interactionType) {
         for (Debuff debuff : DEBUFFS) {
-            if (debuff.blocksInteraction(sim, interactionType)) {
+            if (debuff.isActive(sim) && debuff.blocksInteraction(sim, interactionType)) {
                 return debuff.getBlockMessage(sim);
             }
         }

@@ -25,6 +25,10 @@ public class Location {
         return locationName;
     }
 
+    public boolean containsFurniture(Furniture furniture) {
+        return furnitures.contains(furniture);
+    }
+
     public List<Furniture> getFurnitureViews() {
         return List.copyOf(furnitures);
     }
@@ -40,7 +44,7 @@ public class Location {
     public void removeNpcCharacter(NPCCharacter npc) {
         npcs.remove(npc);
     }
-    
+
     protected void addFurnitureInternal(Furniture furniture) {
         if (furniture == null) {
             throw new IllegalArgumentException("Furniture cannot be null.");
@@ -48,13 +52,14 @@ public class Location {
         furnitures.add(furniture);
     }
     
-    protected void removeFurnitureInternal(Furniture furniture) {
+    protected boolean removeFurnitureInternal(Furniture furniture) {
         if (furniture == null) {
             throw new IllegalArgumentException("Furniture cannot be null.");
         }
         furnitures.remove(furniture);
+        return true;
     }
-    
+
     protected void replaceFurnitureInternal(List<Furniture> newFurniture) {
         if (newFurniture == null) {
             throw new IllegalArgumentException("Furniture list cannot be null.");

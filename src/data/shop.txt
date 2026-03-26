@@ -1,0 +1,30 @@
+[AVAILABLE_FURNITURE]
+NAMES: CheapMattress,SingleBed,DoubleBed,QueenBed,KingBed,SingleHotplate,OldStove,ModernStove,GourmetStove,OldShower,NormalShower,LuxuryBathtub,Toilet,OldCRTTV,ModernLCDTV,OLEDTV,Treadmill,Dumbbells,EspressoMachine,JukeBox,Bookshelf,ComputerDesk,Bicycle
+
+[HOUSE_FOR_SALE]
+NAME: Cozy Apartment
+PRICE: 1500
+RATE: 1.2
+TIER: 2
+FURNITURE: SingleBed,OldStove,NormalShower,Toilet,ModernLCDTV
+
+[HOUSE_FOR_SALE]
+NAME: Modern House
+PRICE: 5000
+RATE: 1.5
+TIER: 3
+FURNITURE: DoubleBed,ModernStove,NormalShower,Toilet,OLEDTV,Bookshelf,ComputerDesk,Treadmill
+
+[HOUSE_FOR_SALE]
+NAME: Luxury Cottage
+PRICE: 7500
+RATE: 2.0
+TIER: 4
+FURNITURE: QueenBed,GourmetStove,LuxuryBathtub,Toilet,OLEDTV,Bookshelf,ComputerDesk,Treadmill,Dumbbells
+
+[HOUSE_FOR_SALE]
+NAME: Mansion
+PRICE: 10000
+RATE: 3.0
+TIER: 5
+FURNITURE: KingBed,GourmetStove,LuxuryBathtub,Toilet,OLEDTV,Bookshelf,ComputerDesk,Treadmill,Dumbbells,JukeBox

@@ -79,13 +79,22 @@ public abstract class Need {
         this.decayRate = this.baseDecayRate;
     }
 
-    public void adjust(double amount) {
-        value = clamp(amount);
-    }
-
-
     private double clamp(double value) {
         return Math.max(MIN_VALUE, Math.min(MAX_VALUE, value));
+    }
+    public void update(SimCharacter sim, double deltaTime, double decayRate) {
+        adjustValue(-(decayRate * deltaTime));
+
+        if (isCritical()) {
+            if (criticallyLowNotifiedSent) {
+                return;
+            }
+            onCriticallyLow(sim);
+            criticallyLowNotifiedSent = true;
+            return;
+        }
+
+        criticallyLowNotifiedSent = false;
     }
 
     public abstract void onCriticallyLow(SimCharacter character);

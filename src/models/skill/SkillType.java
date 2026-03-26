@@ -20,8 +20,4 @@ public enum SkillType {
     public String getName() {
         return name;
     }
-
-    public static SkillType getType(String name) {
-        return SkillType.valueOf(name);
-    }
 }
