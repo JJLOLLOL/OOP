@@ -1,4 +1,4 @@
-package models.actions;
+package models.furniture;
 
 import java.util.ArrayList;
 import java.util.HashMap;

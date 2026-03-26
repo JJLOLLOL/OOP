@@ -1,4 +1,4 @@
-package models.actions;
+package models.furniture;
 
 import core.GameClock;
 import java.util.HashMap;

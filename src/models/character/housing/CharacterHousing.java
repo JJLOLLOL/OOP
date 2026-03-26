@@ -1,8 +1,8 @@
 package models.character.housing;
 
 import models.location.House;
-import models.actions.Furniture;
 import models.character.finances.CharacterFinances;
+import models.furniture.Furniture;
 
 public class CharacterHousing {
     private House currentHouse;

@@ -6,8 +6,6 @@ import models.character.SimCharacter;
 
 import java.util.List;
 
-import Types.Gender;
-
 import static ui.ConsoleUtils.*;
 import static ui.Renderer.*;
 

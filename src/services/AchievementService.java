@@ -13,7 +13,6 @@ import java.util.WeakHashMap;
 import models.career.CareerList;
 import models.character.Character;
 import models.character.SimCharacter;
-import models.skill.Skill;
 import models.skill.SkillType;
 
 

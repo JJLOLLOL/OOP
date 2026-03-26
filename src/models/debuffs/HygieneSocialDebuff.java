@@ -1,5 +1,6 @@
 package models.debuffs;
 
+import models.action.ActionType;
 import models.character.SimCharacter;
 import models.need.Need;
 import models.need.NeedType;
@@ -18,13 +19,8 @@ public class HygieneSocialDebuff implements Debuff {
         return hygiene.isCritical();
     }
     @Override
-    public boolean blocksInteraction(SimCharacter sim, String interactionType) {
-        // Debuff: Hygiene -> NPC (low hygiene -> NPC rejects interaction)
-        if ("Socialise".equals(interactionType)) {
-            Need hygiene = sim.getNeed(NeedType.HYGIENE);
-            return hygiene != null && hygiene.isCritical();
-        }
-        return false;
+    public boolean blockAction(SimCharacter sim, ActionType actionType) {
+        return actionType == ActionType.SOCIALISE && isActive(sim);
     }
 
     @Override

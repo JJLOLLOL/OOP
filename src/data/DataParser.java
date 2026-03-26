@@ -13,10 +13,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import Types.Gender;
-import models.actions.Furniture;
-import models.actions.FurnitureAction;
 import models.character.NPCCharacter;
 import models.character.SimCharacter;
+import models.furniture.Furniture;
+import models.furniture.FurnitureAction;
 import models.need.NeedType;
 import models.skill.SkillType;
 import models.location.House;

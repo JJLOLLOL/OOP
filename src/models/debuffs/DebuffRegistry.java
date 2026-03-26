@@ -3,6 +3,7 @@ package models.debuffs;
 import java.util.ArrayList;
 import java.util.List;
 
+import models.action.ActionType;
 import models.character.SimCharacter;
 import models.need.NeedType;
 import models.skill.SkillType;
@@ -84,10 +85,9 @@ public class DebuffRegistry {
      * @return the message explaining why the interaction is blocked, or {@code null} if it is allowed
      */
 
-    // TODO: improve string interactiontype, best not to use string
-    public static String getInteractionBlockReason(SimCharacter sim, String interactionType) {
+    public static String getInteractionBlockReason(SimCharacter sim, ActionType actionType) {
         for (Debuff debuff : DEBUFFS) {
-            if (debuff.isActive(sim) && debuff.blocksInteraction(sim, interactionType)) {
+            if (debuff.isActive(sim) && debuff.blockAction(sim, actionType)) {
                 return debuff.getBlockMessage(sim);
             }
         }
