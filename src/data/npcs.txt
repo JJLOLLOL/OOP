@@ -1,12 +1,3 @@
-# Non-Playable Characters
-# Format:
-# [NPC]
-# NAME: <Name>
-# AGE: <Age>
-# GENDER: <Gender>
-# DESC: <Description>
-# SCHEDULE: <Time1>,<Location1>;<Time2>,<Location2>;...
-
 [NPC]
 NAME: Nicholas
 AGE: 30

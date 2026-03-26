@@ -1,26 +1,3 @@
-# ==============================================================================
-# Game Furniture and Actions
-# ==============================================================================
-# Format:
-#
-# [FURNITURE]
-# NAME: <Unique Furniture Name>
-# DESC: <Description>
-# PRICE: <Price>
-#
-# [ACTION]
-# FURNITURE: <Spaceless Furniture Name>
-# NAME: <Unique Action Name for this furniture>
-# DESC: <Description>
-# NEEDS: <NeedType1>,<Value1>;<NeedType2>,<Value2>;...
-# SKILLS: <SkillType1>,<XP1>;<SkillType2>,<XP2>;...
-# COST: <Money Cost>
-# TIME: <Time in hours>
-#
-# ==============================================================================
-
-# --- BEDS ---
-
 [FURNITURE]
 NAME: Cheap Mattress
 DESC: Tier 1 - A simple mattress for basic rest

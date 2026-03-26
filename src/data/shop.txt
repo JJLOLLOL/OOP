@@ -1,20 +1,3 @@
-# ==============================================================================
-# Game Shop Inventory
-# ==============================================================================
-# Format:
-#
-# [AVAILABLE_FURNITURE]
-# NAMES: <FurnitureName1>,<FurnitureName2>,...
-#
-# [HOUSE_FOR_SALE]
-# NAME: <Unique House Name>
-# PRICE: <Price>
-# RATE: <Rate Multiplier>
-# TIER: <Tier Number>
-# FURNITURE: <FurnitureName1>,<FurnitureName2>,...
-#
-# ==============================================================================
-
 [AVAILABLE_FURNITURE]
 NAMES: CheapMattress,SingleBed,DoubleBed,QueenBed,KingBed,SingleHotplate,OldStove,ModernStove,GourmetStove,OldShower,NormalShower,LuxuryBathtub,Toilet,OldCRTTV,ModernLCDTV,OLEDTV,Treadmill,Dumbbells,EspressoMachine,JukeBox,Bookshelf,ComputerDesk,Bicycle
 

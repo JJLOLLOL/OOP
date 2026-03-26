@@ -98,6 +98,7 @@ public class DataParser {
             furnitureList = java.util.Arrays.stream(furnitureStr.split(","))
                     .map(String::trim)
                     .map(furnitureMap::get)
+                    .filter(java.util.Objects::nonNull) // Filter out any null furniture (e.g., if name not found)
                     .collect(Collectors.toCollection(ArrayList::new));
         }
 
@@ -186,7 +187,9 @@ public class DataParser {
         Map<String, Furniture> furnitureMap = new HashMap<>();
         for (Map<String, String> props : furniturePropsList) {
             Furniture f = buildFurniture(props);
-            furnitureMap.put(f.getName().replaceAll("\\s+", ""), f);
+            // Add by both original name and space-less name for robust lookup
+            furnitureMap.put(f.getName(), f); // Add original name as key
+            furnitureMap.put(f.getName().replaceAll("\\s+", ""), f); // Add space-less name as key
         }
 
         for (Map<String, String> props : actionPropsList) {
@@ -240,11 +243,17 @@ public class DataParser {
                 continue;
             }
 
-            if (line.equals(blockMarker)) {
+            // Any line starting with '[' is a block marker and signifies the end of the previous block.
+            if (line.startsWith("[")) {
                 if (currentProperties != null) {
-                    propsList.add(currentProperties);
+                    propsList.add(currentProperties); // Finalize the previous block
                 }
-                currentProperties = new HashMap<>();
+                // If this is the type of block we are looking for, start a new one.
+                if (line.equals(blockMarker)) {
+                    currentProperties = new HashMap<>();
+                } else {
+                    currentProperties = null; // Otherwise, we are not in a target block.
+                }
             } else if (currentProperties != null && line.contains(":")) {
                 String[] parts = line.split(":", 2);
                 if (parts.length == 2) {
@@ -296,6 +305,7 @@ public class DataParser {
             furnitureList = java.util.Arrays.stream(furnitureStr.split(","))
                     .map(String::trim)
                     .map(allFurniture::get)
+                    .filter(java.util.Objects::nonNull) // Filter out any null furniture (e.g., if name not found)
                     .collect(Collectors.toCollection(ArrayList::new));
         }
 
