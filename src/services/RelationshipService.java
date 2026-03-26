@@ -24,7 +24,7 @@ public class RelationshipService {
 
 
     @Deprecated
-    // TODO: move to game engine or core/
+    // TODO: move to printing, maybe to ui
     public String interact(Character from, Character to, InteractionList type) {
         from.changeRelationshipWith(to, type.getEffect());
 

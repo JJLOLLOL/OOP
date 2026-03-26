@@ -1,9 +1,17 @@
 package models.character;
 
+import java.util.Map;
+
+import javax.swing.Action;
+
 import core.ActionResult;
+import core.GameClock;
 import models.actions.Furniture;
+import models.actions.FurnitureAction;
+import models.actions.FurnitureFactory;
 import models.career.Career;
 import models.career.CareerList;
+import models.career.PromotionStatus;
 import models.character.finances.CharacterFinances;
 import models.character.housing.CharacterHousing;
 import models.character.stats.CharacterStats;
@@ -21,6 +29,11 @@ public class SimCharacter extends Character {
     private final CharacterFinances finances;
     private final CharacterHousing housing;
     private Career career;
+    private static final double CAREER_XP_PER_SHIFT = 20.0;
+    private static final double SKILL_XP_PER_HOUR = 5.0;
+
+    private static final FurnitureAction WORK_ACTION = FurnitureFactory.createWorkDesk().getAction("Work");
+
 
     public SimCharacter(String name, int age, String gender, Location defaultLocation) {
         super(name, age, gender, defaultLocation);
@@ -29,7 +42,6 @@ public class SimCharacter extends Character {
         this.finances = new CharacterFinances();
         this.housing = new CharacterHousing();
         this.career = new Career(CareerList.JOBLESS);
-
     }
 
     // ======== ????
@@ -93,11 +105,71 @@ public class SimCharacter extends Character {
     public Career getCareer() {
         return career;
     }
+
     public void joinCareer(CareerList newCareer) {
         if (newCareer == null) {
             throw new IllegalArgumentException("Career cannot be null.");
         }
         this.career = new Career(newCareer);
+    }
+
+    public boolean isJobless() {
+        return career.isJobless();
+    }
+
+
+    public ActionResult work(GameClock clock) {
+        if (career.isJobless()) {
+            return ActionResult.failure("You need a job before you can work!");
+        }
+
+        double currentTime = clock.getHours() + clock.getMinutes() / 60.0;
+        if (!career.hasShiftStarted(currentTime)) {
+            return ActionResult.failure(String.format("Work doesn't start until %02d:00.", career.getShiftStartHour()));
+        }
+        if (career.isShiftOver(currentTime)) {
+            return ActionResult.failure(String.format("he work day is over (shift ends %02d:00). Come back tomorrow!", career.getShiftEndHour()));
+        }
+
+        double hoursWorked = career.getRemainingShiftHours(currentTime);
+        double workFraction = career.getWorkFraction(hoursWorked);
+
+        clock.advanceHours(hoursWorked);
+
+        applyWorkNeedEffects(workFraction);
+
+        double earned = career.calculatePay(hoursWorked);
+        earnMoney(earned);
+
+        PromotionStatus promotionStatus = career.addProgress(CAREER_XP_PER_SHIFT * workFraction);
+
+        applyWorkSkillXp(hoursWorked);
+
+        StringBuilder message = new StringBuilder();
+        message.append(String.format(
+                "Worked %.1f / %.0f hours. Earned $%.2f.",
+                hoursWorked,
+                career.getWorkingHours(),
+                earned));
+
+        if (promotionStatus == PromotionStatus.PROMOTED) {
+            message.append("\nPromoted to ").append(career.getRank()).append("!");
+        } else if (promotionStatus == PromotionStatus.MAX_RANK) {
+            message.append("\nAlready at maximum rank.");
+        }
+
+        return ActionResult.success(message.toString());
+    }
+    private void applyWorkNeedEffects(double workFraction) {
+        for (Map.Entry<NeedType, Double> entry : WORK_ACTION.affectedNeedsByActionMap().entrySet()) {
+            adjustNeed(entry.getKey(), entry.getValue() * workFraction);
+        }
+    }
+
+    private void applyWorkSkillXp(double hoursWorked) {
+        for (SkillType skill : career.getRelatedSkills()) {
+            adjustSkillXp(skill, SKILL_XP_PER_HOUR * hoursWorked);
+        }
     }
 
     // ======== HOUSING
