@@ -25,8 +25,8 @@ public class FurnitureAction implements ActivityInterface {
 
     private final String name;
     private final String description;
-    private final Map<String, Double> affectedNeedsMap;
-    private final Map<String, Double> affectedSkillsMap;
+    private final Map<NeedType, Double> affectedNeedsMap;
+    private final Map<SkillType, Double> affectedSkillsMap;
     private final double activityCost;
     private final double timeRequired; // in-game hours (e.g. 0.5 = 30 min, 8.0 = full sleep)
 
@@ -43,8 +43,8 @@ public class FurnitureAction implements ActivityInterface {
     public FurnitureAction(
             String name,
             String description,
-            Map<String, Double> affectedNeedsMap,
-            Map<String, Double> affectedSkillsMap,
+            Map<NeedType, Double> affectedNeedsMap,
+            Map<SkillType, Double> affectedSkillsMap,
             double activityCost,
             double timeRequired) {
         this.name = name;
@@ -57,12 +57,12 @@ public class FurnitureAction implements ActivityInterface {
 
     // ── ActivityInterface ─────────────────────────────────────────────────────
     @Override
-    public Map<String, Double> affectedNeedsByActionMap() {
+    public Map<NeedType, Double> affectedNeedsByActionMap() {
         return affectedNeedsMap;
     }
 
     @Override
-    public Map<String, Double> affectedSkillsByActionMap() {
+    public Map<SkillType, Double> affectedSkillsByActionMap() {
         return affectedSkillsMap;
     }
 
@@ -120,12 +120,12 @@ public class FurnitureAction implements ActivityInterface {
             return false;
         }
 
-        for (Map.Entry<String, Double> effect : affectedNeedsMap.entrySet()) {
+        for (Map.Entry<NeedType, Double> effect : affectedNeedsMap.entrySet()) {
             double amount = effect.getValue();
             if (amount >= 0) {
                 continue;
             }
-            Need need = character.getNeed(NeedType.getType(effect.getKey()));
+            Need need = character.getNeed(effect.getKey());
             if (need == null) {
                 continue;
             }
@@ -137,12 +137,12 @@ public class FurnitureAction implements ActivityInterface {
         // ── Apply effects ─────────────────────────────────────────────────────
         character.spendMoney(activityCost);
 
-        for (Map.Entry<String, Double> effect : affectedNeedsMap.entrySet()) {
-            character.adjustNeed(NeedType.getType(effect.getKey()), effect.getValue());
+        for (Map.Entry<NeedType, Double> effect : affectedNeedsMap.entrySet()) {
+            character.adjustNeed(effect.getKey(), effect.getValue());
         }
 
-        for (Map.Entry<String, Double> effect : affectedSkillsMap.entrySet()) {
-            int levelUpCount = character.adjustSkillXp(SkillType.getType(effect.getKey()), effect.getValue());
+        for (Map.Entry<SkillType, Double> effect : affectedSkillsMap.entrySet()) {
+            int levelUpCount = character.adjustSkillXp(effect.getKey(), effect.getValue());
             if (levelUpCount > 0) {
                 NotificationService.add(character, "Levelled Up by " + levelUpCount);
             }

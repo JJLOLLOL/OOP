@@ -7,14 +7,18 @@ import core.GameState;
 import core.PlayController;
 import core.WorldRegistry;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
+
 import models.actions.Furniture;
 import models.actions.FurnitureAction;
 import models.character.SimCharacter;
 import models.location.House;
 import models.location.Location;
+import models.skill.SkillType;
 
 import static ui.ConsoleUtils.*;
 import static ui.Renderer.*;
@@ -120,22 +124,44 @@ public class ActionsPanelView {
             case PICK_CAREER -> {
                 lines.add(menuTitle("Choose Career"));
                 lines.add("");
+
                 List<CareerList> careers = PlayController.getAvailableCareers();
-                int tw = careers.stream().mapToInt(c -> c.getTitle().length()).max().orElse(10) + 2;
-                lines.add(MUTED + "    " + pad("Career", tw) + "  " + pad("Salary", 9)
-                        + "  " + pad("Hours", 5) + "  Skills" + RESET);
-                lines.add(MUTED + "    " + "─".repeat(tw + 36) + RESET);
+
+                int titleWidth = careers.stream()
+                        .mapToInt(c -> c.getTitle().length())
+                        .max()
+                        .orElse(10) + 2;
+
+                lines.add(MUTED + "    "
+                        + pad("Career", titleWidth) + "  "
+                        + pad("Salary", 9) + "  "
+                        + pad("Hours", 5) + "  "
+                        + "Skills" + RESET);
+
+                lines.add(MUTED + "    " + "─".repeat(titleWidth + 36) + RESET);
+
                 for (int i = 0; i < careers.size(); i++) {
-                    CareerList c = careers.get(i);
+                    CareerList career = careers.get(i);
+
+                    String salaryText = String.format("$%.0f/d", career.getBaseSalary());
+                    String hoursText = career.getWorkingHours() > 0
+                            ? (int) career.getWorkingHours() + "h"
+                            : "";
+
+                    String skillsText = Arrays.stream(career.getRelatedSkills())
+                            .map(SkillType::getName)   // or SkillType::name if you do not have getName()
+                            .collect(Collectors.joining(", "));
+
                     lines.add(BRIGHT_YELLOW + (i + 1) + ". " + RESET
-                            + BRIGHT_WHITE + pad(c.getTitle(), tw) + RESET
-                            + "  " + MUTED + pad(String.format("$%.0f/d", c.getBaseSalary()), 9) + RESET
-                            + "  " + MUTED + pad(c.getWorkingHours() > 0 ? (int) c.getWorkingHours() + "h" : "", 5) + RESET
-                            + "  " + BRIGHT_BLACK + String.join(", ", c.getRelatedSkills()) + RESET);
+                            + BRIGHT_WHITE + pad(career.getTitle(), titleWidth) + RESET
+                            + "  " + MUTED + pad(salaryText, 9) + RESET
+                            + "  " + MUTED + pad(hoursText, 5) + RESET
+                            + "  " + BRIGHT_BLACK + skillsText + RESET);
                 }
-                lines.add("");
-                lines.add(backItem());
-            }
+
+    lines.add("");
+    lines.add(backItem());
+}
             case SHOP -> {
                 lines.add(menuTitle("Shop"));
                 lines.add(menuItem("1", "Browse Houses"));
@@ -182,20 +208,28 @@ public class ActionsPanelView {
     /**
      * Appends effect lines (need deltas or skill XP gains) to an existing line list.
      */
-    private static void addEffectLines(List<String> lines, String labelKey,
-            Map<String, Double> effects, boolean isNeeds) {
-        if (effects == null || effects.isEmpty()) {
-            return;
-        }
-        boolean first = true;
-        for (Map.Entry<String, Double> e : new TreeMap<>(effects).entrySet()) {
-            double v = e.getValue();
-            String prefix = first ? MUTED + labelKey + ": " + RESET : "         ";
-            String value = isNeeds
-                    ? (v > 0 ? BRIGHT_GREEN : BRIGHT_RED) + (v > 0 ? "+" : "") + (int) v + " " + e.getKey() + RESET
-                    : BRIGHT_CYAN + "+" + (int) v + "xp " + e.getKey() + RESET;
-            lines.add(prefix + value);
-            first = false;
-        }
+    private static <E extends Enum<E>> void addEffectLines(
+        List<String> lines,
+        String labelKey,
+        Map<E, Double> effects,
+        boolean isNeeds) {
+
+    if (effects == null || effects.isEmpty()) {
+        return;
     }
+
+    boolean first = true;
+    for (Map.Entry<E, Double> e : new TreeMap<>(effects).entrySet()) {
+        double v = e.getValue();
+        String prefix = first ? MUTED + labelKey + ": " + RESET : "         ";
+        String effectName = e.getKey().toString();
+
+        String value = isNeeds
+                ? (v > 0 ? BRIGHT_GREEN : BRIGHT_RED) + (v > 0 ? "+" : "") + (int) v + " " + effectName + RESET
+                : BRIGHT_CYAN + "+" + (int) v + "xp " + effectName + RESET;
+
+        lines.add(prefix + value);
+        first = false;
+    }
+}
 }

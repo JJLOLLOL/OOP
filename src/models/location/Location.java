@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import models.actions.Furniture;
 import models.character.NPCCharacter;
+import ui.ActionResult;
 
 public class Location {
 
@@ -23,6 +24,10 @@ public class Location {
 
     public String getLocationName() {
         return locationName;
+    }
+
+    public boolean containsFurniture(Furniture furniture) {
+        return furnitures.contains(furniture);
     }
 
     public List<Furniture> getFurnitureViews() {
@@ -47,12 +52,13 @@ public class Location {
         }
         furnitures.add(furniture);
     }
-
-    protected void removeFurnitureInternal(Furniture furniture) {
+    
+    protected boolean removeFurnitureInternal(Furniture furniture) {
         if (furniture == null) {
             throw new IllegalArgumentException("Furniture cannot be null.");
         }
         furnitures.remove(furniture);
+        return true;
     }
 
     protected void replaceFurnitureInternal(List<Furniture> newFurniture) {

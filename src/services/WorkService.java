@@ -45,12 +45,11 @@ public class WorkService {
 
         double hoursWorked = shiftEndH - currentTime;
         double payFraction = hoursWorked / fullShift;
-        boolean late = currentTime > SHIFT_START_HOUR;
 
         clock.advanceHours(hoursWorked);
 
-        for (Map.Entry<String, Double> e : WORK_ACTION.affectedNeedsByActionMap().entrySet()) {
-            player.adjustNeed(NeedType.getType(e.getKey()), e.getValue() * payFraction);
+        for (Map.Entry<NeedType, Double> e : WORK_ACTION.affectedNeedsByActionMap().entrySet()) {
+            player.adjustNeed(e.getKey(), e.getValue() * payFraction);
         }
 
         double earned = player.getCareer().getSalary() * payFraction;
@@ -61,16 +60,14 @@ public class WorkService {
             NotificationService.add(player, careerResult);
         }
 
-        for (String skill : player.getCareer().getCurrentCareer().getRelatedSkills()) {
-            int levelUpCount = player.adjustSkillXp(SkillType.getType(skill), SKILL_XP_PER_HOUR * hoursWorked);
+        for (SkillType skill : player.getCareer().getCurrentCareer().getRelatedSkills()) {
+            int levelUpCount = player.adjustSkillXp(skill, SKILL_XP_PER_HOUR * hoursWorked);
             if (levelUpCount > 0) {
                 NotificationService.add(player, "Levelled Up by " + levelUpCount);
             }
         }
 
-        String timeMsg = late
-                ? String.format("Arrived late. Worked %.1f / %.0f hours.", hoursWorked, fullShift)
-                : String.format("Full shift complete (%.0f hours).", fullShift);
+        String timeMsg = String.format("Worked %.1f / %.0f hours.", hoursWorked, fullShift);
         return String.format("%s Earned $%.2f.", timeMsg, earned);
     }
 }

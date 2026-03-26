@@ -15,7 +15,7 @@ import models.debuffs.DebuffRegistry;
 import models.location.House;
 import models.location.Location;
 import models.need.NeedType;
-import services.FurnitureService;
+import models.skill.SkillType;
 import services.NotificationService;
 import services.WorkService;
 import ui.Renderer;
@@ -265,8 +265,8 @@ public class PlayController {
 
         return pickFromList(input, currentHouses, idx -> {
             House house = currentHouses.get(idx);
-            boolean success = player.purchaseHouse(house);
-            NotificationService.add(player, player.getPurchaseMessage(house, success));
+            ActionResult result = player.purchaseHouse(house);
+            NotificationService.add(player, result.getMessage());
             setStep(Step.SHOP);
             currentHouses = null;
         });
@@ -283,13 +283,9 @@ public class PlayController {
             Furniture furniture = currentFurniture.get(idx);
             House house = player.getCurrentHouse();
 
-            boolean success = player.purchaseFurniture(furniture);
+            ActionResult result = player.buyFurniture(furniture);
 
-            if (success) {
-                NotificationService.add(player, FurnitureService.getPurchaseMessage(player, house, furniture, true));
-            } else {
-                NotificationService.add(player, FurnitureService.getPurchaseMessage(player, house, furniture, false));
-            }
+            NotificationService.add(player, result.getMessage());
             setStep(Step.SHOP);
             currentFurniture = null;
         });
@@ -318,15 +314,9 @@ public class PlayController {
 
         return pickFromList(input, currentFurniture, idx -> {
             Furniture furniture = currentFurniture.get(idx);
-            House house = player.getCurrentHouse();
 
-            boolean success = FurnitureService.sellFurniture(player, house, furniture);
-
-            if (success) {
-                NotificationService.add(player, FurnitureService.getSellMessage(player, house, furniture, true));
-            } else {
-                NotificationService.add(player, FurnitureService.getSellMessage(player, house, furniture, false));
-            }
+            ActionResult result = player.sellFurniture(furniture);
+            NotificationService.add(player, result.getMessage());
             setStep(Step.SHOP);
             currentFurniture = null;
         });
@@ -530,7 +520,7 @@ public class PlayController {
             SimCharacter player,
             models.actions.FurnitureAction action,
             GameState state) {
-        for (String skill : action.affectedSkillsByActionMap().keySet()) {
+        for (SkillType skill : action.affectedSkillsByActionMap().keySet()) {
             addAchievementNotifications(
                     player,
                     state.getAchievementService().evaluateFirstTimeSkillAchievement(player, skill));

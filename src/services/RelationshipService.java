@@ -26,7 +26,7 @@ public class RelationshipService {
 
     public String interact(Character from, Character to, InteractionList type) {
         Relationship r = getOrCreate(from, to);
-        r.changeScore(type.getEffect());
+        r.adjust(type.getEffect());
         return from.getName() + " " + type.getLabel() + " " + to.getName() + "\n"
                 + to.getName() + type.getReaction() + "\n"
                 + "Relationship with " + to.getName() + " "
