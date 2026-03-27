@@ -389,81 +389,297 @@ OOP/
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## Abstracted UML Diagram
+## Overview of UML Diagram
+
+1. System Architecture UML
 
 ```mermaid
 classDiagram
 direction LR
 
-Main --> WorldLoader : loads data
-Main --> WorldRegistry : constructs
-Main --> GameEngine : starts
+Main --> WorldLoader : load world data
+Main --> WorldRegistry : construct registry
+Main --> GameState : construct state
+Main --> GameEngine : start game
 
-WorldLoader ..> FurnitureParser : delegates parsing
-WorldLoader ..> LocationParser : delegates parsing
-WorldLoader ..> NpcParser : delegates parsing
-WorldLoader ..> ShopParser : delegates parsing
-WorldLoader --> WorldData : assembles
+WorldLoader ..> FurnitureParser
+WorldLoader ..> LocationParser
+WorldLoader ..> NpcParser
+WorldLoader ..> ShopParser
+WorldLoader --> WorldData
 
-WorldData --> WorldRegistry : seeds
-WorldData --> ShopInventory : provides
+WorldData --> ShopInventory
+WorldData --> WorldRegistry : seed data
 
-GameEngine *-- GameState : owns runtime state
-GameEngine --> WorldRegistry : reads static world
-GameEngine --> NpcService : updates NPC movement
-GameEngine --> CreateSimController : routes CREATE_SIM
-GameEngine --> PlayController : routes PLAYING
-GameEngine ..> Renderer : redraws UI
+GameEngine *-- GameState
+GameEngine *-- WorldRegistry
+GameEngine *-- NpcService
+GameEngine *-- CreateSimController
+GameEngine *-- PlayController
+GameEngine *-- InputQueue
+GameEngine *-- InputThread
+GameEngine ..> Renderer
 
-GameState *-- GameClock : tracks time
-GameState *-- RelationshipService : owns
-GameState *-- AchievementService : owns
-GameState o-- "many" SimCharacter : stores
+InputThread ..> InputQueue
+
+GameState *-- GameClock
+GameState *-- RelationshipService
+GameState *-- AchievementService
+GameState o-- "0..*" SimCharacter
 GameState --> SimCharacter : active player
 
-CreateSimController --> CreationStepHandler : delegates steps
-CreateSimController ..> SimCharacterBuilder : builds sims
-CreateSimController --> GameState : finalises into
-CreateSimController --> WorldRegistry : resolves home
+WorldRegistry o-- "0..*" Location
+WorldRegistry o-- "0..*" NPCCharacter
 
-PlayController --> PlayInputHandler : delegates menus
-PlayController --> GameState : mutates and queries
-PlayController --> WorldRegistry : queries
-PlayController --> ShopInventory : shop data
-PlayController ..> NotificationService : emits updates
+ShopInventory o-- "0..*" House
+ShopInventory o-- "0..*" Furniture
+
+Renderer --> GameState
+Renderer --> CreateSimController
+Renderer --> PlayController
+Renderer --> WorldRegistry
+Renderer ..> CreateSimView
+Renderer ..> GameplayView
+
+NpcService --> WorldRegistry
+NpcService --> GameClock
+NpcService --> NPCCharacter
+NpcService --> Location
+
+RelationshipService --> Character
+RelationshipService --> SimCharacter
+RelationshipService --> NPCCharacter
+RelationshipService --> InteractionType
+
+AchievementService --> Character
+AchievementService --> SimCharacter
+AchievementService --> AchievementType
+AchievementService --> CareerList
+AchievementService --> SkillType
+AchievementService --> RelationshipType
+
+NotificationService --> SimCharacter
+HouseService --> SimCharacter
+HouseService --> House
+```
+
+2. Controller and UI flow UML
+```mermaid
+classDiagram
+direction LR
+
+CreateSimController --> GameState
+CreateSimController --> WorldRegistry
+CreateSimController --> CreationStepHandler : current step
+CreateSimController o-- "1..*" SimCharacterBuilder : staged builders
+CreateSimController --> SimCharacter : finalize
+
+CreationStepHandler <|.. CountStepHandler
+CreationStepHandler <|.. NameStepHandler
+CreationStepHandler <|.. GenderStepHandler
+CreationStepHandler <|.. AgeStepHandler
+CreationStepHandler <|.. ConfirmStepHandler
+CreationStepHandler <|.. PickPlayerStepHandler
+
+CountStepHandler --> CreateSimController
+NameStepHandler --> CreateSimController
+GenderStepHandler --> CreateSimController
+AgeStepHandler --> CreateSimController
+ConfirmStepHandler --> CreateSimController
+PickPlayerStepHandler --> CreateSimController
+PickPlayerStepHandler --> GameState
+
+PlayController ..|> PlayContext
+PlayController --> GameState
+PlayController --> WorldRegistry
+PlayController --> ShopInventory
+PlayController o-- HandlerType
+PlayController o-- PlayInputHandler : handler registry
+PlayController --> PlayInputHandler : active handler
+PlayController ..> NotificationService
+PlayController ..> Renderer
+
+PlayInputHandler <|.. MainMenuHandler
+PlayInputHandler <|.. InteractionHandler
+PlayInputHandler <|.. LocationChangeHandler
+PlayInputHandler <|.. ShopHandler
+PlayInputHandler <|.. SocialHandler
+PlayInputHandler <|.. SwitchCharacterHandler
+PlayInputHandler <|.. PickCareerHandler
+
+MainMenuHandler --> PlayController
+MainMenuHandler --> GameState
+
+InteractionHandler --> PlayController
+InteractionHandler --> GameState
+InteractionHandler --> SimCharacter
+InteractionHandler --> Furniture
+InteractionHandler --> ActionResult
+
+LocationChangeHandler --> PlayController
+LocationChangeHandler --> Location
+
+ShopHandler --> PlayController
+ShopHandler --> SimCharacter
+ShopHandler --> Furniture
+ShopHandler --> House
+ShopHandler --> ActionResult
+
+SocialHandler --> PlayController
+SocialHandler --> GameState
+SocialHandler --> SimCharacter
+SocialHandler --> ActionType
+SocialHandler --> InteractionType
+SocialHandler --> NeedType
+SocialHandler ..> DebuffRegistry
+
+SwitchCharacterHandler --> PlayController
+SwitchCharacterHandler --> SimCharacter
+
+PickCareerHandler --> PlayController
+PickCareerHandler --> GameState
+PickCareerHandler --> SimCharacter
+PickCareerHandler --> CareerList
+
+Renderer ..> CreateSimView
+Renderer ..> GameplayView
+
+GameplayView --> GameState
+GameplayView --> PlayController
+GameplayView --> WorldRegistry
+GameplayView ..> ActionsPanelView
+GameplayView ..> NotificationsPanelView
+GameplayView ..> SkillsPanelView
+GameplayView ..> StatsPanelView
+
+CreateSimView --> CreateSimController
+CreateSimView --> GameState
+CreateSimView --> SimCharacterBuilder
+CreateSimView --> SimCharacter
+
+ActionsPanelView --> GameState
+ActionsPanelView --> PlayController
+ActionsPanelView --> WorldRegistry
+ActionsPanelView --> InteractionHandler
+ActionsPanelView --> ShopHandler
+ActionsPanelView --> SocialHandler
+ActionsPanelView --> SimCharacter
+ActionsPanelView --> Furniture
+ActionsPanelView --> FurnitureAction
+ActionsPanelView --> House
+ActionsPanelView --> Location
+ActionsPanelView --> CareerList
+ActionsPanelView --> SkillType
+ActionsPanelView --> InteractionType
+
+NotificationsPanelView --> SimCharacter
+NotificationsPanelView --> NotificationService
+
+SkillsPanelView --> SimCharacter
+SkillsPanelView --> Skill
+
+StatsPanelView --> GameState
+StatsPanelView --> PlayController
+StatsPanelView --> WorldRegistry
+StatsPanelView --> SimCharacter
+StatsPanelView --> NPCCharacter
+StatsPanelView --> Location
+StatsPanelView --> Need
+StatsPanelView --> CareerList
+StatsPanelView --> RelationshipType
+```
+
+3. Domain Model UML
+```mermaid
+classDiagram
+direction LR
 
 Character <|-- SimCharacter
 Character <|-- NPCCharacter
-Character *-- CharacterRelationship : social graph
-Character --> Location : current location
 
-NPCCharacter --> Location : scheduled movement
+Character --> Gender
+Character --> Location : current location
+Character *-- CharacterRelationship
+
+CharacterRelationship --> Character : owner
+CharacterRelationship o-- "0..*" Relationship
+Relationship --> RelationshipType
+
+NPCCharacter --> Location : scheduled locations
+
 SimCharacter *-- CharacterStats
 SimCharacter *-- CharacterFinances
 SimCharacter *-- CharacterHousing
-SimCharacter *-- Career
-SimCharacter ..> DebuffRegistry : applies modifiers
+SimCharacter --> Career
+SimCharacter --> DebuffRegistry
+SimCharacter --> Location
+SimCharacter --> House
+SimCharacter --> Furniture
+SimCharacter --> FurnitureAction
+SimCharacter --> ActionResult
+SimCharacter --> GameClock
+SimCharacter --> CareerList
+SimCharacter --> PromotionStatus
 
-DebuffRegistry o-- "many" Debuff : global rules
-CharacterStats o-- "needs" Need
-CharacterStats o-- "skills" Skill
-CharacterHousing --> House : owns and upgrades
-House --|> Location
-Location o-- "many" Furniture
-Furniture o-- "many" FurnitureAction
+CharacterStats o-- "0..*" Need
+CharacterStats o-- "0..*" Skill
+CharacterStats --> NeedType
+CharacterStats --> SkillType
 
-NpcService --> WorldRegistry : iterates NPCs
-RelationshipService ..> Character : applies interactions
-AchievementService ..> SimCharacter : evaluates unlocks
-NotificationService ..> SimCharacter : stores messages
+Need <|-- Energy
+Need <|-- Hunger
+Need <|-- Hygiene
+Need <|-- Fun
+Need <|-- Social
 
-Renderer ..> CreateSimView : renders
-Renderer ..> GameplayView : renders
-GameplayView ..> StatsPanelView : builds panel
-GameplayView ..> ActionsPanelView : builds panel
-GameplayView ..> SkillsPanelView : builds panel
-GameplayView ..> NotificationsPanelView : builds panel
+Need --> NeedType
+Need --> SimCharacter
+
+Fun --> SkillType
+
+Skill *-- XpTracker
+Skill --> SkillType
+
+Career --> CareerList
+Career --> SkillType
+Career --> PromotionStatus
+CareerList --> SkillType
+CareerRankList --> CareerList
+
+CharacterHousing --> House
+CharacterHousing ..> CharacterFinances
+
+Location <|-- House
+Location o-- "0..*" Furniture
+Location o-- "0..*" NPCCharacter
+
+Furniture o-- "1..*" FurnitureAction
+FurnitureAction ..|> ExecutableAction
+FurnitureAction --> NeedType
+FurnitureAction --> SkillType
+FurnitureAction --> SimCharacter
+FurnitureAction --> GameClock
+
+Debuff <|.. EnergySkillDebuff
+Debuff <|.. FatigueDecayDebuff
+Debuff <|.. HungerEnergyDebuff
+Debuff <|.. HygieneSocialDebuff
+Debuff <|.. SocialFunDebuff
+
+DebuffRegistry o-- "0..*" Debuff
+Debuff --> SimCharacter
+Debuff --> NeedType
+Debuff --> SkillType
+Debuff --> ActionType
+DebuffRegistry --> DebuffType
+
+WorldData o-- "0..*" Location
+WorldData o-- "0..*" NPCCharacter
+WorldData *-- ShopInventory
+
+ActionResult --> SimCharacter : optional target
 ```
+
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -491,7 +707,9 @@ GameplayView ..> NotificationsPanelView : builds panel
 Open Terminal in the project root folder, then run:
 
 ```bash
-java app/Main.java
+mkdir -p out
+find src -path 'src/test' -prune -o -name '*.java' -print | xargs javac -d out
+java -cp out app.Main
 ```
 
 ### Windows (PowerShell)
@@ -499,7 +717,9 @@ java app/Main.java
 Open PowerShell in the project root folder, then run:
 
 ```powershell
-javac -d out (Get-ChildItem -Recurse src\*.java).FullName; java -cp out app.Main
+$files = Get-ChildItem -Recurse src -Filter *.java | Where-Object { $_.FullName -notmatch '\\src\\test\\' }
+javac -d out $files.FullName
+java -cp out app.Main
 ```
 
 ### Alternative for Some Windows Users
