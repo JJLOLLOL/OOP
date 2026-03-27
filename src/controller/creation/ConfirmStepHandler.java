@@ -1,12 +1,9 @@
 package controller.creation;
 
 import controller.CreateSimController;
-import core.GameState;
-import core.WorldRegistry;
 import ui.Renderer;
 
 public class ConfirmStepHandler implements CreationStepHandler {
-
     @Override
     public boolean handleInput(String input, CreateSimController context) {
         switch (input.toLowerCase()) {

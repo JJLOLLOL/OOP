@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import models.character.Character;
 import models.character.Relationship;
-import types.RelationshipList;
+import types.RelationshipType;
 
 public class CharacterRelationship {
     private final Character owner;
@@ -51,11 +51,11 @@ public class CharacterRelationship {
         return relationship == null ? 0 : relationship.getScore();
     }
 
-    public RelationshipList getStatusWith(Character target) {
+    public RelationshipType getStatusWith(Character target) {
         validateTarget(target);
         Relationship relationship = relationships.get(target);
         return relationship == null
-                ? RelationshipList.ACQUAINTANCE
+                ? RelationshipType.ACQUAINTANCE
                 : relationship.getStatus();
     }
 

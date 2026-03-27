@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import models.location.Location;
 import types.Gender;
-import types.RelationshipList;
+import types.RelationshipType;
 
 import org.junit.jupiter.api.Test;
 
@@ -46,7 +46,7 @@ class CharacterTest {
 
         assertEquals(30, alex.getRelationshipScoreWith(sam));
         assertEquals(30, sam.getRelationshipScoreWith(alex));
-        assertEquals(RelationshipList.FRIENDLY, alex.getRelationshipStatus(sam));
-        assertEquals(RelationshipList.FRIENDLY, sam.getRelationshipStatus(alex));
+        assertEquals(RelationshipType.FRIENDLY, alex.getRelationshipStatus(sam));
+        assertEquals(RelationshipType.FRIENDLY, sam.getRelationshipStatus(alex));
     }
 }

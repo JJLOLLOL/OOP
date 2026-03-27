@@ -14,7 +14,7 @@ import models.character.SimCharacter;
 import models.location.Location;
 import models.skill.SkillType;
 import services.NotificationService;
-import types.AchievementList;
+import types.AchievementType;
 import ui.Renderer;
 
 public class PlayController implements PlayContext {
@@ -81,8 +81,8 @@ public class PlayController implements PlayContext {
 
     public static void addAchievementNotifications(
             SimCharacter player,
-            List<AchievementList> unlockedAchievements) {
-        for (AchievementList achievement : unlockedAchievements) {
+            List<AchievementType> unlockedAchievements) {
+        for (AchievementType achievement : unlockedAchievements) {
             NotificationService.add(player, "Achievement unlocked: " + achievement.getTitle());
         }
     }

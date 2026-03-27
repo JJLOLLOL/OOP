@@ -4,7 +4,7 @@ import java.util.List;
 import models.character.Character;
 import models.character.NPCCharacter;
 import models.character.SimCharacter;
-import types.InteractionList;
+import types.InteractionType;
 
 public class RelationshipService {
 
@@ -21,7 +21,7 @@ public class RelationshipService {
     }
 
 
-    public String interact(Character from, Character to, InteractionList type) {
+    public String interact(Character from, Character to, InteractionType type) {
         from.changeRelationshipWith(to, type.getEffect());
 
         int score = from.getRelationshipScoreWith(to);
