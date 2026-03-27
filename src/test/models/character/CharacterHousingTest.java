@@ -161,7 +161,7 @@ class CharacterHousingTest {
         housing.assignHouse(house);
         CharacterHousing.HousingResult result = housing.sellFurniture(sofa, finances);
 
-        assertEquals(CharacterHousing.HousingResult.HOUSE_EMPTY, result);
+        assertEquals(CharacterHousing.HousingResult.FURNITURE_NOT_FOUND, result);
         assertEquals(1000.0, finances.getMoney());
     }
 
@@ -185,7 +185,7 @@ class CharacterHousingTest {
         House targetHouse = makeHouse("Luxury House", 600.0, 4);
 
         housing.assignHouse(currentHouse);
-        CharacterHousing.HousingResult result = housing.buyHouse(targetHouse, finances);
+        CharacterHousing.HousingResult result = housing.upgradeTo(targetHouse, finances);
 
         assertEquals(CharacterHousing.HousingResult.SUCCESS, result);
         assertEquals(4, currentHouse.getTier());
@@ -201,7 +201,7 @@ class CharacterHousingTest {
         House mansion = makeHouse("Mansion", 1500.0, 5);
 
         housing.assignHouse(currentHouse);
-        CharacterHousing.HousingResult result = housing.buyHouse(mansion, finances);
+        CharacterHousing.HousingResult result = housing.upgradeTo(mansion, finances);
 
         assertEquals(CharacterHousing.HousingResult.INSUFFICIENT_FUNDS, result);
         assertEquals(1, currentHouse.getTier());
@@ -216,7 +216,7 @@ class CharacterHousingTest {
         housing.assignHouse(makeHouse("Starter House", 0.0, 1));
 
         IllegalArgumentException ex =
-                assertThrows(IllegalArgumentException.class, () -> housing.buyHouse(null, finances));
+                assertThrows(IllegalArgumentException.class, () -> housing.upgradeTo(null, finances));
 
         assertEquals("House cannot be null.", ex.getMessage());
     }
@@ -228,7 +228,7 @@ class CharacterHousingTest {
 
         IllegalArgumentException ex =
                 assertThrows(IllegalArgumentException.class,
-                        () -> housing.buyHouse(makeHouse("Upgrade", 500.0, 3), null));
+                        () -> housing.upgradeTo(makeHouse("Upgrade", 500.0, 3), null));
 
         assertEquals("Finances cannot be null.", ex.getMessage());
     }
@@ -240,7 +240,7 @@ class CharacterHousingTest {
 
         IllegalArgumentException ex =
                 assertThrows(IllegalArgumentException.class,
-                        () -> housing.buyHouse(makeHouse("Upgrade", 500.0, 3), finances));
+                        () -> housing.upgradeTo(makeHouse("Upgrade", 500.0, 3), finances));
 
         assertEquals("House cannot be null.", ex.getMessage());
     }
@@ -252,7 +252,7 @@ class CharacterHousingTest {
         assertEquals(4, results.length);
         assertEquals(CharacterHousing.HousingResult.SUCCESS, results[0]);
         assertEquals(CharacterHousing.HousingResult.HOUSE_FULL, results[1]);
-        assertEquals(CharacterHousing.HousingResult.HOUSE_EMPTY, results[2]);
+        assertEquals(CharacterHousing.HousingResult.FURNITURE_NOT_FOUND, results[2]);
         assertEquals(CharacterHousing.HousingResult.INSUFFICIENT_FUNDS, results[3]);
     }
 }

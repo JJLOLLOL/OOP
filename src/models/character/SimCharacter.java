@@ -46,12 +46,10 @@ public class SimCharacter extends Character {
      * @param action The action defining the effects of working a shift.
      */
     public static void setWorkAction(FurnitureAction action) {
+        if (action == null) {
+            throw new IllegalArgumentException("Work action cannot be null.");
+        }
         WORK_ACTION = action;
-    }
-
-    // ======== ????
-    public int getAge() {
-        return super.getAge();
     }
 
     // ======== STATS
@@ -130,7 +128,7 @@ public class SimCharacter extends Character {
             return ActionResult.failure(String.format("Work doesn't start until %02d:00.", career.getShiftStartHour()));
         }
         if (career.isShiftOver(currentTime)) {
-            return ActionResult.failure(String.format("he work day is over (shift ends %02d:00). Come back tomorrow!", career.getShiftEndHour()));
+            return ActionResult.failure(String.format("The work day is over (shift ends %02d:00). Come back tomorrow!", career.getShiftEndHour()));
         }
 
         double hoursWorked = career.getRemainingShiftHours(currentTime);
@@ -186,7 +184,7 @@ public class SimCharacter extends Character {
     }
 
     public ActionResult purchaseHouse(House targetHouse) {
-        CharacterHousing.HousingResult result = housing.buyHouse(targetHouse, finances);
+        CharacterHousing.HousingResult result = housing.upgradeTo(targetHouse, finances);
         switch (result) {
             case SUCCESS: return ActionResult.success(getName() + " bought " + targetHouse.getLocationName() + " for $" + targetHouse.getPrice());
             case INSUFFICIENT_FUNDS: return ActionResult.failure("Insufficient funds! Need $" + targetHouse.getPrice() + ", have: $" + getMoney());
@@ -207,7 +205,7 @@ public class SimCharacter extends Character {
         CharacterHousing.HousingResult result = housing.sellFurniture(furniture, finances);
         switch (result) {
             case SUCCESS: return ActionResult.success(getName() + " sold " + furniture.getName() + " for $" + furniture.getPrice());
-            case HOUSE_EMPTY: return ActionResult.failure("Your house is empty.");
+            case FURNITURE_NOT_FOUND: return ActionResult.failure("Your house is empty.");
             default: throw new IllegalStateException("Unexpected result: " + result);
         }
     }

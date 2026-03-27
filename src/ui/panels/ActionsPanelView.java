@@ -20,8 +20,8 @@ import models.furniture.FurnitureAction;
 import models.location.House;
 import models.location.Location;
 import models.skill.SkillType;
-import types.InteractionList;
-import types.RelationshipList;
+import types.InteractionType;
+import types.RelationshipType;
 
 import static ui.ConsoleUtils.*;
 import static ui.Renderer.*;
@@ -90,7 +90,7 @@ public class ActionsPanelView {
                     lines.add(MUTED + "Nobody here." + RESET);
                 } else {
                     for (int i = 0; i < chars.size(); i++) {
-                        RelationshipList status = player.getRelationshipStatus(chars.get(i));
+                        RelationshipType status = player.getRelationshipStatus(chars.get(i));
                         lines.add(menuItem(String.valueOf(i + 1),
                                 chars.get(i).getName() + " " + MUTED + "[" + status.label + "]" + RESET));
                     }
@@ -99,7 +99,7 @@ public class ActionsPanelView {
             }
             case SOCIALISE_ACTION -> {
                 lines.add(menuTitle("Interact: " + ((SocialHandler) playController.getActiveHandler()).getSelectedCharacter().getName()));
-                InteractionList[] types = InteractionList.values();
+                InteractionType[] types = InteractionType.values();
                 for (int i = 0; i < types.length; i++) {
                     lines.add(menuItem(String.valueOf(i + 1), types[i].getLabel()));
                 }

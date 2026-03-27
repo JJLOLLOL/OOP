@@ -9,45 +9,45 @@ class AchievementListTest {
 
     @Test
     void values_containsAllAchievements() {
-        AchievementList[] achievements = AchievementList.values();
+        AchievementType[] achievements = AchievementType.values();
 
         assertEquals(21, achievements.length);
-        assertEquals(AchievementList.FIRST_JOB, achievements[0]);
-        assertEquals(AchievementList.EVIL, achievements[20]);
+        assertEquals(AchievementType.FIRST_JOB, achievements[0]);
+        assertEquals(AchievementType.EVIL, achievements[20]);
     }
 
     @Test
     void getTitle_returnsCorrectValues() {
-        assertEquals("First Job", AchievementList.FIRST_JOB.getTitle());
-        assertEquals("Tech Trailblazer", AchievementList.TECH_TRAILBLAZER.getTitle());
-        assertEquals("First Cooking", AchievementList.FIRST_COOKING.getTitle());
-        assertEquals("Friendly", AchievementList.FRIENDLY.getTitle());
+        assertEquals("First Job", AchievementType.FIRST_JOB.getTitle());
+        assertEquals("Tech Trailblazer", AchievementType.TECH_TRAILBLAZER.getTitle());
+        assertEquals("First Cooking", AchievementType.FIRST_COOKING.getTitle());
+        assertEquals("Friendly", AchievementType.FRIENDLY.getTitle());
     }
 
     @Test
     void getDescription_returnsCorrectValues() {
         assertEquals("Get your first non-jobless career",
-                AchievementList.FIRST_JOB.getDescription());
+                AchievementType.FIRST_JOB.getDescription());
         assertEquals("Reach career rank 7",
-                AchievementList.CORPORATE_EXECUTIVE.getDescription());
+                AchievementType.CORPORATE_EXECUTIVE.getDescription());
         assertEquals("Use Painting skill for the first time",
-                AchievementList.FIRST_PAINTING.getDescription());
+                AchievementType.FIRST_PAINTING.getDescription());
         assertEquals("Become enemies with every other character",
-                AchievementList.EVIL.getDescription());
+                AchievementType.EVIL.getDescription());
     }
 
     @Test
     void valueOf_returnsCorrectEnum() {
-        assertEquals(AchievementList.FIRST_JOB, AchievementList.valueOf("FIRST_JOB"));
-        assertEquals(AchievementList.FIRST_PROMOTION, AchievementList.valueOf("FIRST_PROMOTION"));
-        assertEquals(AchievementList.FIRST_PROGRAMMING,
-                AchievementList.valueOf("FIRST_PROGRAMMING"));
-        assertEquals(AchievementList.FRIENDLY, AchievementList.valueOf("FRIENDLY"));
+        assertEquals(AchievementType.FIRST_JOB, AchievementType.valueOf("FIRST_JOB"));
+        assertEquals(AchievementType.FIRST_PROMOTION, AchievementType.valueOf("FIRST_PROMOTION"));
+        assertEquals(AchievementType.FIRST_PROGRAMMING,
+                AchievementType.valueOf("FIRST_PROGRAMMING"));
+        assertEquals(AchievementType.FRIENDLY, AchievementType.valueOf("FRIENDLY"));
     }
 
     @Test
     void valueOf_throwsExceptionForInvalidName() {
         assertThrows(IllegalArgumentException.class,
-                () -> AchievementList.valueOf("INVALID"));
+                () -> AchievementType.valueOf("INVALID"));
     }
 }

@@ -9,9 +9,9 @@ import models.need.NeedType;
 import models.skill.SkillType;
 import org.junit.jupiter.api.Test;
 
-class ActivityInterfaceTest {
+class ExecutableActionTest {
 
-    private static class TestActivity implements ActivityInterface {
+    private static class TestActivity implements ExecutableAction {
         @Override
         public String getName() {
             return "Study";
@@ -50,7 +50,7 @@ class ActivityInterfaceTest {
 
     @Test
     void implementationReturnsConfiguredValues() {
-        ActivityInterface activity = new TestActivity();
+        ExecutableAction activity = new TestActivity();
 
         assertEquals("Study", activity.getName());
         assertEquals("Improves logic", activity.getDescription());
@@ -62,7 +62,7 @@ class ActivityInterfaceTest {
 
     @Test
     void performReturnsTrueForNonNullCharacter() {
-        ActivityInterface activity = new TestActivity();
+        ExecutableAction activity = new TestActivity();
         Object result = activity.perform(new models.character.SimCharacter(
                 "Alex",
                 20,

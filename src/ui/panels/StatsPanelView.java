@@ -11,7 +11,7 @@ import models.character.NPCCharacter;
 import models.character.SimCharacter;
 import models.location.Location;
 import models.need.Need;
-import types.RelationshipList;
+import types.RelationshipType;
 
 import static ui.ConsoleUtils.*;
 import static ui.Renderer.*;
@@ -61,7 +61,7 @@ public class StatsPanelView {
         } else {
             lines.add(LABEL + "nearby:" + RESET);
             for (models.character.Character c : chars) {
-                RelationshipList status = player.getRelationshipStatus(c);
+                RelationshipType status = player.getRelationshipStatus(c);
                 int score = player.getRelationshipScoreWith(c);
                 String col = score > 0 ? BRIGHT_GREEN : score < 0 ? BRIGHT_RED : BRIGHT_YELLOW;
                 lines.add(WHITE + c.getName() + RESET + MUTED + " [" + status.label + "] " + RESET + col + score + RESET);

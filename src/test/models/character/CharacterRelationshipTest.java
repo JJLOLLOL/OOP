@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import models.character.relationship.CharacterRelationship;
 import models.location.Location;
 import types.Gender;
-import types.RelationshipList;
+import types.RelationshipType;
 
 import org.junit.jupiter.api.Test;
 
@@ -55,8 +55,8 @@ class CharacterRelationshipTest {
 
         assertEquals(50, alex.getRelationships().getScoreWith(sam));
         assertEquals(50, sam.getRelationships().getScoreWith(alex));
-        assertEquals(RelationshipList.FRIEND, alex.getRelationships().getStatusWith(sam));
-        assertEquals(RelationshipList.FRIEND, sam.getRelationships().getStatusWith(alex));
+        assertEquals(RelationshipType.FRIEND, alex.getRelationships().getStatusWith(sam));
+        assertEquals(RelationshipType.FRIEND, sam.getRelationships().getStatusWith(alex));
     }
 
     @Test
@@ -65,7 +65,7 @@ class CharacterRelationshipTest {
         TestCharacter sam = new TestCharacter("Sam");
 
         assertEquals(0, alex.getRelationships().getScoreWith(sam));
-        assertEquals(RelationshipList.ACQUAINTANCE, alex.getRelationships().getStatusWith(sam));
+        assertEquals(RelationshipType.ACQUAINTANCE, alex.getRelationships().getStatusWith(sam));
     }
 
     @Test

@@ -1,6 +1,6 @@
 package models.character;
 
-import types.RelationshipList;
+import types.RelationshipType;
 
 /**
  * Represents one relationship bond between two characters.
@@ -22,8 +22,8 @@ public class Relationship {
         return score;
     }
 
-    public RelationshipList getStatus() {
-        return RelationshipList.from(score);
+    public RelationshipType getStatus() {
+        return RelationshipType.from(score);
     }
 
     public void adjust(int delta) {
