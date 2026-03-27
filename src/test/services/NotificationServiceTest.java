@@ -35,7 +35,7 @@ class NotificationServiceTest {
         UITestSupport.Fixture fixture = UITestSupport.fixture();
         NotificationService.add(fixture.player, "temporary");
 
-        for (int i = 0; i < 9; i++) {
+        for (int i = 0; i < 199; i++) {
             NotificationService.tick(fixture.player);
         }
         assertEquals(List.of("temporary"), NotificationService.get(fixture.player));

@@ -345,7 +345,7 @@ class SimCharacterTest {
         ActionResult result = sim.sellFurniture(chair);
 
         assertTrue(result.isSuccess());
-        assertEquals("Taylor sold Chair for $200.0", result.getMessage());
+        assertEquals("Taylor sold Chair for $100.00", result.getMessage());
         assertEquals(1100.0, sim.getMoney());
         assertFalse(sim.getCurrentHouse().containsFurniture(chair));
     }
