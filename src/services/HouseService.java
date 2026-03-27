@@ -73,7 +73,7 @@ public class HouseService {
 
         double upgradeCost = nextHouse.getPrice() - currentHouse.getPrice();
 
-        if (owner.getMoney() < upgradeCost) {
+        if (!owner.canAfford(upgradeCost)) {
             return false; // Not enough money for upgrade
         }
 

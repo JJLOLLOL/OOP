@@ -21,7 +21,7 @@ import services.NotificationService;
  * {@link #perform(SimCharacter)} skips time advancement for backwards
  * compatibility (e.g. automated/test calls).
  */
-public class FurnitureAction implements ActivityInterface {
+public class FurnitureAction implements ExecutableAction {
 
     private final String name;
     private final String description;

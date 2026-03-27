@@ -4,7 +4,7 @@ package models.character;
 import models.character.relationship.CharacterRelationship;
 import models.location.Location;
 import types.Gender;
-import types.RelationshipList;
+import types.RelationshipType;
 
 public abstract class Character {
     private final String name;
@@ -48,7 +48,7 @@ public abstract class Character {
         return relationships.getScoreWith(other);
     }
 
-    public RelationshipList getRelationshipStatus(Character other) {
+    public RelationshipType getRelationshipStatus(Character other) {
         return relationships.getStatusWith(other);
     }
 

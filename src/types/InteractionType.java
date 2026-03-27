@@ -1,6 +1,6 @@
 package types;
 
-public enum InteractionList {
+public enum InteractionType {
 
     TALK("Talk", 5, " responds positively to the conversation."),
     COMPLIMENT("Compliment", 10, " smiles and thanks you warmly."),
@@ -11,7 +11,7 @@ public enum InteractionList {
     private final int effect;
     private final String reaction;
 
-    InteractionList(String label, int effect, String reaction) {
+    InteractionType(String label, int effect, String reaction) {
         this.label = label;
         this.effect = effect;
         this.reaction = reaction;

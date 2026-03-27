@@ -7,6 +7,7 @@ import java.util.EnumMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import core.ActionResult;
@@ -48,11 +49,6 @@ class SimCharacterTest {
                 affectedSkills,
                 0.0,
                 0.0);
-    }
-
-    @AfterEach
-    void resetStaticWorkAction() {
-        SimCharacter.setWorkAction(null);
     }
 
     @Test
@@ -183,21 +179,15 @@ class SimCharacterTest {
         ActionResult result = sim.work(clock);
 
         assertFalse(result.isSuccess());
-        assertEquals("he work day is over (shift ends 19:00). Come back tomorrow!", result.getMessage());
+        assertEquals("The work day is over (shift ends 19:00). Come back tomorrow!", result.getMessage());
     }
 
     @Test
-    void workThrowsWhenWorkActionIsNotInitialized() {
-        SimCharacter sim = createSim();
-        sim.joinCareer(CareerList.CHEF);
-
-        GameClock clock = new GameClock();
-        clock.advanceHours(1.0); // 09:00
-
-        IllegalStateException ex = assertThrows(IllegalStateException.class, () -> sim.work(clock));
-        assertEquals(
-                "Work action has not been initialized. Ensure DataParser has set this value.",
-                ex.getMessage());
+    void setWorkActionRejectsNull() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> SimCharacter.setWorkAction(null));
+        assertEquals("Work action cannot be null.", ex.getMessage());
     }
 
     @Test
@@ -372,5 +362,31 @@ class SimCharacterTest {
         assertEquals(
                 "Taylor purchased Villa for $5000.0!",
                 sim.getPurchaseMessage(house, true));
+    }
+    @BeforeEach
+    void setUpWorkAction() {
+        SimCharacter.setWorkAction(
+                new FurnitureAction(
+                        "Work",
+                        "Work shift",
+                        new EnumMap<>(NeedType.class),
+                        new EnumMap<>(SkillType.class),
+                        0.0,
+                        0.0));
+    }
+    @Test
+    void switchingBetweenMultipleSimsPreservesIndependentState() {
+        SimCharacter simA = new SimCharacter("A", 20, Gender.MALE, new Location("HomeA", new ArrayList<>()));
+        SimCharacter simB = new SimCharacter("B", 22, Gender.FEMALE, new Location("HomeB", new ArrayList<>()));
+
+        simA.earnMoney(500.0);
+        simB.spendMoney(200.0);
+
+        assertEquals(1500.0, simA.getMoney());
+        assertEquals(800.0, simB.getMoney());
+
+        simA.adjustNeed(NeedType.ENERGY, -20.0);
+        assertEquals(60.0, simA.getNeed(NeedType.ENERGY).getValue());
+        assertEquals(80.0, simB.getNeed(NeedType.ENERGY).getValue());
     }
 }

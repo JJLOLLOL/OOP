@@ -7,7 +7,7 @@ import models.character.SimCharacter;
 import models.debuffs.DebuffRegistry;
 import models.need.NeedType;
 import services.NotificationService;
-import types.InteractionList;
+import types.InteractionType;
 
 import java.util.List;
 
@@ -44,11 +44,11 @@ public class SocialHandler implements PlayInputHandler {
             onEnter(context); // re-fetch characters
             return true;
         }
-        InteractionList[] types = InteractionList.values();
+        InteractionType[] types = InteractionType.values();
         return PlayController.pickFromList(input, List.of(types), idx -> {
             SimCharacter player = context.getActivePlayer();
             GameState state = context.getGameState();
-            InteractionList chosen = types[idx];
+            InteractionType chosen = types[idx];
 
             String blockReason = DebuffRegistry.getInteractionBlockReason(player, ActionType.SOCIALISE);
             if (blockReason != null) {

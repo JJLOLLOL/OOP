@@ -10,7 +10,7 @@ public class CharacterHousing {
     public enum HousingResult {
         SUCCESS,
         HOUSE_FULL,
-        HOUSE_EMPTY,
+        FURNITURE_NOT_FOUND,
         INSUFFICIENT_FUNDS
     }
     
@@ -54,7 +54,7 @@ public class CharacterHousing {
             throw new IllegalArgumentException("furniture cannot be null.");
         }
         if (!currentHouse.containsFurniture(furniture)) {
-            return HousingResult.HOUSE_EMPTY;
+            return HousingResult.FURNITURE_NOT_FOUND;
         }
 
         currentHouse.removeFurniture(furniture);
@@ -62,7 +62,7 @@ public class CharacterHousing {
         return HousingResult.SUCCESS;
     }
     
-    public HousingResult buyHouse(House targetHouse, CharacterFinances finances) {
+    public HousingResult upgradeTo(House targetHouse, CharacterFinances finances) {
         if (targetHouse == null) {
             throw new IllegalArgumentException("House cannot be null.");
         }

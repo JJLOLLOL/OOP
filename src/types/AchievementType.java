@@ -1,6 +1,6 @@
 package types;
 
-public enum AchievementList {
+public enum AchievementType {
 
     // Career achievements
     FIRST_JOB("First Job", "Get your first non-jobless career"),
@@ -30,7 +30,7 @@ public enum AchievementList {
     private final String title;
     private final String description;
 
-    AchievementList(String title, String description) {
+    AchievementType(String title, String description) {
         this.title = title;
         this.description = description;
     }

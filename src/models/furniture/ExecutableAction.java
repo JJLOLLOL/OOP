@@ -11,7 +11,7 @@ import models.skill.SkillType;
  * Defines the contract for providing information about the action's effects,
  * cost, and requirements, as well as executing it.
  */
-public interface ActivityInterface {
+public interface ExecutableAction {
 
     /**
      * Retrieves the name of the activity.
