@@ -39,7 +39,11 @@ class RendererTest {
         CreateSimController createSimController = new CreateSimController();
 
         String output = UITestSupport.withoutClearScreen(UITestSupport.captureOutput(
-                () -> Renderer.render(fixture.state, fixture.world, createSimController)));
+                () -> Renderer.render(
+                        fixture.state,
+                        fixture.world,
+                        createSimController,
+                        fixture.playController)));
 
         assertTrue(output.contains("CREATE YOUR SIMS"));
         assertTrue(output.contains("How many Sims do you want to create?"));
@@ -51,7 +55,11 @@ class RendererTest {
         fixture.state.setPhase(GameState.Phase.PLAYING);
 
         String output = UITestSupport.withoutClearScreen(UITestSupport.captureOutput(
-                () -> Renderer.render(fixture.state, fixture.world, new CreateSimController())));
+                () -> Renderer.render(
+                        fixture.state,
+                        fixture.world,
+                        new CreateSimController(),
+                        fixture.playController)));
 
         assertTrue(output.contains("DAY 1"));
         assertTrue(output.contains("Actions"));
@@ -65,7 +73,11 @@ class RendererTest {
         fixture.state.setPhase(GameState.Phase.QUIT);
 
         String output = UITestSupport.captureOutput(
-                () -> Renderer.render(fixture.state, fixture.world, new CreateSimController()));
+                () -> Renderer.render(
+                        fixture.state,
+                        fixture.world,
+                        new CreateSimController(),
+                        fixture.playController));
 
         assertEquals("\033[H\033[2J", output);
     }

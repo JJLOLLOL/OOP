@@ -21,7 +21,7 @@ class GameplayViewTest {
         NotificationService.add(fixture.player, "Warning: low hygiene cost");
 
         String output = UITestSupport.captureOutput(
-                () -> GameplayView.render(fixture.state, fixture.world));
+                () -> GameplayView.render(fixture.state, fixture.world, fixture.playController));
 
         assertTrue(output.contains("DAY 1"));
         assertTrue(output.contains("Actions"));

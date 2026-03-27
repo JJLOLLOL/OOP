@@ -1,6 +1,5 @@
 package controller;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -31,8 +30,11 @@ class CreateSimControllerTest {
 
         assertTrue(controller.handleInput("M", fixture.state, fixture.world));
         assertEquals(CreateSimController.Step.NAME, controller.getStep());
-        assertEquals(1, controller.getCommitted().size());
-        assertArrayEquals(new String[]{"Alex", "25", "Male"}, controller.getCommitted().get(0));
+        assertEquals(2, controller.getCommitted().size());
+        assertEquals(1, controller.getCurrentIndex());
+        assertEquals("Alex", controller.getCommitted().get(0).getName());
+        assertEquals(25, controller.getCommitted().get(0).getAge());
+        assertEquals("M", controller.getCommitted().get(0).getGenderLabel());
     }
 
     @Test

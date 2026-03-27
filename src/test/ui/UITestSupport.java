@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import controller.PlayController;
 import core.GameState;
 import core.WorldRegistry;
 import data.ShopInventory;
@@ -46,11 +47,12 @@ public final class UITestSupport {
         public final House villa;
         public final Furniture lamp;
         public final ShopInventory shopInventory;
+        public final PlayController playController;
 
         private Fixture(House home, Location park, Location cafe, Furniture studyDesk,
                 Furniture arcadeMachine, SimCharacter player, SimCharacter roommate,
                 NPCCharacter npc, WorldRegistry world, GameState state, House villa,
-                Furniture lamp, ShopInventory shopInventory) {
+                Furniture lamp, ShopInventory shopInventory, PlayController playController) {
             this.home = home;
             this.park = park;
             this.cafe = cafe;
@@ -64,6 +66,7 @@ public final class UITestSupport {
             this.villa = villa;
             this.lamp = lamp;
             this.shopInventory = shopInventory;
+            this.playController = playController;
         }
     }
 
@@ -132,10 +135,10 @@ public final class UITestSupport {
         House villa = new House("Villa", new ArrayList<>(), 2500.0, 2.0, 3);
         Furniture lamp = new Furniture("Lamp", "Warm ambient light.", 80.0);
         ShopInventory shopInventory = new ShopInventory(List.of(villa), List.of(lamp));
-        resetPlayController(shopInventory);
+        PlayController playController = new PlayController(shopInventory);
 
         return new Fixture(home, park, cafe, studyDesk, arcadeMachine, player, roommate,
-                npc, world, state, villa, lamp, shopInventory);
+                npc, world, state, villa, lamp, shopInventory, playController);
     }
 
     public static void resetRendererLayout() {
@@ -144,35 +147,6 @@ public final class UITestSupport {
         Renderer.SKILLS_W = Renderer.MIN_COL_W;
         Renderer.NOTIF_W = Renderer.MIN_COL_W;
         Renderer.INNER_W = 4 * (Renderer.MIN_COL_W + 2) + 3;
-    }
-
-    public static void resetPlayController(ShopInventory shopInventory) {
-        controller.PlayController.setShopInventory(shopInventory);
-        try {
-            java.lang.reflect.Field step = controller.PlayController.class.getDeclaredField("step");
-            java.lang.reflect.Field selectedFurniture =
-                    controller.PlayController.class.getDeclaredField("selectedFurniture");
-            java.lang.reflect.Field selectedCharacter =
-                    controller.PlayController.class.getDeclaredField("selectedCharacter");
-            java.lang.reflect.Field currentHouses =
-                    controller.PlayController.class.getDeclaredField("currentHouses");
-            java.lang.reflect.Field currentFurniture =
-                    controller.PlayController.class.getDeclaredField("currentFurniture");
-
-            step.setAccessible(true);
-            selectedFurniture.setAccessible(true);
-            selectedCharacter.setAccessible(true);
-            currentHouses.setAccessible(true);
-            currentFurniture.setAccessible(true);
-
-            step.set(null, controller.PlayController.Step.MAIN);
-            selectedFurniture.set(null, null);
-            selectedCharacter.set(null, null);
-            currentHouses.set(null, null);
-            currentFurniture.set(null, null);
-        } catch (ReflectiveOperationException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public static String captureOutput(ThrowingRunnable action) throws Exception {

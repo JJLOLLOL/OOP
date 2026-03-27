@@ -2,7 +2,6 @@ package controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -10,72 +9,72 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import core.GameState;
-import models.career.CareerList;
+import controller.play.InteractionHandler;
+import controller.play.ShopHandler;
+import controller.play.SocialHandler;
 import models.furniture.FurnitureAction;
 import models.need.NeedType;
 import models.skill.SkillType;
 import services.NotificationService;
-import types.AchievementList;
+import types.AchievementType;
 import ui.UITestSupport;
 
 class PlayControllerTest {
-
-    @BeforeEach
-    void setUp() {
-        UITestSupport.Fixture fixture = UITestSupport.fixture();
-        UITestSupport.resetPlayController(fixture.shopInventory);
-    }
 
     @Test
     void handleInputMovesBetweenMainMenuStatesAndCanQuit() {
         UITestSupport.Fixture fixture = UITestSupport.fixture();
 
-        assertEquals(PlayController.Step.MAIN, PlayController.getStep());
-        assertTrue(PlayController.handleInput("1", fixture.state, fixture.world));
-        assertEquals(PlayController.Step.INTERACTABLES, PlayController.getStep());
+        assertEquals(PlayController.Step.MAIN, fixture.playController.getActiveHandler().getStep());
+        assertTrue(fixture.playController.handleInput("1", fixture.state, fixture.world));
+        assertEquals(PlayController.Step.INTERACTABLES, fixture.playController.getActiveHandler().getStep());
 
-        UITestSupport.resetPlayController(fixture.shopInventory);
-        assertTrue(PlayController.handleInput("6", fixture.state, fixture.world));
-        assertSame(GameState.Phase.QUIT, fixture.state.getPhase());
+        UITestSupport.Fixture quitFixture = UITestSupport.fixture();
+        assertTrue(quitFixture.playController.handleInput("6", quitFixture.state, quitFixture.world));
+        assertSame(GameState.Phase.QUIT, quitFixture.state.getPhase());
     }
 
     @Test
-    void interactionAndSocialSelectionPopulateStaticSelections() {
+    void interactionAndSocialSelectionPopulateHandlerSelections() {
         UITestSupport.Fixture fixture = UITestSupport.fixture();
 
-        PlayController.handleInput("1", fixture.state, fixture.world);
-        PlayController.handleInput("1", fixture.state, fixture.world);
-        assertEquals(PlayController.Step.INTERACTABLE_ACTION, PlayController.getStep());
-        assertSame(fixture.studyDesk, PlayController.getSelectedFurniture());
+        fixture.playController.handleInput("1", fixture.state, fixture.world);
+        fixture.playController.handleInput("1", fixture.state, fixture.world);
+        assertEquals(PlayController.Step.INTERACTABLE_ACTION, fixture.playController.getActiveHandler().getStep());
+        assertSame(
+                fixture.studyDesk,
+                ((InteractionHandler) fixture.playController.getActiveHandler()).getSelectedFurniture());
 
-        UITestSupport.resetPlayController(fixture.shopInventory);
-        PlayController.handleInput("2", fixture.state, fixture.world);
-        PlayController.handleInput("1", fixture.state, fixture.world);
-        assertEquals(PlayController.Step.SOCIALISE_ACTION, PlayController.getStep());
-        assertSame(fixture.roommate, PlayController.getSelectedCharacter());
+        UITestSupport.Fixture socialFixture = UITestSupport.fixture();
+        socialFixture.playController.handleInput("2", socialFixture.state, socialFixture.world);
+        socialFixture.playController.handleInput("1", socialFixture.state, socialFixture.world);
+        assertEquals(PlayController.Step.SOCIALISE_ACTION, socialFixture.playController.getActiveHandler().getStep());
+        assertSame(
+                socialFixture.roommate,
+                ((SocialHandler) socialFixture.playController.getActiveHandler()).getSelectedCharacter());
     }
 
     @Test
-    void shopRelatedStateAndCareerAccessorsReturnExpectedValues() {
+    void shopHandlerExposesSelectedInventoryLists() {
         UITestSupport.Fixture fixture = UITestSupport.fixture();
 
-        PlayController.handleInput("5", fixture.state, fixture.world);
-        PlayController.handleInput("1", fixture.state, fixture.world);
-        assertEquals(PlayController.Step.SHOP_HOUSES, PlayController.getStep());
-        assertEquals(List.of(fixture.villa), PlayController.getCurrentHouses());
+        fixture.playController.handleInput("5", fixture.state, fixture.world);
+        fixture.playController.handleInput("1", fixture.state, fixture.world);
+        assertEquals(PlayController.Step.SHOP_HOUSES, fixture.playController.getActiveHandler().getStep());
+        assertEquals(
+                List.of(fixture.villa),
+                ((ShopHandler) fixture.playController.getActiveHandler()).getHousesForSale());
 
-        UITestSupport.resetPlayController(fixture.shopInventory);
-        PlayController.handleInput("5", fixture.state, fixture.world);
-        PlayController.handleInput("2", fixture.state, fixture.world);
-        assertEquals(PlayController.Step.SHOP_FURNITURE, PlayController.getStep());
-        assertEquals(List.of(fixture.lamp), PlayController.getCurrentFurniture());
-
-        assertFalse(PlayController.getAvailableCareers().contains(CareerList.JOBLESS));
-        assertTrue(PlayController.getAvailableCareers().contains(CareerList.SOFTWARE_DEVELOPER));
+        UITestSupport.Fixture furnitureFixture = UITestSupport.fixture();
+        furnitureFixture.playController.handleInput("5", furnitureFixture.state, furnitureFixture.world);
+        furnitureFixture.playController.handleInput("2", furnitureFixture.state, furnitureFixture.world);
+        assertEquals(PlayController.Step.SHOP_FURNITURE, furnitureFixture.playController.getActiveHandler().getStep());
+        assertEquals(
+                List.of(furnitureFixture.lamp),
+                ((ShopHandler) furnitureFixture.playController.getActiveHandler()).getFurnitureForSale());
     }
 
     @Test
@@ -91,7 +90,7 @@ class PlayControllerTest {
 
         invokeStatic(PlayController.class, "addAchievementNotifications",
                 new Class<?>[]{models.character.SimCharacter.class, List.class},
-                fixture.player, List.of(AchievementList.FIRST_JOB));
+                fixture.player, List.of(AchievementType.FIRST_JOB));
         invokeStatic(PlayController.class, "addSkillAchievementNotifications",
                 new Class<?>[]{models.character.SimCharacter.class, models.furniture.FurnitureAction.class, GameState.class},
                 fixture.player, action, fixture.state);
@@ -125,9 +124,8 @@ class PlayControllerTest {
     void invalidMainMenuInputReturnsFalseAndKeepsStep() {
         UITestSupport.Fixture fixture = UITestSupport.fixture();
 
-        assertFalse(PlayController.handleInput("x", fixture.state, fixture.world));
-        assertEquals(PlayController.Step.MAIN, PlayController.getStep());
-        assertNull(PlayController.getSelectedFurniture());
+        assertFalse(fixture.playController.handleInput("x", fixture.state, fixture.world));
+        assertEquals(PlayController.Step.MAIN, fixture.playController.getActiveHandler().getStep());
     }
 
     private static Object invokeStatic(Class<?> type, String methodName, Class<?>[] parameterTypes,

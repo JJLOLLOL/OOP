@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-import types.InteractionList;
+import types.InteractionType;
 import ui.UITestSupport;
 
 class RelationshipServiceTest {
@@ -27,7 +27,7 @@ class RelationshipServiceTest {
         UITestSupport.Fixture fixture = UITestSupport.fixture();
         RelationshipService service = new RelationshipService();
 
-        String result = service.interact(fixture.player, fixture.roommate, InteractionList.COMPLIMENT);
+        String result = service.interact(fixture.player, fixture.roommate, InteractionType.COMPLIMENT);
 
         assertEquals(10, fixture.player.getRelationshipScoreWith(fixture.roommate));
         assertEquals(10, fixture.roommate.getRelationshipScoreWith(fixture.player));
