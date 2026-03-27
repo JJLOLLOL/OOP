@@ -10,7 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import controller.PlayController;
-import types.RelationshipList;
+import types.RelationshipType;
 import ui.UITestSupport;
 
 class ActionsPanelViewTest {
@@ -25,7 +25,7 @@ class ActionsPanelViewTest {
         UITestSupport.Fixture fixture = UITestSupport.fixture();
 
         List<String> lines = ActionsPanelView.build(PlayController.Step.MAIN, fixture.home,
-                fixture.player, fixture.state, fixture.world);
+                fixture.player, fixture.state, fixture.world, fixture.playController);
 
         assertEquals("Actions", UITestSupport.plain(lines.get(0)));
         assertEquals("1. Interact Objects", UITestSupport.plain(lines.get(1)));
@@ -37,7 +37,7 @@ class ActionsPanelViewTest {
         UITestSupport.Fixture fixture = UITestSupport.fixture();
 
         List<String> lines = ActionsPanelView.build(PlayController.Step.INTERACTABLES, fixture.home,
-                fixture.player, fixture.state, fixture.world);
+                fixture.player, fixture.state, fixture.world, fixture.playController);
 
         assertEquals("Interact Objects", UITestSupport.plain(lines.get(0)));
         assertEquals("1. Study Desk", UITestSupport.plain(lines.get(1)));
@@ -48,11 +48,16 @@ class ActionsPanelViewTest {
         @Test
     void buildInteractableActionShowsSortedActionsAndEffects() {
         UITestSupport.Fixture fixture = UITestSupport.fixture();
-        PlayController.handleInput("1", fixture.state, fixture.world);
-        PlayController.handleInput("1", fixture.state, fixture.world);
+        fixture.playController.handleInput("1", fixture.state, fixture.world);
+        fixture.playController.handleInput("1", fixture.state, fixture.world);
 
-        List<String> lines = ActionsPanelView.build(PlayController.getStep(), fixture.home,
-                fixture.player, fixture.state, fixture.world);
+        List<String> lines = ActionsPanelView.build(
+                fixture.playController.getActiveHandler().getStep(),
+                fixture.home,
+                fixture.player,
+                fixture.state,
+                fixture.world,
+                fixture.playController);
 
         assertEquals("Study Desk", UITestSupport.plain(lines.get(0)));
         assertEquals("1. Code", UITestSupport.plain(lines.get(1)));
@@ -70,22 +75,27 @@ class ActionsPanelViewTest {
         fixture.player.changeRelationshipWith(fixture.roommate, 30);
 
         List<String> lines = ActionsPanelView.build(PlayController.Step.SOCIALISE, fixture.home,
-                fixture.player, fixture.state, fixture.world);
+                fixture.player, fixture.state, fixture.world, fixture.playController);
 
         assertEquals("Socialise", UITestSupport.plain(lines.get(0)));
-        assertTrue(UITestSupport.findLineContaining(lines, "Jamie [Friendly]").contains(RelationshipList.FRIENDLY.label));
-        assertTrue(UITestSupport.findLineContaining(lines, "Taylor [Acquaintance]").contains(RelationshipList.ACQUAINTANCE.label));
+        assertTrue(UITestSupport.findLineContaining(lines, "Jamie [Friendly]").contains(RelationshipType.FRIENDLY.label));
+        assertTrue(UITestSupport.findLineContaining(lines, "Taylor [Acquaintance]").contains(RelationshipType.ACQUAINTANCE.label));
         assertEquals("0. Back", UITestSupport.plain(lines.get(lines.size() - 1)));
     }
 
     @Test
     void buildSocialiseActionListsAllInteractionOptions() {
         UITestSupport.Fixture fixture = UITestSupport.fixture();
-        PlayController.handleInput("2", fixture.state, fixture.world);
-        PlayController.handleInput("1", fixture.state, fixture.world);
+        fixture.playController.handleInput("2", fixture.state, fixture.world);
+        fixture.playController.handleInput("1", fixture.state, fixture.world);
 
-        List<String> lines = ActionsPanelView.build(PlayController.getStep(), fixture.home,
-                fixture.player, fixture.state, fixture.world);
+        List<String> lines = ActionsPanelView.build(
+                fixture.playController.getActiveHandler().getStep(),
+                fixture.home,
+                fixture.player,
+                fixture.state,
+                fixture.world,
+                fixture.playController);
 
         assertEquals("Interact: Jamie", UITestSupport.plain(lines.get(0)));
         assertEquals("1. Talk", UITestSupport.plain(lines.get(1)));
@@ -98,7 +108,7 @@ class ActionsPanelViewTest {
         UITestSupport.Fixture fixture = UITestSupport.fixture();
 
         List<String> lines = ActionsPanelView.build(PlayController.Step.CHANGE_LOCATION, fixture.home,
-                fixture.player, fixture.state, fixture.world);
+                fixture.player, fixture.state, fixture.world, fixture.playController);
 
         assertEquals("Go to...", UITestSupport.plain(lines.get(0)));
         assertTrue(UITestSupport.plain(lines.get(1)).contains("Home ← here"));
@@ -110,7 +120,7 @@ class ActionsPanelViewTest {
         UITestSupport.Fixture fixture = UITestSupport.fixture();
 
         List<String> lines = ActionsPanelView.build(PlayController.Step.SWITCH_CHARACTER, fixture.home,
-                fixture.player, fixture.state, fixture.world);
+                fixture.player, fixture.state, fixture.world, fixture.playController);
 
         assertTrue(UITestSupport.plain(lines.get(1)).contains("Alex ← active"));
         assertTrue(UITestSupport.plain(lines.get(2)).contains("Jamie"));
@@ -121,7 +131,7 @@ class ActionsPanelViewTest {
         UITestSupport.Fixture fixture = UITestSupport.fixture();
 
         List<String> lines = ActionsPanelView.build(PlayController.Step.PICK_CAREER, fixture.home,
-                fixture.player, fixture.state, fixture.world);
+                fixture.player, fixture.state, fixture.world, fixture.playController);
 
         assertEquals("Choose Career", UITestSupport.plain(lines.get(0)));
         assertTrue(UITestSupport.findLineContaining(lines, "Software Developer").contains("Software Developer"));
@@ -132,13 +142,13 @@ class ActionsPanelViewTest {
     @Test
     void buildShopAndHouseMenusUseShopInventory() {
         UITestSupport.Fixture fixture = UITestSupport.fixture();
-        PlayController.handleInput("5", fixture.state, fixture.world);
-        PlayController.handleInput("1", fixture.state, fixture.world);
+        fixture.playController.handleInput("5", fixture.state, fixture.world);
+        fixture.playController.handleInput("1", fixture.state, fixture.world);
 
         List<String> shopLines = ActionsPanelView.build(PlayController.Step.SHOP, fixture.home,
-                fixture.player, fixture.state, fixture.world);
+                fixture.player, fixture.state, fixture.world, fixture.playController);
         List<String> houseLines = ActionsPanelView.build(PlayController.Step.SHOP_HOUSES, fixture.home,
-                fixture.player, fixture.state, fixture.world);
+                fixture.player, fixture.state, fixture.world, fixture.playController);
 
         assertEquals("Shop", UITestSupport.plain(shopLines.get(0)));
         assertEquals("1. Browse Houses", UITestSupport.plain(shopLines.get(1)));
@@ -149,16 +159,16 @@ class ActionsPanelViewTest {
     @Test
     void buildShopFurnitureAndSellFurnitureShowPricesAndRefunds() {
         UITestSupport.Fixture fixture = UITestSupport.fixture();
-        PlayController.handleInput("5", fixture.state, fixture.world);
-        PlayController.handleInput("2", fixture.state, fixture.world);
+        fixture.playController.handleInput("5", fixture.state, fixture.world);
+        fixture.playController.handleInput("2", fixture.state, fixture.world);
         List<String> buyLines = ActionsPanelView.build(PlayController.Step.SHOP_FURNITURE, fixture.home,
-                fixture.player, fixture.state, fixture.world);
+                fixture.player, fixture.state, fixture.world, fixture.playController);
 
         UITestSupport.Fixture sellFixture = UITestSupport.fixture();
-        PlayController.handleInput("5", sellFixture.state, sellFixture.world);
-        PlayController.handleInput("3", sellFixture.state, sellFixture.world);
+        sellFixture.playController.handleInput("5", sellFixture.state, sellFixture.world);
+        sellFixture.playController.handleInput("3", sellFixture.state, sellFixture.world);
         List<String> sellLines = ActionsPanelView.build(PlayController.Step.SELL_FURNITURE, sellFixture.home,
-                sellFixture.player, sellFixture.state, sellFixture.world);
+                sellFixture.player, sellFixture.state, sellFixture.world, sellFixture.playController);
 
         assertEquals("Furniture for Sale", UITestSupport.plain(buyLines.get(0)));
         assertTrue(UITestSupport.plain(buyLines.get(1)).contains("Lamp - $80"));

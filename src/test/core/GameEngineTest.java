@@ -15,6 +15,7 @@ import java.util.TreeMap;
 
 import org.junit.jupiter.api.Test;
 
+import data.ShopInventory;
 import models.character.NPCCharacter;
 import models.character.SimCharacter;
 import models.location.House;
@@ -27,8 +28,7 @@ class GameEngineTest {
 
     @Test
     void handleInputRoutesCreateSimAndPlayingPhases() throws Exception {
-        UITestSupport.resetPlayController(new data.ShopInventory(List.of(), List.of()));
-        GameEngine engine = new GameEngine(engineWorld());
+        GameEngine engine = new GameEngine(engineWorld(), new ShopInventory(List.of(), List.of()));
         GameState state = getField(engine, "state", GameState.class);
         WorldRegistry world = getField(engine, "world", WorldRegistry.class);
         controller.CreateSimController createSimController =
@@ -52,7 +52,7 @@ class GameEngineTest {
     @Test
     void tickAdvancesClockNeedsNotificationsAndNpcLocationsOnlyWhilePlaying() throws Exception {
         WorldRegistry world = engineWorld();
-        GameEngine engine = new GameEngine(world);
+        GameEngine engine = new GameEngine(world, new ShopInventory(List.of(), List.of()));
         GameState state = getField(engine, "state", GameState.class);
 
         SimCharacter player = new SimCharacter("Alex", 25, Gender.MALE, world.getLocation("Home"));
@@ -79,7 +79,7 @@ class GameEngineTest {
 
     @Test
     void shutdownPrintsExitMessageAndStopsInputThread() throws Exception {
-        GameEngine engine = new GameEngine(engineWorld());
+        GameEngine engine = new GameEngine(engineWorld(), new ShopInventory(List.of(), List.of()));
 
         String output = UITestSupport.captureOutput(
                 () -> invoke(engine, "shutdown", new Class<?>[0]));

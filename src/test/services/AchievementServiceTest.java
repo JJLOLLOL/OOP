@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 
 import models.career.CareerList;
 import models.skill.SkillType;
-import types.AchievementList;
+import types.AchievementType;
 import ui.UITestSupport;
 
 class AchievementServiceTest {
@@ -21,11 +21,11 @@ class AchievementServiceTest {
         UITestSupport.Fixture fixture = UITestSupport.fixture();
         AchievementService service = new AchievementService();
 
-        assertTrue(service.unlockAchievement(fixture.player, AchievementList.FIRST_JOB));
-        assertTrue(service.hasAchievement(fixture.player, AchievementList.FIRST_JOB));
-        assertEquals(Set.of(AchievementList.FIRST_JOB), service.getUnlockedAchievements(fixture.player));
+        assertTrue(service.unlockAchievement(fixture.player, AchievementType.FIRST_JOB));
+        assertTrue(service.hasAchievement(fixture.player, AchievementType.FIRST_JOB));
+        assertEquals(Set.of(AchievementType.FIRST_JOB), service.getUnlockedAchievements(fixture.player));
         assertThrows(UnsupportedOperationException.class,
-                () -> service.getUnlockedAchievements(fixture.player).add(AchievementList.EVIL));
+                () -> service.getUnlockedAchievements(fixture.player).add(AchievementType.EVIL));
     }
 
     @Test
@@ -33,7 +33,7 @@ class AchievementServiceTest {
         UITestSupport.Fixture fixture = UITestSupport.fixture();
         AchievementService service = new AchievementService();
 
-        assertEquals(List.of(AchievementList.FIRST_PROGRAMMING),
+        assertEquals(List.of(AchievementType.FIRST_PROGRAMMING),
                 service.evaluateFirstTimeSkillAchievement(fixture.player, SkillType.PROGRAMMING));
         assertEquals(List.of(),
                 service.evaluateFirstTimeSkillAchievement(fixture.player, SkillType.PROGRAMMING));
@@ -48,16 +48,16 @@ class AchievementServiceTest {
             fixture.player.getCareer().addProgress(10_000);
         }
 
-        List<AchievementList> career = service.evaluateCareerAchievements(fixture.player);
-        List<AchievementList> work = service.evaluateWorkAchievements(fixture.player);
+        List<AchievementType> career = service.evaluateCareerAchievements(fixture.player);
+        List<AchievementType> work = service.evaluateWorkAchievements(fixture.player);
 
-        assertTrue(career.contains(AchievementList.FIRST_JOB));
-        assertTrue(career.contains(AchievementList.TECH_TRAILBLAZER));
-        assertTrue(career.contains(AchievementList.FIRST_PROMOTION));
-        assertTrue(career.contains(AchievementList.SENIOR_STAFF));
-        assertTrue(career.contains(AchievementList.CORPORATE_EXECUTIVE));
-        assertTrue(work.contains(AchievementList.FIRST_PROGRAMMING));
-        assertTrue(work.contains(AchievementList.FIRST_LOGIC));
+        assertTrue(career.contains(AchievementType.FIRST_JOB));
+        assertTrue(career.contains(AchievementType.TECH_TRAILBLAZER));
+        assertTrue(career.contains(AchievementType.FIRST_PROMOTION));
+        assertTrue(career.contains(AchievementType.SENIOR_STAFF));
+        assertTrue(career.contains(AchievementType.CORPORATE_EXECUTIVE));
+        assertTrue(work.contains(AchievementType.FIRST_PROGRAMMING));
+        assertTrue(work.contains(AchievementType.FIRST_LOGIC));
     }
 
     @Test
@@ -70,7 +70,7 @@ class AchievementServiceTest {
         fixture.player.changeRelationshipWith(fixture.roommate, 50);
         fixture.player.changeRelationshipWith(fixture.npc, 50);
 
-        List<AchievementList> friendly = service.evaluateSocialAchievements(
+        List<AchievementType> friendly = service.evaluateSocialAchievements(
                 fixture.player,
                 List.of(fixture.player, fixture.roommate, fixture.npc),
                 fixture.state.getRelationshipService());
@@ -78,12 +78,12 @@ class AchievementServiceTest {
         fixture.player.changeRelationshipWith(fixture.roommate, -150);
         fixture.player.changeRelationshipWith(fixture.npc, -150);
 
-        List<AchievementList> evil = service.evaluateSocialAchievements(
+        List<AchievementType> evil = service.evaluateSocialAchievements(
                 fixture.player,
                 List.of(fixture.player, fixture.roommate, fixture.npc),
                 fixture.state.getRelationshipService());
 
-        assertEquals(List.of(AchievementList.FRIENDLY), friendly);
-        assertEquals(List.of(AchievementList.EVIL), evil);
+        assertEquals(List.of(AchievementType.FRIENDLY), friendly);
+        assertEquals(List.of(AchievementType.EVIL), evil);
     }
 }
