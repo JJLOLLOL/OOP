@@ -749,13 +749,31 @@ javac --version
 
 ## How to Run Tests
 
-The project uses JUnit 5, but the repository does not include a build tool. You need a local copy of the **JUnit Platform Console Standalone** jar.
-
-Place the jar in a folder named `lib/` at the project root, for example:
+Place `junit-platform-console-standalone.jar` inside `lib/` at the project root:
 
 ```text
 lib/
 └─ junit-platform-console-standalone.jar
+```
+
+#### macOS / Linux
+
+```bash
+mkdir -p out out-test
+find src -path 'src/test' -prune -o -name '*.java' -print | xargs javac -d out
+find src/test -name '*.java' -print | xargs javac -cp "out:lib/junit-platform-console-standalone.jar" -d out-test
+java -jar lib/junit-platform-console-standalone.jar --class-path out:out-test --scan-class-path
+```
+
+#### Windows (PowerShell)
+
+```powershell
+$main = Get-ChildItem -Recurse src -Filter *.java | Where-Object { $_.FullName -notmatch '\\src\\test\\' }
+$tests = Get-ChildItem -Recurse src\test -Filter *.java
+
+javac -d out $main.FullName
+javac -cp "out;lib\junit-platform-console-standalone.jar" -d out-test $tests.FullName
+java -jar lib\junit-platform-console-standalone.jar --class-path "out;out-test" --scan-class-path
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
