@@ -7,7 +7,7 @@ import models.location.House;
 
 /**
  * A data-holding class for the game's shop inventory.
- * This object is constructed by the {@link DataParser} from external data files.
+ * This object is constructed by the {@link data.parser.ShopParser} from external data files.
  */
 public class ShopInventory {
     private final List<House> availableHouses;
