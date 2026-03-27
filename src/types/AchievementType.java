@@ -1,5 +1,8 @@
 package types;
 
+/**
+ * Enumerates all achievements that can be unlocked during the game.
+ */
 public enum AchievementType {
 
     // Career achievements

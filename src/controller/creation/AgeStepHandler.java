@@ -3,11 +3,24 @@ package controller.creation;
 import controller.CreateSimController;
 import ui.Renderer;
 
+/**
+ * Validates the age entered for the current sim and advances to gender
+ * selection.
+ */
 public class AgeStepHandler implements CreationStepHandler {
 
     private final int MAX_AGE = 90;
     private final int MIN_AGE = 10;
 
+    /**
+     * Parses the entered age, validates its allowed range, and stores it on the
+     * active builder.
+     *
+     * @param input the player's raw age input
+     * @param context the shared create-sim controller
+     * @return {@code true} when the flow advances, {@code false} when an inline
+     * error is shown
+     */
     @Override
     public boolean handleInput(String input, CreateSimController context) {
         try {
@@ -24,6 +37,11 @@ public class AgeStepHandler implements CreationStepHandler {
         return true;
     }
 
+    /**
+     * Returns the view step represented by this handler.
+     *
+     * @return {@link controller.CreateSimController.Step#AGE}
+     */
     @Override
     public CreateSimController.Step getStep() {
         return CreateSimController.Step.AGE;

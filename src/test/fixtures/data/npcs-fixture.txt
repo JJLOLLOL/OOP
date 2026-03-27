@@ -1,0 +1,6 @@
+[NPC]
+NAME: Alex
+AGE: 29
+GENDER: Female
+DESC: Test NPC.
+SCHEDULE: 0,Starter Home;1200,UnknownPlace;1800,Lounge

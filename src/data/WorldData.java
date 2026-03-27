@@ -13,6 +13,13 @@ public class WorldData {
     private final List<NPCCharacter> npcs;
     private final ShopInventory shopInventory;
 
+    /**
+     * Creates an immutable snapshot of all parsed world content.
+     *
+     * @param locations the parsed locations keyed by name
+     * @param npcs the parsed NPC definitions
+     * @param shopInventory the parsed shop inventory
+     */
     public WorldData(Map<String, Location> locations, List<NPCCharacter> npcs, ShopInventory shopInventory) {
         this.locations = locations;
         this.npcs = npcs;

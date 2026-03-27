@@ -3,8 +3,14 @@ package services;
 import models.character.SimCharacter;
 import models.location.House;
 
+/**
+ * Legacy helper methods for house purchasing and upgrading flows.
+ */
 public class HouseService {
 
+    /**
+     * Prevents instantiation of this utility class.
+     */
     private HouseService() {
 
     }
@@ -38,6 +44,14 @@ public class HouseService {
         return true;
     }
 
+    /**
+     * Builds the legacy success message shown after a house purchase.
+     *
+     * @param buyer the sim attempting the purchase
+     * @param house the house being purchased
+     * @param success unused legacy flag kept for compatibility
+     * @return the message that should be shown to the player
+     */
     public static String getPurchaseMessage(SimCharacter buyer, House house, boolean success) {
         // if (!success) {
             // if (house.isOwned()) {

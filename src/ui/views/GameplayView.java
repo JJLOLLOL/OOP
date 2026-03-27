@@ -64,10 +64,18 @@ public class GameplayView {
         System.out.print("\n> ");
     }
 
+    /**
+     * Safely returns the indexed row from a panel list, or an empty string when
+     * the list is shorter than the requested row.
+     */
     private static String get(List<String> list, int i) {
         return i < list.size() ? list.get(i) : "";
     }
 
+    /**
+     * Renders the top border row and centered clock heading for the gameplay
+     * box layout.
+     */
     private static void printBoxTop(String clock) {
         System.out.println(BORDER + "┌" + seg(INNER_W) + "┐" + RESET);
         System.out.println(BORDER + "│" + RESET + centerColoured(clock, INNER_W) + BORDER + "│" + RESET);

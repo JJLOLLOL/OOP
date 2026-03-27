@@ -2,6 +2,10 @@ package models.career;
 
 import models.skill.SkillType;
 
+/**
+ * Tracks a sim's current career, rank progression, shift timings, and pay
+ * calculations.
+ */
 public class Career {
 
     private static final int SHIFT_START_HOUR = 9;
@@ -13,6 +17,11 @@ public class Career {
     private double progress;
     private double requiredXP;
 
+    /**
+     * Creates a career state starting at rank 1 with zero progress.
+     *
+     * @param currentCareer the chosen career path
+     */
     public Career(CareerList currentCareer) {
         if (currentCareer == null) {
             throw new IllegalArgumentException("Career cannot be null.");
@@ -48,14 +57,34 @@ public class Career {
         return SHIFT_START_HOUR + (int) getWorkingHours();
     }
 
+    /**
+     * Returns whether the shift has already started for the supplied in-game
+     * time.
+     *
+     * @param currentTime the current time expressed in fractional hours
+     * @return {@code true} when the shift has started
+     */
     public boolean hasShiftStarted(double currentTime) {
         return currentTime >= getShiftStartHour();
     }
 
+    /**
+     * Returns whether the current shift has already ended for the supplied
+     * in-game time.
+     *
+     * @param currentTime the current time expressed in fractional hours
+     * @return {@code true} when the shift is over
+     */
     public boolean isShiftOver(double currentTime) {
         return currentTime >= getShiftEndHour();
     }
 
+    /**
+     * Calculates how many in-game work hours remain in today's shift.
+     *
+     * @param currentTime the current time expressed in fractional hours
+     * @return remaining shift hours, or {@code 0.0} when outside the shift
+     */
     public double getRemainingShiftHours(double currentTime) {
         if (!hasShiftStarted(currentTime) || isShiftOver(currentTime)) {
             return 0.0;
@@ -63,6 +92,12 @@ public class Career {
         return getShiftEndHour() - currentTime;
     }
 
+    /**
+     * Converts worked hours into a fraction of a full shift.
+     *
+     * @param hoursWorked the hours completed during the shift
+     * @return the worked fraction in the range {@code 0.0..1.0+}
+     */
     public double getWorkFraction(double hoursWorked) {
         double fullShift = getWorkingHours();
         if (fullShift <= 0) {
@@ -84,6 +119,12 @@ public class Career {
                 * CareerRankList.fromRank(currentRank).getSalaryMultiplier();
     }
 
+    /**
+     * Calculates salary earned for a partial shift.
+     *
+     * @param hoursWorked the number of hours worked
+     * @return pay earned for the supplied hours
+     */
     public double calculatePay(double hoursWorked) {
         return getSalary() * getWorkFraction(hoursWorked);
     }
@@ -100,6 +141,12 @@ public class Career {
         return requiredXP;
     }
 
+    /**
+     * Adds career progression and promotes the sim when the threshold is met.
+     *
+     * @param amount the experience amount to add
+     * @return the promotion outcome after applying the progress
+     */
     public PromotionStatus addProgress(double amount) {
         if (amount <= 0) {
             return PromotionStatus.NONE;

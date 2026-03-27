@@ -13,6 +13,12 @@ public class ShopInventory {
     private final List<House> availableHouses;
     private final List<Furniture> availableFurniture;
 
+    /**
+     * Creates a shop inventory from pre-parsed houses and furniture items.
+     *
+     * @param houses the houses available for purchase
+     * @param furniture the furniture items available for purchase
+     */
     public ShopInventory(List<House> houses, List<Furniture> furniture) {
         this.availableHouses = houses;
         this.availableFurniture = furniture;

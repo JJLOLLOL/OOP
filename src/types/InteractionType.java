@@ -1,5 +1,9 @@
 package types;
 
+/**
+ * Social interactions available between characters, including their
+ * relationship effects and canned reactions.
+ */
 public enum InteractionType {
 
     TALK("Talk", 5, " responds positively to the conversation."),

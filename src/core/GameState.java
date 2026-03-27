@@ -37,17 +37,17 @@ public class GameState {
     private final AchievementService achievementService = new AchievementService();
     private final GameClock gameClock = new GameClock();
 
-    // ── Phase ─────────────────────────────────────────────────────────────────
     /**
-     * Returns the current game phase.
+     * Creates a new game state in the create-sim phase.
      */
+    public GameState() {
+    }
+
+    // ── Phase ─────────────────────────────────────────────────────────────────
     public Phase getPhase() {
         return phase;
     }
 
-    /**
-     * Sets the current game phase.
-     */
     public void setPhase(Phase phase) {
         this.phase = phase;
     }
@@ -60,6 +60,11 @@ public class GameState {
     }
 
     // ── Sims ──────────────────────────────────────────────────────────────────
+    /**
+     * Adds a newly created sim to the active game state.
+     *
+     * @param sim the sim to add
+     */
     public void addSim(SimCharacter sim) {
         if (sim == null) {
             throw new IllegalArgumentException("Sim cannot be null.");
@@ -67,6 +72,11 @@ public class GameState {
         sims.add(sim);
     }
 
+    /**
+     * Sets the sim currently controlled by the player.
+     *
+     * @param player the sim to make active
+     */
     public void setActivePlayer(SimCharacter player) {
         if (player == null) {
             throw new IllegalArgumentException("Active player cannot be null.");
@@ -77,30 +87,20 @@ public class GameState {
     public List<SimCharacter> getSims() {
         return Collections.unmodifiableList(sims);
     }
-    /**
-     * Returns the sim currently controlled by the player.
-     */
+
     public SimCharacter getActivePlayer() {
         return activePlayer;
     }
+
     // ── Services ──────────────────────────────────────────────────────────────
-    /**
-     * Returns the shared {@link RelationshipService} instance.
-     */
     public RelationshipService getRelationshipService() {
         return relationshipService;
     }
 
-    /**
-     * Returns the shared {@link AchievementService} instance.
-     */
     public AchievementService getAchievementService() {
         return achievementService;
     }
 
-    /**
-     * Returns the in-game clock.
-     */
     public GameClock getGameClock() {
         return gameClock;
     }

@@ -14,15 +14,24 @@ import models.need.Social;
 import models.skill.Skill;
 import models.skill.SkillType;
 
+/**
+ * Stores and exposes all needs and skills belonging to a single sim.
+ */
 public class CharacterStats {
     private final EnumMap<NeedType, Need> needs;
     private final EnumMap<SkillType, Skill> skills;
-    
+
+    /**
+     * Creates the default starting need and skill collections for a sim.
+     */
     public CharacterStats() {
         this.needs = createDefaultNeeds();
         this.skills = createDefaultSkills();
     }
-    
+
+    /**
+     * Builds the default set of needs with their concrete implementations.
+     */
     private EnumMap<NeedType, Need> createDefaultNeeds() {
         EnumMap<NeedType, Need> map = new EnumMap<>(NeedType.class);
         map.put(NeedType.HUNGER, new Hunger());
@@ -33,6 +42,9 @@ public class CharacterStats {
         return map;
     }
 
+    /**
+     * Builds the default set of trainable skills.
+     */
     private EnumMap<SkillType, Skill> createDefaultSkills() {
         EnumMap<SkillType, Skill> map = new EnumMap<>(SkillType.class);
         for (SkillType type : SkillType.values()) {
@@ -61,7 +73,14 @@ public class CharacterStats {
         return Collections.unmodifiableCollection(skills.values());
     }
 
-    // setter
+    /**
+     * Applies raw skill XP to the supplied skill without running any debuff
+     * logic.
+     *
+     * @param type the skill being updated
+     * @param xp the raw XP delta
+     * @return the number of levels gained
+     */
     public int adjustSkillXpRaw(SkillType type, double xp) {
         if (type == null) {
             throw new IllegalArgumentException("Skill type cannot be null.");
@@ -92,8 +111,13 @@ public class CharacterStats {
     public Collection<Need> getNeedViews() {
         return Collections.unmodifiableCollection(needs.values());
     }
-    
-    // setter
+
+    /**
+     * Applies a raw need delta without running any debuff logic.
+     *
+     * @param type the need being updated
+     * @param amount the raw change to apply
+     */
     public void adjustNeedRaw(NeedType type, double amount) {
         if (type == null) {
             throw new IllegalArgumentException("Need type cannot be null.");

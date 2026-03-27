@@ -88,29 +88,14 @@ public class Furniture {
         return new ArrayList<>(availableActionsMap.keySet());
     }
 
-    /**
-     * Gets the name of the furniture.
-     *
-     * @return the furniture's name
-     */
     public String getName() {
         return name;
     }
 
-    /**
-     * Gets the description of the furniture.
-     *
-     * @return the furniture's description
-     */
     public String getDescription() {
         return description;
     }
 
-    /**
-     * Gets the purchase price of the furniture.
-     *
-     * @return the price of the furniture
-     */
     public double getPrice() {
         return price;
     }

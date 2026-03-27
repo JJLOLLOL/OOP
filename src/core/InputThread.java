@@ -22,6 +22,8 @@ public class InputThread implements Runnable {
     private volatile boolean running = true;
 
     /**
+     * Creates a background reader for terminal input.
+     *
      * @param scanner the scanner wrapping {@code System.in}
      * @param inputQueue the queue to forward input lines into
      */
@@ -31,6 +33,10 @@ public class InputThread implements Runnable {
     }
 
     @Override
+    /**
+     * Continuously reads terminal lines and forwards them into the shared
+     * input queue.
+     */
     public void run() {
         while (running && scanner.hasNextLine()) {
             inputQueue.offer(scanner.nextLine());

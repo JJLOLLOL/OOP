@@ -4,7 +4,17 @@ import controller.PlayController;
 import core.GameState;
 import ui.Renderer;
 
+/**
+ * Handles the top-level gameplay menu.
+ */
 public class MainMenuHandler implements PlayInputHandler {
+    /**
+     * Dispatches the selected top-level menu option.
+     *
+     * @param input the player's raw menu selection
+     * @param context the gameplay context
+     * @return {@code true} when the menu changed or the game quit
+     */
     @Override
     public boolean handleInput(String input, PlayContext context) {
         switch (input) {
@@ -22,11 +32,21 @@ public class MainMenuHandler implements PlayInputHandler {
         return true;
     }
 
+    /**
+     * Performs no setup because the main menu is stateless.
+     *
+     * @param context the gameplay context
+     */
     @Override
     public void onEnter(PlayContext context) {
         // No setup needed for main menu
     }
 
+    /**
+     * Returns the gameplay step currently represented by this handler.
+     *
+     * @return {@link controller.PlayController.Step#MAIN}
+     */
     @Override
     public PlayController.Step getStep() {
         return PlayController.Step.MAIN;

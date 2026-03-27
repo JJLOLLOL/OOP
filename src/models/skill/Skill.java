@@ -2,16 +2,31 @@ package models.skill;
 
 import models.progression.XpTracker;
 
+/**
+ * Represents one skill's level and experience progression for a character.
+ */
 public class Skill {
     private final SkillType type;
     private int level;
     private final int maxLevel;
     private final XpTracker xpTracker;
 
+    /**
+     * Creates a skill at level 1 with the default maximum level of 10.
+     *
+     * @param type the skill type
+     */
     public Skill(SkillType type) {
         this(type, 1, 10);
     }
 
+    /**
+     * Creates a skill with explicit starting and maximum levels.
+     *
+     * @param type the skill type
+     * @param startingLevel the initial skill level
+     * @param maxLevel the highest level this skill can reach
+     */
     public Skill(SkillType type, int startingLevel, int maxLevel) {
         if (type == null) {
             throw new IllegalArgumentException("Skill type cannot be null.");
@@ -56,6 +71,13 @@ public class Skill {
         return level >= maxLevel;
     }
 
+    /**
+     * Applies skill experience and levels up repeatedly while enough XP
+     * remains.
+     *
+     * @param amount the XP delta to apply
+     * @return the number of levels gained
+     */
     public int addProgress(double amount) {
         if (amount == 0) {
             return 0;
@@ -83,10 +105,19 @@ public class Skill {
         return levelsGained;
     }
 
+    /**
+     * Calculates the XP requirement for the supplied level using the skill
+     * growth curve.
+     */
     private double calculateRequiredXP(int level) {
         return 100.0 * Math.pow(1.5, level - 1);
     }
 
+    /**
+     * Returns a concise summary of the skill's current level and XP progress.
+     *
+     * @return a human-readable skill summary
+     */
     @Override
     public String toString() {
         return type + " | Level: " + level + " | XP: " + getProgress() + "/" + getRequiredXP();

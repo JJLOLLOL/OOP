@@ -12,8 +12,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+/**
+ * Parses NPC definitions, descriptions, and daily schedules from the NPC data
+ * file.
+ */
 public class NpcParser {
 
+    /**
+     * Reads the supplied NPC resource and builds the corresponding NPC list.
+     *
+     * @param resourcePath the classpath-relative data file to parse
+     * @param locations the available locations used to resolve schedules
+     * @return the parsed NPC characters
+     * @throws IOException when the data file cannot be read
+     */
     public List<NPCCharacter> parse(String resourcePath, Map<String, Location> locations) throws IOException {
         List<NPCCharacter> npcs = new ArrayList<>();
         List<String> lines = FileUtils.readFile(resourcePath);
@@ -45,6 +57,9 @@ public class NpcParser {
         return npcs;
     }
 
+    /**
+     * Builds a single NPC instance from one parsed property block.
+     */
     private NPCCharacter buildNpc(Map<String, String> properties, Map<String, Location> locations) {
         String name = properties.get("NAME");
         int age = Integer.parseInt(properties.get("AGE"));

@@ -1,0 +1,9 @@
+[LOCATION]
+TYPE: House
+NAME: Starter Home
+FURNITURE: TestDesk, MissingFurniture
+
+[LOCATION]
+TYPE: Location
+NAME: Lounge
+FURNITURE: ArcadeMachine

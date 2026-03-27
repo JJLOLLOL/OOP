@@ -4,8 +4,19 @@ import controller.CreateSimController;
 import core.GameState;
 import ui.Renderer;
 
+/**
+ * Lets the player choose which created sim becomes the initial active sim.
+ */
 public class PickPlayerStepHandler implements CreationStepHandler {
 
+    /**
+     * Parses the chosen sim index and switches the game into the playing phase.
+     *
+     * @param input the player's raw selection
+     * @param context the shared create-sim controller
+     * @return {@code true} when the selection succeeds, {@code false} when an
+     * inline error is shown
+     */
     @Override
     public boolean handleInput(String input, CreateSimController context) {
         GameState state = context.getGameState();
@@ -23,6 +34,11 @@ public class PickPlayerStepHandler implements CreationStepHandler {
         return true;
     }
 
+    /**
+     * Returns the view step represented by this handler.
+     *
+     * @return {@link controller.CreateSimController.Step#PICK_PLAYER}
+     */
     @Override
     public CreateSimController.Step getStep() {
         return CreateSimController.Step.PICK_PLAYER;

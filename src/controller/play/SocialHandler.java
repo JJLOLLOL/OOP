@@ -11,12 +11,22 @@ import types.InteractionType;
 
 import java.util.List;
 
+/**
+ * Handles character-to-character social interaction menus.
+ */
 public class SocialHandler implements PlayInputHandler {
 
     private PlayController.Step internalStep = PlayController.Step.SOCIALISE;
     private models.character.Character selectedCharacter;
     private List<models.character.Character> charactersAtLocation;
 
+    /**
+     * Routes input between target selection and interaction selection.
+     *
+     * @param input the player's raw input
+     * @param context the gameplay context
+     * @return {@code true} when a state transition occurred
+     */
     @Override
     public boolean handleInput(String input, PlayContext context) {
         return switch (internalStep) {
@@ -26,6 +36,9 @@ public class SocialHandler implements PlayInputHandler {
         };
     }
 
+    /**
+     * Resolves which nearby character the player wants to interact with.
+     */
     private boolean handleSocialiseList(String input, PlayContext context) {
         if (input.equals("0")) {
             context.switchTo(HandlerType.MAIN_MENU);
@@ -37,6 +50,10 @@ public class SocialHandler implements PlayInputHandler {
         });
     }
 
+    /**
+     * Executes the chosen social interaction and applies any resulting need,
+     * relationship, and achievement updates.
+     */
     private boolean handleSocialiseAction(String input, PlayContext context) {
         if (input.equals("0")) {
             this.selectedCharacter = null;
@@ -68,6 +85,12 @@ public class SocialHandler implements PlayInputHandler {
         });
     }
 
+    /**
+     * Resets the social flow and snapshots characters at the active player's
+     * location.
+     *
+     * @param context the gameplay context
+     */
     @Override
     public void onEnter(PlayContext context) {
         this.internalStep = PlayController.Step.SOCIALISE;
@@ -75,6 +98,11 @@ public class SocialHandler implements PlayInputHandler {
         this.charactersAtLocation = PlayController.charsAt(context.getActivePlayer().getLocation(), context.getGameState(), context.getWorldRegistry());
     }
 
+    /**
+     * Returns the gameplay step currently represented by this handler.
+     *
+     * @return the current social sub-step
+     */
     @Override
     public PlayController.Step getStep() {
         return internalStep;

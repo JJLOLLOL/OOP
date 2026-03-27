@@ -1,5 +1,8 @@
 package models.need;
 
+/**
+ * Enumerates the needs tracked for each sim.
+ */
 public enum NeedType {
     HUNGER("Hunger"),
     HYGIENE("Hygiene"),

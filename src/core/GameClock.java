@@ -25,6 +25,12 @@ public class GameClock {
     private int minutes = 0;
     private double accumulator = 0.0;
 
+    /**
+     * Creates a game clock starting at Day 1, 08:00.
+     */
+    public GameClock() {
+    }
+
     // ── Tick ──────────────────────────────────────────────────────────────────
     /**
      * Advances the clock by {@code deltaTime} real seconds. Called once per
@@ -47,23 +53,14 @@ public class GameClock {
     }
 
     // ── Accessors ─────────────────────────────────────────────────────────────
-    /**
-     * Returns the current in-game day (starts at 1).
-     */
     public int getDays() {
         return days;
     }
 
-    /**
-     * Returns the current in-game hour (0–23).
-     */
     public int getHours() {
         return hours;
     }
 
-    /**
-     * Returns the current in-game minute (0–59).
-     */
     public int getMinutes() {
         return minutes;
     }
@@ -80,19 +77,8 @@ public class GameClock {
     }
 
     /**
-     * Returns a human-readable time string, e.g. {@code "Day 1 - 08:17"}.
-     *
-     * @return formatted time string
-     */
-    /**
      * Advances the clock by the given number of in-game hours. Used by
-     * {@link services.WorkService} to skip time after a work shift.
-     *
-     * @param hours fractional in-game hours to advance (e.g. 6.5 = 6 h 30 m)
-     */
-    /**
-     * Advances the clock by the given number of in-game hours. Used by
-     * {@link services.WorkService} to skip time after a work shift.
+     * work and furniture actions to skip time-consuming activities.
      *
      * @param hoursToAdd fractional in-game hours to advance (e.g. 6.5 = 6 h 30
      * m)
@@ -109,6 +95,11 @@ public class GameClock {
         }
     }
 
+    /**
+     * Returns a human-readable time string, e.g. {@code "Day 1 - 08:17"}.
+     *
+     * @return formatted time string
+     */
     public String getTimeString() {
         return String.format("Day %d - %02d:%02d", days, hours, minutes);
     }

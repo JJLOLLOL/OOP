@@ -47,6 +47,12 @@ public class GameEngine {
     private final Thread inputThreadHandle;
 
     // ── Constructor ───────────────────────────────────────────────────────────
+    /**
+     * Creates a fully wired game engine ready to start the main loop.
+     *
+     * @param world the immutable world registry
+     * @param shopInventory the shop inventory available during play
+     */
     public GameEngine(WorldRegistry world, data.ShopInventory shopInventory) {
         this.state = new GameState();
         this.world = world;
@@ -71,6 +77,10 @@ public class GameEngine {
     }
 
     // ── Game loop ─────────────────────────────────────────────────────────────
+    /**
+     * Runs the main fixed-timestep loop until the game reaches
+     * {@link GameState.Phase#QUIT}.
+     */
     private void run() {
         long lastTime = System.nanoTime();
         double unprocessed = 0;
@@ -148,6 +158,9 @@ public class GameEngine {
     }
 
     // ── Shutdown ──────────────────────────────────────────────────────────────
+    /**
+     * Performs final cleanup after the game loop exits.
+     */
     private void shutdown() {
         System.out.println("\nGame over. Thanks for playing!");
         inputThread.stop();

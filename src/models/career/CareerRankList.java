@@ -1,5 +1,8 @@
 package models.career;
 
+/**
+ * Enumerates the rank ladder and salary multiplier for career progression.
+ */
 public enum CareerRankList {
     INTERN("Intern", 0.5),
     JUNIOR_EMPLOYEE("Junior Employee", 1.0),

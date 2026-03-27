@@ -12,8 +12,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Parses the shop inventory data file into purchasable houses and furniture.
+ */
 public class ShopParser {
 
+    /**
+     * Reads the supplied shop resource and builds the visible shop inventory.
+     *
+     * @param resourcePath the classpath-relative data file to parse
+     * @param allFurniture all parsed furniture definitions available for lookup
+     * @return the parsed shop inventory
+     * @throws IOException when the data file cannot be read
+     */
     public ShopInventory parse(String resourcePath, Map<String, Furniture> allFurniture) throws IOException {
         List<String> lines = FileUtils.readFile(resourcePath);
         List<Map<String, String>> availableFurnitureProps = new ArrayList<>();
@@ -45,6 +56,9 @@ public class ShopParser {
         return new ShopInventory(shopHouses, shopFurniture);
     }
 
+    /**
+     * Builds one house-for-sale entry from a parsed shop block.
+     */
     private House buildShopHouse(Map<String, String> props, Map<String, Furniture> allFurniture) {
         String name = props.get("NAME");
         double price = Double.parseDouble(props.get("PRICE"));

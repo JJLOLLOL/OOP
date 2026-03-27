@@ -1,5 +1,8 @@
 package models.skill;
 
+/**
+ * Enumerates the trainable skills available in the game.
+ */
 public enum SkillType {
     COOKING("Cooking"),
     FITNESS("Fitness"),

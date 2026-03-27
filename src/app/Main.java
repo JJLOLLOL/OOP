@@ -14,6 +14,11 @@ import data.WorldData;
  * This decouples the core game engine from the data loading process.
  */
 public class Main {
+    /**
+     * Loads world data, constructs the runtime services, and starts the game.
+     *
+     * @param args unused command-line arguments
+     */
     public static void main(String[] args) {
         WorldLoader parser = new WorldLoader();
         WorldData worldData = parser.loadWorldData();

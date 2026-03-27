@@ -31,20 +31,10 @@ public class NPCCharacter extends Character {
         this.schedule = schedule;
     }
 
-    /**
-     * Retrieves the daily schedule of the NPC.
-     *
-     * @return a {@link TreeMap} associating time integer keys (HHMM) with {@link Location} values
-     */
     public TreeMap<Integer, Location> getSchedule() {
         return schedule;
     }
 
-    /**
-     * Retrieves the description of the NPC.
-     *
-     * @return the description string
-     */
     public String getDescription() {
         return description;
     }

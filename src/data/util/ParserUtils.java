@@ -5,6 +5,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+/**
+ * Shared parsing helpers for the game's plain-text data files.
+ */
 public class ParserUtils {
 
     /**

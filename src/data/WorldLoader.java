@@ -50,6 +50,10 @@ public class WorldLoader {
         }
     }
 
+    /**
+     * Extracts the global work action from the parsed furniture data and
+     * stores it on {@link SimCharacter} for later work-shift calculations.
+     */
     private void setGlobalWorkAction(Map<String, Furniture> furnitureMap) {
         Furniture workDesk = furnitureMap.get("WorkDesk");
         if (workDesk != null && workDesk.getAction("Work") != null) {

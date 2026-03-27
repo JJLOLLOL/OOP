@@ -17,8 +17,16 @@ import services.NotificationService;
 import types.AchievementType;
 import ui.Renderer;
 
+/**
+ * Main controller for the gameplay phase. It owns the handler registry, keeps
+ * the active gameplay context current, and routes input to the correct
+ * sub-handler.
+ */
 public class PlayController implements PlayContext {
 
+    /**
+     * UI steps that determine which gameplay menu or sub-menu is rendered.
+     */
     public enum Step {
         MAIN,
         INTERACTABLES, INTERACTABLE_ACTION,
@@ -36,12 +44,26 @@ public class PlayController implements PlayContext {
     private WorldRegistry worldRegistry;
     private final ShopInventory shopInventory;
 
+    /**
+     * Routes raw input to the currently active gameplay handler.
+     *
+     * @param input the player's raw input
+     * @param state the shared game state
+     * @param world the loaded world registry
+     * @return {@code true} when the UI should redraw, {@code false} when the
+     * active handler displayed an inline error
+     */
     public boolean handleInput(String input, GameState state, WorldRegistry world) {
         this.gameState = state;
         this.worldRegistry = world;
         return activeHandler.handleInput(input, this);
     }
 
+    /**
+     * Creates the controller and registers each gameplay handler.
+     *
+     * @param shopInventory the immutable inventory exposed by the shop menus
+     */
     public PlayController(ShopInventory shopInventory) {
         this.shopInventory = shopInventory;
 
@@ -69,6 +91,12 @@ public class PlayController implements PlayContext {
     @Override
     public SimCharacter getActivePlayer() { return gameState.getActivePlayer(); }
 
+    /**
+     * Switches the active gameplay handler and runs that handler's setup hook
+     * before the next render.
+     *
+     * @param type the handler type to activate
+     */
     @Override
     public void switchTo(HandlerType type) {
         this.activeHandler = handlers.get(type);
@@ -79,6 +107,12 @@ public class PlayController implements PlayContext {
         this.activeHandler.onEnter(this);
     }
 
+    /**
+     * Converts unlocked achievements into player-facing notifications.
+     *
+     * @param player the sim who unlocked the achievements
+     * @param unlockedAchievements the achievements to announce
+     */
     public static void addAchievementNotifications(
             SimCharacter player,
             List<AchievementType> unlockedAchievements) {
@@ -87,6 +121,14 @@ public class PlayController implements PlayContext {
         }
     }
 
+    /**
+     * Evaluates first-use skill achievements for every skill touched by a
+     * furniture action and emits notifications for any newly unlocked ones.
+     *
+     * @param player the acting sim
+     * @param action the furniture action that granted skill progress
+     * @param state the current game state used to access the achievement service
+     */
     public static void addSkillAchievementNotifications(
             SimCharacter player,
             models.furniture.FurnitureAction action,
@@ -98,6 +140,13 @@ public class PlayController implements PlayContext {
         }
     }
 
+    /**
+     * Returns a combined list of every sim and NPC in the current world.
+     *
+     * @param state the current game state
+     * @param world the current world registry
+     * @return all controllable and non-playable characters
+     */
     public static List<models.character.Character> getAllCharacters(GameState state, WorldRegistry world) {
         List<models.character.Character> characters = new ArrayList<>();
         characters.addAll(state.getSims());
@@ -105,6 +154,15 @@ public class PlayController implements PlayContext {
         return characters;
     }
 
+    /**
+     * Parses a one-based menu selection and invokes a callback for the chosen
+     * index.
+     *
+     * @param input the raw menu choice entered by the player
+     * @param list the list being selected from
+     * @param action the callback to run with the resolved zero-based index
+     * @return {@code true} when a valid selection was made
+     */
     public static boolean pickFromList(String input, List<?> list, IndexAction action) {
         try {
             int idx = Integer.parseInt(input) - 1;
@@ -119,8 +177,17 @@ public class PlayController implements PlayContext {
         }
     }
 
+    /**
+     * Callback used by {@link #pickFromList(String, List, IndexAction)} once a
+     * valid menu index has been resolved.
+     */
     @FunctionalInterface
     public interface IndexAction {
+        /**
+         * Performs work for the selected zero-based index.
+         *
+         * @param idx the validated zero-based index
+         */
         void run(int idx);
     }
 
@@ -128,6 +195,15 @@ public class PlayController implements PlayContext {
         return activeHandler;
     }
 
+    /**
+     * Returns all non-active characters currently standing in the supplied
+     * location.
+     *
+     * @param loc the location to inspect
+     * @param state the current game state
+     * @param world the world registry providing NPCs
+     * @return nearby sims and NPCs, excluding the active player
+     */
     public static List<models.character.Character> charsAt(Location loc, GameState state,
             WorldRegistry world) {
         SimCharacter player = state.getActivePlayer();

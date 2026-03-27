@@ -63,24 +63,40 @@ public class CreateSimView {
         System.out.print("\n> ");
     }
 
+    /**
+     * Prints a muted prompt line for the current creation question.
+     */
     private static void prompt(String text) {
         System.out.println("  " + LABEL + text + RESET);
     }
 
+    /**
+     * Prints a single key-value preview row for in-progress builder data.
+     */
     private static void field(String key, String val) {
         System.out.println("  " + MUTED + pad(key, 4) + " : " + RESET + BRIGHT_WHITE + val + RESET);
     }
 
+    /**
+     * Renders the bordered heading shown at the top of the creation screen.
+     */
     private static void printBanner(String title) {
         System.out.println(BORDER + "┌" + seg(INNER_W) + "┐" + RESET);
         System.out.println(BORDER + "│" + RESET + CLOCK + center(title, INNER_W) + RESET + BORDER + "│" + RESET);
         System.out.println(BORDER + "└" + seg(INNER_W) + "┘" + RESET);
     }
 
+    /**
+     * Formats a short one-line label for a staged or created sim.
+     */
     private static String simLabel(String name, String age, String gender) {
         return BRIGHT_WHITE + name + RESET + MUTED + " (" + age + gender + ")" + RESET;
     }
 
+    /**
+     * Prints the sims that have already been fully defined in the current
+     * creation batch.
+     */
     private static void showCommitted(List<SimCharacterBuilder> committed) {
         if (committed.isEmpty()) {
             return;

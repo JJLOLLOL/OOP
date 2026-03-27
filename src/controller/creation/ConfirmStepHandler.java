@@ -3,7 +3,18 @@ package controller.creation;
 import controller.CreateSimController;
 import ui.Renderer;
 
+/**
+ * Handles the final confirmation prompt for the completed creation batch.
+ */
 public class ConfirmStepHandler implements CreationStepHandler {
+    /**
+     * Confirms the created sims or resets the wizard to start over.
+     *
+     * @param input the player's confirmation input
+     * @param context the shared create-sim controller
+     * @return {@code true} when the flow advances, {@code false} when an inline
+     * error is shown
+     */
     @Override
     public boolean handleInput(String input, CreateSimController context) {
         switch (input.toLowerCase()) {
@@ -26,6 +37,11 @@ public class ConfirmStepHandler implements CreationStepHandler {
         return true;
     }
 
+    /**
+     * Returns the view step represented by this handler.
+     *
+     * @return {@link controller.CreateSimController.Step#CONFIRM}
+     */
     @Override
     public CreateSimController.Step getStep() {
         return CreateSimController.Step.CONFIRM;

@@ -1,0 +1,6 @@
+[NPC]
+NAME: Broken NPC
+AGE: 31
+GENDER: Male
+DESC: No valid locations.
+SCHEDULE: 900,UnknownPlace

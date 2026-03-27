@@ -13,16 +13,34 @@ public class SimCharacterBuilder {
     private int age;
     private Gender gender;
 
+    /**
+     * Stores the staged sim name.
+     *
+     * @param name the name to stage
+     * @return this builder for chaining
+     */
     public SimCharacterBuilder withName(String name) {
         this.name = name;
         return this;
     }
 
+    /**
+     * Stores the staged sim age.
+     *
+     * @param age the age to stage
+     * @return this builder for chaining
+     */
     public SimCharacterBuilder withAge(int age) {
         this.age = age;
         return this;
     }
 
+    /**
+     * Stores the staged sim gender.
+     *
+     * @param gender the gender to stage
+     * @return this builder for chaining
+     */
     public SimCharacterBuilder withGender(Gender gender) {
         this.gender = gender;
         return this;

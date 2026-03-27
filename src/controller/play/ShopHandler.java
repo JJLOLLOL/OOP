@@ -12,12 +12,23 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Handles shop browsing, house purchasing, furniture purchasing, and furniture
+ * selling flows.
+ */
 public class ShopHandler implements PlayInputHandler {
 
     private PlayController.Step internalStep = PlayController.Step.SHOP;
     private List<House> housesForSale;
     private List<Furniture> furnitureForSale;
 
+    /**
+     * Routes input between the shop's sub-menus.
+     *
+     * @param input the player's raw input
+     * @param context the gameplay context
+     * @return {@code true} when the menu changes
+     */
     @Override
     public boolean handleInput(String input, PlayContext context) {
         return switch (internalStep) {
@@ -29,6 +40,10 @@ public class ShopHandler implements PlayInputHandler {
         };
     }
 
+    /**
+     * Handles the top-level shop menu and loads the appropriate inventory for
+     * the chosen branch.
+     */
     private boolean handleShopMenu(String input, PlayContext context) {
         if (input.equals("0")) {
             context.switchTo(HandlerType.MAIN_MENU);
@@ -72,6 +87,9 @@ public class ShopHandler implements PlayInputHandler {
         return true;
     }
 
+    /**
+     * Purchases the selected house and returns to the top-level shop menu.
+     */
     private boolean handleShopHouses(String input, PlayContext context) {
         if (input.equals("0")) {
             this.internalStep = PlayController.Step.SHOP;
@@ -85,6 +103,10 @@ public class ShopHandler implements PlayInputHandler {
         });
     }
 
+    /**
+     * Purchases the selected furniture item and returns to the top-level shop
+     * menu.
+     */
     private boolean handleShopFurniture(String input, PlayContext context) {
         if (input.equals("0")) {
             this.internalStep = PlayController.Step.SHOP;
@@ -98,6 +120,9 @@ public class ShopHandler implements PlayInputHandler {
         });
     }
 
+    /**
+     * Sells the selected furniture item from the active sim's house.
+     */
     private boolean handleSellFurniture(String input, PlayContext context) {
         if (input.equals("0")) {
             this.internalStep = PlayController.Step.SHOP;
@@ -111,6 +136,11 @@ public class ShopHandler implements PlayInputHandler {
         });
     }
 
+    /**
+     * Resets the shop handler back to its top-level menu.
+     *
+     * @param context the gameplay context
+     */
     @Override
     public void onEnter(PlayContext context) {
         this.internalStep = PlayController.Step.SHOP;
@@ -118,6 +148,11 @@ public class ShopHandler implements PlayInputHandler {
         this.furnitureForSale = null;
     }
 
+    /**
+     * Returns the gameplay step currently represented by this handler.
+     *
+     * @return the current shop sub-step
+     */
     @Override
     public PlayController.Step getStep() {
         return internalStep;

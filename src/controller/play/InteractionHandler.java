@@ -10,6 +10,9 @@ import services.NotificationService;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Handles object interaction menus during gameplay.
+ */
 public class InteractionHandler implements PlayInputHandler {
 
     private PlayController.Step internalStep = PlayController.Step.INTERACTABLES;
@@ -17,6 +20,13 @@ public class InteractionHandler implements PlayInputHandler {
     private List<Furniture> interactables;
     private List<String> sortedActionNames;
 
+    /**
+     * Routes input between furniture selection and action selection sub-states.
+     *
+     * @param input the player's raw input
+     * @param context the gameplay context
+     * @return {@code true} when a state transition occurred
+     */
     @Override
     public boolean handleInput(String input, PlayContext context) {
         return switch (internalStep) {
@@ -26,6 +36,9 @@ public class InteractionHandler implements PlayInputHandler {
         };
     }
 
+    /**
+     * Resolves a furniture selection from the current location.
+     */
     private boolean handleInteractablesList(String input, PlayContext context) {
         if (input.equals("0")) {
             context.switchTo(HandlerType.MAIN_MENU);
@@ -39,6 +52,10 @@ public class InteractionHandler implements PlayInputHandler {
         });
     }
 
+    /**
+     * Executes the chosen furniture action, including the special work-desk
+     * career flow.
+     */
     private boolean handleInteractableAction(String input, PlayContext context) {
         if (input.equals("0")) {
             this.selectedFurniture = null;
@@ -78,6 +95,12 @@ public class InteractionHandler implements PlayInputHandler {
         });
     }
 
+    /**
+     * Resets the handler and snapshots the current location's interactable
+     * furniture.
+     *
+     * @param context the gameplay context
+     */
     @Override
     public void onEnter(PlayContext context) {
         this.internalStep = PlayController.Step.INTERACTABLES;
@@ -86,6 +109,11 @@ public class InteractionHandler implements PlayInputHandler {
         this.interactables = context.getActivePlayer().getLocation().getFurnitureViews();
     }
 
+    /**
+     * Returns the gameplay step currently represented by this handler.
+     *
+     * @return the current interaction sub-step
+     */
     @Override
     public PlayController.Step getStep() {
         return internalStep;

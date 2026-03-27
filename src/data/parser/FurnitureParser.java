@@ -13,8 +13,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Parses furniture and furniture-action definitions from the furniture data
+ * file.
+ */
 public class FurnitureParser {
 
+    /**
+     * Reads the supplied resource and builds all furniture definitions keyed by
+     * both display name and whitespace-stripped lookup name.
+     *
+     * @param resourcePath the classpath-relative data file to parse
+     * @return a map of furniture definitions
+     * @throws IOException when the data file cannot be read
+     */
     public Map<String, Furniture> parse(String resourcePath) throws IOException {
         List<String> lines = FileUtils.readFile(resourcePath);
         List<Map<String, String>> furniturePropsList = new ArrayList<>();
@@ -40,6 +52,9 @@ public class FurnitureParser {
         return furnitureMap;
     }
 
+    /**
+     * Builds a single furniture object from one parsed property block.
+     */
     private Furniture buildFurniture(Map<String, String> props) {
         String name = props.get("NAME");
         String desc = props.get("DESC");
@@ -47,6 +62,10 @@ public class FurnitureParser {
         return new Furniture(name, desc, price);
     }
 
+    /**
+     * Builds one furniture action and attaches it to its parent furniture
+     * object.
+     */
     private void buildAndAttachAction(Map<String, String> props, Map<String, Furniture> furnitureMap) {
         String furnitureName = props.get("FURNITURE");
         Furniture parent = furnitureMap.get(furnitureName);

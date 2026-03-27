@@ -19,8 +19,10 @@ import models.need.*;
 import models.skill.SkillType;
 import types.Gender;
 
-
-
+/**
+ * Playable sim implementation combining needs, skills, finances, career, and
+ * housing state.
+ */
 public class SimCharacter extends Character {
 
     private final CharacterStats stats;
@@ -32,6 +34,15 @@ public class SimCharacter extends Character {
 
     private static FurnitureAction WORK_ACTION;
 
+    /**
+     * Creates a playable sim with default stats, finances, housing state, and
+     * no career.
+     *
+     * @param name the sim's name
+     * @param age the sim's age
+     * @param gender the sim's gender
+     * @param defaultLocation the sim's starting location
+     */
     public SimCharacter(String name, int age, Gender gender, Location defaultLocation) {
         super(name, age, gender, defaultLocation);
 
@@ -59,6 +70,15 @@ public class SimCharacter extends Character {
     public Need getNeed(NeedType type) {
         return stats.getNeed(type);
     }
+
+    /**
+     * Applies a skill XP delta after all active debuff modifiers and returns
+     * the number of levels gained.
+     *
+     * @param type the skill being modified
+     * @param amount the raw XP delta
+     * @return the number of levels gained
+     */
     public int adjustSkillXp(SkillType type, double amount) {
         if (type == null) {
             throw new IllegalArgumentException("Skill type cannot be null.");
@@ -69,6 +89,13 @@ public class SimCharacter extends Character {
         double finalAmount = DebuffRegistry.applySkillModifiers(this, type, amount);
         return stats.adjustSkillXpRaw(type, finalAmount);
     }
+
+    /**
+     * Applies a need delta after all active debuff modifiers.
+     *
+     * @param type the need being modified
+     * @param amount the raw need delta
+     */
     public void adjustNeed(NeedType type, double amount) {
         if (type == null) {
             throw new IllegalArgumentException("Need type cannot be null.");
@@ -80,6 +107,12 @@ public class SimCharacter extends Character {
         stats.adjustNeedRaw(type, finalAmount);
     }
 
+    /**
+     * Advances every tracked need for one update step using the debuff-adjusted
+     * decay rate for each need.
+     *
+     * @param deltaTime the elapsed in-game time in hours
+     */
     public void updateNeeds(double deltaTime) {
         for (Need need : stats.getNeedViews()) {
             double effectiveDecay = DebuffRegistry.applyDecayModifiers(this, need.getType(), need.getBaseDecayRate());
@@ -88,15 +121,34 @@ public class SimCharacter extends Character {
     }
 
     // ======== FINANCES
+
+    /**
+     * Spends money from the sim's finances.
+     *
+     * @param amount the amount to spend
+     */
     public void spendMoney(double amount) {
         finances.spendMoney(amount);
     }
+
+    /**
+     * Adds money to the sim's finances.
+     *
+     * @param amount the amount to add
+     */
     public void earnMoney(double amount) {
         finances.earnMoney(amount);
     }
     public double getMoney() {
         return finances.getMoney();
     }
+
+    /**
+     * Returns whether the sim can afford the supplied amount.
+     *
+     * @param amount the amount to check
+     * @return {@code true} when the sim has enough money
+     */
     public boolean canAfford(double amount) {
         return finances.canAfford(amount);
     }
@@ -106,6 +158,11 @@ public class SimCharacter extends Character {
         return career;
     }
 
+    /**
+     * Switches the sim into a new career at rank 1 with zero progress.
+     *
+     * @param newCareer the career to join
+     */
     public void joinCareer(CareerList newCareer) {
         if (newCareer == null) {
             throw new IllegalArgumentException("Career cannot be null.");
@@ -117,7 +174,13 @@ public class SimCharacter extends Character {
         return career.isJobless();
     }
 
-
+    /**
+     * Works the remainder of the current shift, applying time skip, need
+     * changes, pay, career progress, and related skill XP.
+     *
+     * @param clock the game clock used to advance in-game time
+     * @return the outcome of the work action
+     */
     public ActionResult work(GameClock clock) {
         if (career.isJobless()) {
             return ActionResult.failure("You need a job before you can work!");
@@ -160,6 +223,13 @@ public class SimCharacter extends Character {
 
         return ActionResult.success(message.toString());
     }
+
+    /**
+     * Applies the configured work-action need deltas scaled by the fraction of
+     * the shift worked.
+     *
+     * @param workFraction the fraction of a full shift that was completed
+     */
     private void applyWorkNeedEffects(double workFraction) {
         if (WORK_ACTION == null) {
             throw new IllegalStateException("Work action has not been initialized. Ensure WorldLoader has set this value.");
@@ -169,6 +239,11 @@ public class SimCharacter extends Character {
         }
     }
 
+    /**
+     * Awards work-related skill XP for the supplied number of hours worked.
+     *
+     * @param hoursWorked the number of in-game hours worked
+     */
     private void applyWorkSkillXp(double hoursWorked) {
         for (SkillType skill : career.getRelatedSkills()) {
             adjustSkillXp(skill, SKILL_XP_PER_HOUR * hoursWorked);
@@ -179,10 +254,23 @@ public class SimCharacter extends Character {
     public House getCurrentHouse() {
         return housing.getCurrentHouse();
     }
+
+    /**
+     * Assigns the sim's current home.
+     *
+     * @param house the house to assign
+     */
     public void assignHouse(House house) {
         housing.assignHouse(house);;
     }
 
+    /**
+     * Attempts to purchase the supplied house definition as the sim's current
+     * home.
+     *
+     * @param targetHouse the house being purchased
+     * @return the purchase outcome
+     */
     public ActionResult purchaseHouse(House targetHouse) {
         CharacterHousing.HousingResult result = housing.upgradeTo(targetHouse, finances);
         switch (result) {
@@ -192,6 +280,12 @@ public class SimCharacter extends Character {
         }
     }
 
+    /**
+     * Attempts to buy one furniture item for the sim's current house.
+     *
+     * @param furniture the furniture being purchased
+     * @return the purchase outcome
+     */
     public ActionResult buyFurniture(Furniture furniture) {
         CharacterHousing.HousingResult result = housing.buyFurniture(furniture, finances);
         switch (result) {
@@ -201,6 +295,13 @@ public class SimCharacter extends Character {
             default: throw new IllegalStateException("Unexpected result: " + result);
         }
     }
+
+    /**
+     * Attempts to sell one furniture item from the sim's current house.
+     *
+     * @param furniture the furniture being sold
+     * @return the sale outcome
+     */
     public ActionResult sellFurniture(Furniture furniture) {
         CharacterHousing.HousingResult result = housing.sellFurniture(furniture, finances);
         switch (result) {
@@ -209,7 +310,14 @@ public class SimCharacter extends Character {
             default: throw new IllegalStateException("Unexpected result: " + result);
         }
     }
-    
+
+    /**
+     * Builds the player-facing purchase message for a house transaction.
+     *
+     * @param house the house being purchased
+     * @param success whether the purchase succeeded
+     * @return the message that should be shown to the player
+     */
     public String getPurchaseMessage(House house, boolean success) {
         if (!success) {
             return "Insufficient funds! You need $" + house.getPrice() + " to purchase this house.";

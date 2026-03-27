@@ -16,7 +16,17 @@ public interface PlayInputHandler {
      */
     boolean handleInput(String input, PlayContext context);
 
+    /**
+     * Runs any setup needed when this handler becomes active.
+     *
+     * @param context the gameplay context
+     */
     void onEnter(PlayContext context);
 
+    /**
+     * Returns the current UI step represented by this handler.
+     *
+     * @return the step that should be rendered
+     */
     PlayController.Step getStep();
 }

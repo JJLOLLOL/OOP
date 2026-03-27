@@ -27,9 +27,9 @@ public class DebuffRegistry {
     /**
      * Applies all active debuff modifiers to a need change amount.
      *
-     * @param sim      the {@link SimCharacter} experiencing the change
-     * @param needName the name of the need being changed
-     * @param amount   the original amount of change
+     * @param sim the {@link SimCharacter} experiencing the change
+     * @param type the need being changed
+     * @param amount the original amount of change
      * @return the final modified amount after all debuffs have been applied
      */
     public static double applyNeedModifiers(SimCharacter sim, NeedType type, double amount) {
@@ -45,9 +45,9 @@ public class DebuffRegistry {
     /**
      * Applies all active debuff modifiers to a skill progress amount.
      *
-     * @param sim       the {@link SimCharacter} gaining skill progress
-     * @param skillName the name of the skill
-     * @param amount    the original amount of progress
+     * @param sim the {@link SimCharacter} gaining skill progress
+     * @param type the skill being modified
+     * @param amount the original amount of progress
      * @return the final modified progress amount after all debuffs have been applied
      */
     public static double applySkillModifiers(SimCharacter sim, SkillType type, double amount) {
@@ -62,8 +62,8 @@ public class DebuffRegistry {
     /**
      * Applies all active debuff modifiers to a need's decay rate.
      *
-     * @param sim       the {@link SimCharacter} whose need is decaying
-     * @param needName  the name of the need
+     * @param sim the {@link SimCharacter} whose need is decaying
+     * @param type the need being updated
      * @param baseDecay the original base decay rate
      * @return the final modified decay rate after all debuffs have been applied
      */
@@ -78,13 +78,13 @@ public class DebuffRegistry {
     }
 
     /**
-     * Checks if any active debuff blocks the specified interaction and returns the block reason.
+     * Checks whether any active debuff blocks the supplied action and returns
+     * the reason.
      *
-     * @param sim             the {@link SimCharacter} attempting the interaction
-     * @param interactionType the type of interaction
+     * @param sim the {@link SimCharacter} attempting the action
+     * @param actionType the action being attempted
      * @return the message explaining why the interaction is blocked, or {@code null} if it is allowed
      */
-
     public static String getInteractionBlockReason(SimCharacter sim, ActionType actionType) {
         for (Debuff debuff : DEBUFFS) {
             if (debuff.isActive(sim) && debuff.blockAction(sim, actionType)) {

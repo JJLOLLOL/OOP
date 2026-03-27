@@ -1,5 +1,8 @@
 package types;
 
+/**
+ * Supported genders for characters and parser input.
+ */
 public enum Gender {
     MALE("Male", "M"),
     FEMALE("Female", "F");
@@ -20,6 +23,13 @@ public enum Gender {
         return label;
     }
 
+    /**
+     * Parses a user-entered gender token such as {@code M}, {@code F},
+     * {@code male}, or {@code female}.
+     *
+     * @param input the user input to parse
+     * @return the matching gender
+     */
     public static Gender fromUserInput(String input) {
         if (input == null) {
             throw new IllegalArgumentException("Gender input cannot be null.");
@@ -32,6 +42,12 @@ public enum Gender {
         };
     }
 
+    /**
+     * Parses a gender token coming from data files.
+     *
+     * @param input the serialized gender value
+     * @return the matching gender
+     */
     public static Gender fromDataValue(String input) {
         if (input == null) {
             throw new IllegalArgumentException("Gender data value cannot be null.");

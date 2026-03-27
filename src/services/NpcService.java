@@ -15,10 +15,21 @@ public class NpcService {
 
     private final WorldRegistry world;
 
+    /**
+     * Creates an NPC updater bound to the immutable world registry.
+     *
+     * @param world the world registry containing all NPCs
+     */
     public NpcService(WorldRegistry world) {
         this.world = world;
     }
 
+    /**
+     * Moves every NPC to the location dictated by its schedule for the current
+     * in-game time.
+     *
+     * @param clock the current game clock
+     */
     public void updateNPCLocations(GameClock clock) {
         int currentTime = clock.getTimeAsHHMM(); // e.g. 1430 for 14:30
 

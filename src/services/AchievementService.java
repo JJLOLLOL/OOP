@@ -16,6 +16,10 @@ import types.AchievementType;
 import types.RelationshipType;
 
 
+/**
+ * Tracks unlocked achievements per sim and evaluates new unlocks from skill,
+ * career, work, and social events.
+ */
 public class AchievementService {
 
     private static final Map<SimCharacter, Set<AchievementType>> unlocked
@@ -24,20 +28,48 @@ public class AchievementService {
             = Collections.synchronizedMap(new WeakHashMap<>());
 
     // ── Access ────────────────────────────────────────────────────────────────
+    /**
+     * Marks an achievement as unlocked for the given sim.
+     *
+     * @param sim the owning sim
+     * @param achievement the achievement to unlock
+     * @return {@code true} when the achievement was newly unlocked
+     */
     public boolean unlockAchievement(SimCharacter sim, AchievementType achievement) {
         return unlocked.computeIfAbsent(sim, k -> new HashSet<>()).add(achievement);
     }
 
+    /**
+     * Checks whether the given sim has already unlocked the supplied
+     * achievement.
+     *
+     * @param sim the sim to inspect
+     * @param achievement the achievement being queried
+     * @return {@code true} when the achievement is already unlocked
+     */
     public boolean hasAchievement(SimCharacter sim, AchievementType achievement) {
         Set<AchievementType> set = unlocked.get(sim);
         return set != null && set.contains(achievement);
     }
 
+    /**
+     * Returns an unmodifiable view of the achievements unlocked by a sim.
+     *
+     * @param sim the sim to inspect
+     * @return the unlocked achievements, or an empty set when none exist
+     */
     public Set<AchievementType> getUnlockedAchievements(SimCharacter sim) {
         Set<AchievementType> set = unlocked.get(sim);
         return set == null ? Collections.emptySet() : Collections.unmodifiableSet(set);
     }
 
+    /**
+     * Evaluates first-time skill usage achievements for a skill gain event.
+     *
+     * @param sim the sim whose skill changed
+     * @param type the skill that was used
+     * @return newly unlocked achievements, if any
+     */
     public List<AchievementType> evaluateFirstTimeSkillAchievement(SimCharacter sim, SkillType type) {
         List<AchievementType> gained = new ArrayList<>();
         if (sim == null || type == null) {
@@ -57,6 +89,12 @@ public class AchievementService {
     }
 
 
+    /**
+     * Evaluates career-start and promotion achievements for the supplied sim.
+     *
+     * @param sim the sim whose career state changed
+     * @return newly unlocked achievements, if any
+     */
     public List<AchievementType> evaluateCareerAchievements(SimCharacter sim) {
         List<AchievementType> gained = new ArrayList<>();
         if (sim == null) {
@@ -89,6 +127,13 @@ public class AchievementService {
         return gained;
     }
 
+    /**
+     * Evaluates work-triggered achievements, including both career and
+     * first-time related skill achievements.
+     *
+     * @param sim the sim who just worked
+     * @return newly unlocked achievements, if any
+     */
     public List<AchievementType> evaluateWorkAchievements(SimCharacter sim) {
         List<AchievementType> gained = new ArrayList<>(evaluateCareerAchievements(sim));
         if (sim == null || sim.getCareer().getCurrentCareer() == CareerList.JOBLESS) {
@@ -101,6 +146,15 @@ public class AchievementService {
         return gained;
     }
 
+    /**
+     * Evaluates social achievements that depend on the sim's relationship state
+     * with every other character.
+     *
+     * @param sim the sim whose social state is being evaluated
+     * @param allCharacters every character in the current game
+     * @param relationships unused service reference kept for call-site symmetry
+     * @return newly unlocked achievements, if any
+     */
     public List<AchievementType> evaluateSocialAchievements(
             SimCharacter sim,
             List<? extends Character> allCharacters,
@@ -135,12 +189,19 @@ public class AchievementService {
     }
 
     // ── Helpers ───────────────────────────────────────────────────────────────
+    /**
+     * Attempts to unlock an achievement and records it in the accumulated
+     * result list only when newly granted.
+     */
     private void tryUnlock(SimCharacter sim, AchievementType type, List<AchievementType> gained) {
         if (unlockAchievement(sim, type)) {
             gained.add(type);
         }
     }
 
+    /**
+     * Maps a skill type to its corresponding first-use achievement.
+     */
     private static AchievementType skillAchievement(SkillType type) {
         return switch (type) {
             case SkillType.COOKING ->
@@ -166,6 +227,9 @@ public class AchievementService {
         };
     }
 
+    /**
+     * Maps a career choice to its category achievement, when one exists.
+     */
     private static AchievementType careerAchievement(CareerList career) {
         return switch (career) {
             case SOFTWARE_DEVELOPER, ENGINEER ->

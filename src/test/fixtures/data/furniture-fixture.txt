@@ -1,0 +1,36 @@
+[FURNITURE]
+NAME: Test Desk
+DESC: Coding desk
+PRICE: 200.0
+
+[ACTION]
+FURNITURE: TestDesk
+NAME: Code
+DESC: Build a feature.
+NEEDS: ENERGY,-10.5;FUN,5.0
+SKILLS: PROGRAMMING,12.0;LOGIC,4.0
+COST: 15.0
+TIME: 2.5
+
+[FURNITURE]
+NAME: Arcade Machine
+DESC: Fun machine
+PRICE: 500.0
+
+[ACTION]
+FURNITURE: ArcadeMachine
+NAME: Play
+DESC: Relax for a while.
+NEEDS: FUN,20.0;ENERGY,-5.0
+SKILLS:
+COST: 2.0
+TIME: 1.0
+
+[ACTION]
+FURNITURE: MissingFurniture
+NAME: Broken
+DESC: Should be ignored.
+NEEDS: ENERGY,5.0
+SKILLS:
+COST: 0.0
+TIME: 1.0

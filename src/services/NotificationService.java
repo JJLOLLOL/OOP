@@ -32,6 +32,13 @@ public class NotificationService {
     private NotificationService() {
     }
 
+    /**
+     * Adds a notification for the supplied sim, evicting the oldest item when
+     * the per-sim cap is exceeded.
+     *
+     * @param sim the sim receiving the notification
+     * @param message the message to store
+     */
     public static void add(SimCharacter sim, String message) {
         Deque<Entry> queue = store.computeIfAbsent(sim, k -> new ArrayDeque<>());
         queue.addLast(new Entry(message, ticks.getOrDefault(sim, 0L)));
@@ -40,6 +47,12 @@ public class NotificationService {
         }
     }
 
+    /**
+     * Advances the notification lifetime counter for a sim and expires old
+     * notifications.
+     *
+     * @param sim the sim whose notification queue should age
+     */
     public static void tick(SimCharacter sim) {
         long next = ticks.getOrDefault(sim, 0L) + 1;
         ticks.put(sim, next);
@@ -49,6 +62,13 @@ public class NotificationService {
         }
     }
 
+    /**
+     * Returns the current visible notifications for a sim, keeping achievement
+     * messages at the top of the list.
+     *
+     * @param sim the sim whose notifications should be returned
+     * @return ordered notification messages for display
+     */
     public static List<String> get(SimCharacter sim) {
         Deque<Entry> queue = store.get(sim);
         if (queue == null) {

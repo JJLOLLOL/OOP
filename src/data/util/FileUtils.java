@@ -9,6 +9,9 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * File helpers for reading packaged game data resources.
+ */
 public class FileUtils {
 
     /**

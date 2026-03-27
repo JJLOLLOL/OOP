@@ -5,8 +5,8 @@ import models.need.Need;
 import models.need.NeedType;
 
 /**
- * Implements fatigue effects: when Energy is critically low, other needs decay faster.
- * This simulates the real-world effect of exhaustion causing hunger, social withdrawal, etc.
+ * Implements fatigue effects: when energy is critically low, energy drains even
+ * faster and all other needs decay more quickly.
  */
 public class FatigueDecayDebuff implements Debuff {
 
@@ -14,6 +14,12 @@ public class FatigueDecayDebuff implements Debuff {
     private static final double OTHER_NEED_DECAY_BONUS = 1.0;
 
 
+    /**
+     * Activates when the sim's energy need is critical.
+     *
+     * @param sim the sim being evaluated
+     * @return {@code true} when the debuff should apply
+     */
     @Override
     public boolean isActive(SimCharacter sim) {
         Need energy = sim.getNeed(NeedType.ENERGY);
@@ -22,6 +28,16 @@ public class FatigueDecayDebuff implements Debuff {
         }
         return energy.isCritical();
     }
+
+    /**
+     * Increases decay for every need while fatigue is active, with an extra
+     * multiplier applied to energy itself.
+     *
+     * @param sim the affected sim
+     * @param type the need being updated
+     * @param baseDecay the unmodified decay rate
+     * @return the adjusted decay rate
+     */
     @Override
     public double modifyNeedDecay(SimCharacter sim, NeedType type, double baseDecay) {
         if (type == NeedType.ENERGY) {

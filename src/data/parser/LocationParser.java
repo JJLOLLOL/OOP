@@ -12,8 +12,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Parses location definitions from the locations data file.
+ */
 public class LocationParser {
 
+    /**
+     * Reads the supplied location resource and builds the corresponding
+     * location objects.
+     *
+     * @param resourcePath the classpath-relative data file to parse
+     * @param furnitureMap furniture definitions available for location lookup
+     * @return the parsed locations keyed by display name
+     * @throws IOException when the data file cannot be read
+     */
     public Map<String, Location> parse(String resourcePath, Map<String, Furniture> furnitureMap) throws IOException {
         Map<String, Location> locations = new HashMap<>();
         List<String> lines = FileUtils.readFile(resourcePath);
@@ -47,6 +59,10 @@ public class LocationParser {
         return locations;
     }
 
+    /**
+     * Builds either a {@link House} or a plain {@link Location} from one parsed
+     * location block.
+     */
     private Location buildLocation(Map<String, String> properties, Map<String, Furniture> furnitureMap) {
         String name = properties.get("NAME");
         String type = properties.get("TYPE");

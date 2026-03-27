@@ -1,5 +1,8 @@
 package types;
 
+/**
+ * Relationship tiers derived from a numeric relationship score.
+ */
 public enum RelationshipType {
 
     ENEMY("Enemy", -100, -50),

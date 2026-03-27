@@ -106,13 +106,20 @@ class ActionsPanelViewTest {
     @Test
     void buildChangeLocationMarksCurrentLocation() {
         UITestSupport.Fixture fixture = UITestSupport.fixture();
-
-        List<String> lines = ActionsPanelView.build(PlayController.Step.CHANGE_LOCATION, fixture.home,
-                fixture.player, fixture.state, fixture.world, fixture.playController);
-
+    
+        List<String> lines = ActionsPanelView.build(
+                PlayController.Step.CHANGE_LOCATION,
+                fixture.home,
+                fixture.player,
+                fixture.state,
+                fixture.world,
+                fixture.playController);
+    
         assertEquals("Go to...", UITestSupport.plain(lines.get(0)));
-        assertTrue(UITestSupport.plain(lines.get(1)).contains("Home ← here"));
-        assertTrue(UITestSupport.plain(lines.get(2)).contains("Park"));
+        assertTrue(lines.stream().map(UITestSupport::plain).anyMatch(line -> line.contains("Home ← here")));
+        assertTrue(UITestSupport.findLineContaining(lines, "Park").contains("Park"));
+        assertTrue(UITestSupport.findLineContaining(lines, "Cafe").contains("Cafe"));
+        assertEquals("0. Back", UITestSupport.plain(lines.get(lines.size() - 1)));
     }
 
     @Test

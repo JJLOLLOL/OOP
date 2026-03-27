@@ -1,0 +1,16 @@
+[AVAILABLE_FURNITURE]
+NAMES: TestDesk, ArcadeMachine, MissingFurniture
+
+[HOUSE_FOR_SALE]
+NAME: Condo
+PRICE: 1500
+RATE: 1.2
+TIER: 2
+FURNITURE: TestDesk, MissingFurniture
+
+[HOUSE_FOR_SALE]
+NAME: Villa
+PRICE: 4000
+RATE: 2.1
+TIER: 4
+FURNITURE: ArcadeMachine
