@@ -76,7 +76,7 @@ public class CreateSimController {
             SimCharacter sim = builder.build(home);
             state.getRelationshipService().registerNewSim(sim, state.getSims(), world.getAllNPCs());
             state.addSim(sim);
-            sim.assignHouse((models.location.House) home);
+            sim.assignHouse(house);
         }
 
         if (state.getSims().size() == 1) {
