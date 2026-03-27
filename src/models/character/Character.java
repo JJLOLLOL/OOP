@@ -14,6 +14,19 @@ public abstract class Character {
     private final CharacterRelationship relationships;
 
     protected Character(String name, int age, Gender gender, Location defaultLocation) {
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Name cannot be null or blank.");
+        }
+        if (age < 0) {
+            throw new IllegalArgumentException("Age cannot be negative.");
+        }
+        if (gender == null) {
+            throw new IllegalArgumentException("Gender cannot be null.");
+        }
+        if (defaultLocation == null) {
+            throw new IllegalArgumentException("Default location cannot be null.");
+        }
+    
         this.name = name;
         this.age = age;
         this.gender = gender;

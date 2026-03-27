@@ -39,6 +39,12 @@ public class CreateSimController {
 
     public void finaliseSims(GameState state, WorldRegistry world) {
         Location home = world.getLocation("Home");
+        if (home == null) {
+            throw new IllegalStateException("Required location 'Home' was not found.");
+        }
+        if (!(home instanceof models.location.House house)) {
+            throw new IllegalStateException("'Home' must be a House.");
+        }
         for (SimCharacterBuilder builder : builders) {
             SimCharacter sim = builder.build(home);
             state.getRelationshipService().registerNewSim(sim, state.getSims(), world.getAllNPCs());

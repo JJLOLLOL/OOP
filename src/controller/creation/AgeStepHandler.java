@@ -12,7 +12,7 @@ public class AgeStepHandler implements CreationStepHandler {
     public boolean handleInput(String input, CreateSimController context) {
         try {
             int age = Integer.parseInt(input);
-            if (age < MIN_AGE || MAX_AGE > 90) {
+            if (age < MIN_AGE || age > MAX_AGE) {
                 throw new NumberFormatException();
             }
             context.getCurrentBuilder().withAge(age);

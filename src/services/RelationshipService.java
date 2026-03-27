@@ -9,6 +9,9 @@ import types.InteractionType;
 public class RelationshipService {
 
     public void registerNewSim(SimCharacter newSim, List<SimCharacter> sims, List<NPCCharacter> npcs) {
+        if (newSim == null || sims == null || npcs == null) {
+            throw new IllegalArgumentException("Arguments cannot be null.");
+        }
         for (NPCCharacter npc : npcs) {
             newSim.initializeRelationshipWith(npc);
         }
@@ -22,6 +25,9 @@ public class RelationshipService {
 
 
     public String interact(Character from, Character to, InteractionType type) {
+        if (from == null || to == null || type == null) {
+            throw new IllegalArgumentException("Interaction arguments cannot be null.");
+        }
         from.changeRelationshipWith(to, type.getEffect());
 
         int score = from.getRelationshipScoreWith(to);

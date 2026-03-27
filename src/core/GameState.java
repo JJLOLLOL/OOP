@@ -1,6 +1,7 @@
 package core;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import models.character.SimCharacter;
@@ -59,34 +60,29 @@ public class GameState {
     }
 
     // ── Sims ──────────────────────────────────────────────────────────────────
-    /**
-     * Returns the list of all created sims.
-     */
-    public List<SimCharacter> getSims() {
-        return sims;
-    }
-
-    /**
-     * Adds a sim to the game.
-     */
     public void addSim(SimCharacter sim) {
+        if (sim == null) {
+            throw new IllegalArgumentException("Sim cannot be null.");
+        }
         sims.add(sim);
     }
 
+    public void setActivePlayer(SimCharacter player) {
+        if (player == null) {
+            throw new IllegalArgumentException("Active player cannot be null.");
+        }
+        this.activePlayer = player;
+    }
+
+    public List<SimCharacter> getSims() {
+        return Collections.unmodifiableList(sims);
+    }
     /**
      * Returns the sim currently controlled by the player.
      */
     public SimCharacter getActivePlayer() {
         return activePlayer;
     }
-
-    /**
-     * Sets the sim currently controlled by the player.
-     */
-    public void setActivePlayer(SimCharacter player) {
-        this.activePlayer = player;
-    }
-
     // ── Services ──────────────────────────────────────────────────────────────
     /**
      * Returns the shared {@link RelationshipService} instance.

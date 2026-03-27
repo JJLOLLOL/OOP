@@ -30,8 +30,14 @@ public class WorldRegistry {
      * once by {@link GameEngine} at startup after data is loaded by a parser.
      */
     public WorldRegistry(Map<String, Location> locations, List<NPCCharacter> npcs) {
-        this.locationsMap = locations;
-        this.npcList = npcs;
+        if (locations == null) {
+            throw new IllegalArgumentException("Locations cannot be null.");
+        }
+        if (npcs == null) {
+            throw new IllegalArgumentException("NPC list cannot be null.");
+        }
+        this.locationsMap = Map.copyOf(locations);
+        this.npcList = List.copyOf(npcs);
     }
 
     // ── Public accessors ──────────────────────────────────────────────────────
