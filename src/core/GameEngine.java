@@ -4,6 +4,7 @@ import java.util.Scanner;
 
 import controller.CreateSimController;
 import controller.PlayController;
+import data.DataParser;
 import services.NpcService;
 import ui.Renderer;
 

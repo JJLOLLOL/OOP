@@ -1,10 +1,9 @@
-package models.character;
+package models.character.stats;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import models.character.stats.CharacterStats;
 import models.need.NeedType;
 import models.skill.SkillType;
 import org.junit.jupiter.api.Test;
