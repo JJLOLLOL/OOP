@@ -162,7 +162,7 @@ public class SimCharacter extends Character {
     }
     private void applyWorkNeedEffects(double workFraction) {
         if (WORK_ACTION == null) {
-            throw new IllegalStateException("Work action has not been initialized. Ensure DataParser has set this value.");
+            throw new IllegalStateException("Work action has not been initialized. Ensure WorldLoader has set this value.");
         }
         for (Map.Entry<NeedType, Double> entry : WORK_ACTION.affectedNeedsByActionMap().entrySet()) {
             adjustNeed(entry.getKey(), entry.getValue() * workFraction);

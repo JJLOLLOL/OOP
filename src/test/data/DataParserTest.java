@@ -19,7 +19,7 @@ class DataParserTest {
 
     @Test
     void loadWorldData_shouldReturnWorldData_whenResourcesExist() {
-        DataParser parser = new DataParser();
+        WorldLoader parser = new WorldLoader();
 
         WorldData worldData = assertDoesNotThrow(parser::loadWorldData);
 
@@ -31,7 +31,7 @@ class DataParserTest {
 
     @Test
     void loadWorldData_shouldLoadAtLeastSomeLocations() {
-        DataParser parser = new DataParser();
+        WorldLoader parser = new WorldLoader();
 
         WorldData worldData = parser.loadWorldData();
 
@@ -40,8 +40,8 @@ class DataParserTest {
 
     @Test
     void parseEffects_shouldReturnEmptyMap_whenInputIsNull() throws Exception {
-        DataParser parser = new DataParser();
-        Method method = DataParser.class.getDeclaredMethod("parseEffects", String.class, java.util.function.Function.class);
+        WorldLoader parser = new WorldLoader();
+        Method method = WorldLoader.class.getDeclaredMethod("parseEffects", String.class, java.util.function.Function.class);
         method.setAccessible(true);
 
         @SuppressWarnings("unchecked")
@@ -57,8 +57,8 @@ class DataParserTest {
 
     @Test
     void parseEffects_shouldParseValidEffects() throws Exception {
-        DataParser parser = new DataParser();
-        Method method = DataParser.class.getDeclaredMethod("parseEffects", String.class, java.util.function.Function.class);
+        WorldLoader parser = new WorldLoader();
+        Method method = WorldLoader.class.getDeclaredMethod("parseEffects", String.class, java.util.function.Function.class);
         method.setAccessible(true);
 
         @SuppressWarnings("unchecked")
@@ -76,8 +76,8 @@ class DataParserTest {
 
     @Test
     void readFile_shouldThrowIOException_whenResourceDoesNotExist() throws Exception {
-        DataParser parser = new DataParser();
-        Method method = DataParser.class.getDeclaredMethod("readFile", String.class);
+        WorldLoader parser = new WorldLoader();
+        Method method = WorldLoader.class.getDeclaredMethod("readFile", String.class);
         method.setAccessible(true);
 
         InvocationTargetException ex = assertThrows(
