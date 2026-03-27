@@ -36,7 +36,7 @@ public class WorldRegistry {
         if (npcs == null) {
             throw new IllegalArgumentException("NPC list cannot be null.");
         }
-        this.locationsMap = Map.copyOf(locations);
+        this.locationsMap = Collections.unmodifiableMap(new java.util.LinkedHashMap<>(locations));
         this.npcList = List.copyOf(npcs);
     }
 
