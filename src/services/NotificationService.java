@@ -11,13 +11,11 @@ import java.util.WeakHashMap;
 import models.character.SimCharacter;
 
 /**
- * Manages timed notifications for each {@link SimCharacter}. Notifications
- * expire after {@value #LIFETIME_TICKS} player actions, capped at
- * {@value #MAX_NOTIFICATIONS} per sim.
+ * Manages timed notifications for each {@link SimCharacter}.
  */
 public class NotificationService {
 
-    private static final int LIFETIME_TICKS = 10;
+    private static final int LIFETIME_TICKS = 200;
     private static final int MAX_NOTIFICATIONS = 5;
 
     private record Entry(String message, long tick) {
