@@ -1,220 +1,370 @@
-# CLI Sims Simulation Game
+<div id="top"></div>
+
+<br />
+<div align="center">
+
+<h1 align="center">CLI Sims Simulation Game</h1>
+
+<p align="center">
+  A Java command-line life simulation game inspired by <em>The Sims</em>
+  <br />
+  <br />
+  <a href="#overview">Overview</a>
+  ·
+  <a href="#gameplay-summary">Gameplay</a>
+  ·
+  <a href="#user-guide">User Guide</a>
+  ·
+  <a href="#system-overview">Architecture</a>
+  ·
+  <a href="#how-to-run-the-game">Run the Game</a>
+</p>
+
+</div>
+
+---
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Project Pitch](#project-pitch)
+- [Main Features](#main-features)
+- [Game World](#game-world)
+- [Needs System](#needs-system)
+- [Skills and Careers](#skills-and-careers)
+- [Housing and Upgrades](#housing-and-upgrades)
+- [User Guide](#user-guide)
+- [System Overview](#system-overview)
+- [File Hierarchy](#file-hierarchy)
+- [Requirements](#requirements)
+- [How to Run the Game](#how-to-run-the-game)
+- [How to Run Tests](#how-to-run-tests)
+
+---
 
 ## Overview
 
-This project is a Java command-line life simulation game inspired by *The Sims*.
-The player creates one or more Sims, selects an active Sim, and manages daily life through a menu-driven CLI.
+This project recreates the core life-simulation loop in a text-based interface: create Sims, manage their needs, build skills, choose careers, earn money, travel between locations, interact with other characters, and upgrade a home.
 
-The game currently supports:
+The emphasis is on simulation logic, modular design, and object-oriented structure rather than graphics.
 
-- Sim creation and active-character selection
-- Real-time in-game clock progression
-- Need decay and recovery
-- Skills and XP progression
-- Careers, shifts, salary, and promotion progress
-- Social interactions and relationship changes
-- Location changes and NPC schedules
-- Furniture-based actions
-- House and furniture shopping
-- Debuffs triggered by poor need management
-- Achievement and notification systems
-- Basic JUnit test coverage for selected core/model classes
+<p align="right">(<a href="#top">back to top</a>)</p>
 
----
+## Project Pitch
+
+This project transforms a typically graphical genre into a structured terminal experience.
+
+What makes it notable:
+
+- **Full life-simulation loop in CLI form**
+- **Time-driven gameplay** with in-game day and hour progression
+- **Need management** that affects what a Sim can do
+- **Skill and career progression** with meaningful long-term planning
+- **Location-based actions** tied to furniture and world spaces
+- **NPC movement and social interactions** that make the world feel active
+- **Housing and furniture upgrades** that improve efficiency and progression
+- **Object-oriented architecture** built around separable models, controllers, services, and data loading
+
+It is a multi-system simulation with interconnected mechanics.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Gameplay Summary
 
-### Main gameplay loop
+### Core Gameplay Loop
 
-After creating Sims, the player enters the gameplay screen and controls one active Sim at a time.
-The main gameplay menu allows the player to:
+The game is built around a repeating progression cycle:
 
-1. Interact with objects at the current location
-2. Socialise with nearby characters
-3. Change location
-4. Switch active Sim
-5. Open the shop
-6. Exit the game
+**Manage needs -> perform activities -> build skills -> work for income -> buy upgrades -> improve efficiency**
 
-### Sim systems
+A strong run depends on balancing short-term survival with long-term progression.
 
-Each Sim has the following major systems:
+Example flow:
 
-- **Needs**: Hunger, Hygiene, Energy, Fun, Social
-- **Skills**: Tracked through XP and level progression
-- **Career**: Job selection, salary, rank progression, shift timing
-- **Finances**: Starting money, spending, and earning
-- **Housing**: Current house, furniture ownership, upgrades
-- **Relationships**: Shared relationship scores with other Sims and NPCs
+1. Recover urgent needs such as energy or hunger.
+2. Travel to a useful location.
+3. Perform actions to train skills or restore stats.
+4. Work a shift to earn money.
+5. Buy better furniture or a better house.
+6. Repeat with stronger stats and faster recovery.
 
-### Locations
+<p align="right">(<a href="#top">back to top</a>)</p>
 
-The game world includes several locations such as:
+## Main Features
 
-- Home
-- Restaurant
-- Gym
-- Park
-- Cafe
-- Library
-- Club
-- Office
+### Simulation Systems
 
-NPCs move between locations based on daily schedules.
+- Create one or more Sims
+- Select and switch the active Sim
+- Persistent in-game clock with day and time progression
+- Need decay and need recovery through actions
+- Debuffs or reduced effectiveness when needs are neglected
 
-### Furniture and actions
+### Progression Systems
 
-Locations contain furniture, and furniture exposes actions.
-Examples include actions such as eating, sleeping, showering, studying, working, exercising, and leisure interactions.
-Each action can affect:
+- Skill XP and level progression
+- Career selection and work shifts
+- Salary and rank progression
+- Achievement tracking
+- Notification updates for important events and milestones
 
-- needs
-- skill XP
-- money
-- time taken
+### World Systems
 
-### Shop system
+- Multiple playable locations
+- Location-based furniture and actions
+- NPCs that move based on schedules
+- Social interactions and relationship changes
 
-The shop currently supports:
+### Economy and Housing
 
-- browsing houses
-- browsing furniture
-- buying houses
-- buying furniture
-- selling owned furniture
+- Money earning and spending
+- House purchasing
+- Furniture buying and selling
+- Upgrades that improve quality of life and recovery options
 
-### Achievements and notifications
+<p align="right">(<a href="#top">back to top</a>)</p>
 
-The game tracks milestone-style achievements, such as career and skill firsts, and displays recent notifications in the right-side panel of the UI.
+## Game World
 
----
+The current world includes these main locations:
 
-## User Interface
+- **Home**
+- **Restaurant**
+- **Gym**
+- **Park**
+- **Cafe**
+- **Library**
+- **Club**
+- **Office**
 
-The project uses a text-based CLI interface.
+Each location offers different furniture, activities, and interaction opportunities.
 
-### Create Sim phase
+<p align="right">(<a href="#top">back to top</a>)</p>
 
-At startup, the player is guided through a multi-step creation flow:
+## Needs System
 
-- choose number of Sims
-- enter each Sim's name
-- enter age
-- enter gender
-- confirm Sims
-- choose the active Sim if more than one Sim was created
+Each Sim is driven by five core needs:
 
-### Gameplay phase
+- **Hunger**
+- **Hygiene**
+- **Energy**
+- **Fun**
+- **Social**
 
-During gameplay, the UI renders four side-by-side panels:
+These values decline over time. Ignoring them makes the Sim less effective and can limit progress. Efficient play means keeping needs stable before they become a problem.
 
-- **Stats**: active Sim details, money, needs, current location, nearby characters
-- **Actions**: current menu and available options
-- **Skills**: skill bars and levels
-- **Notifications**: recent events and achievements
+### Early-Game Priorities
 
-The UI is rendered by the `ui` package and displayed with ANSI-coloured console output.
+- Restore **energy** before long activities or work
+- Keep **hunger** under control so the Sim stays productive
+- Maintain **hygiene** to avoid poor overall condition
+- Do not ignore **fun** and **social**, or the Sim will fall behind in balance
 
----
+<p align="right">(<a href="#top">back to top</a>)</p>
 
-## Architecture Overview
+## Skills and Careers
 
-The codebase is structured into separate layers for game flow, domain logic, services, and rendering.
+### Skills
 
-### `core`
+The project includes these skill types:
 
-Owns game startup, game loop, input handling, state, and top-level controllers.
+- Cooking
+- Fitness
+- Programming
+- Charisma
+- Creativity
+- Logic
+- Music
+- Writing
+- Painting
 
-Key classes:
+Skills improve through actions and support long-term progression.
 
-- `Main` — application entry point
-- `GameEngine` — main loop, tick cycle, input routing
-- `GameState` — shared mutable runtime state
-- `GameClock` — in-game time progression
-- `CreateSimController` — create-sim flow controller
-- `PlayController` — gameplay menu flow controller
-- `WorldRegistry` — central access point for world data
+### Careers
 
-### `models`
+Available career paths include:
 
-Owns the domain model and gameplay behaviour.
+- Software Developer
+- Engineer
+- Doctor
+- Teacher
+- Lawyer
+- Police Officer
+- Accountant
+- Business Manager
+- Chef
+- Artist
+- Musician
+- Writer
 
-Main areas:
+Careers differ in salary, working hours, and related skills. Choosing a career that matches a training plan leads to stronger progression.
 
-- `character` — `Character`, `SimCharacter`, `NPCCharacter`, `Relationship`
-- `character.stats` — needs and skills owned by the Sim
-- `character.finances` — money handling
-- `character.housing` — house and furniture ownership logic
-- `character.relationship` — relationship map and shared relationship state
-- `need` — need classes and need types
-- `skill` — skill objects and skill types
-- `career` — career definitions and progression
-- `actions` — furniture, actions, shop inventory
-- `location` — `Location` and `House`
-- `debuffs` — debuff rules applied to needs and skills
-- `progression` — XP tracker support
+<p align="right">(<a href="#top">back to top</a>)</p>
 
-### `services`
+## Housing and Upgrades
 
-Owns shared coordination logic that does not belong directly in rendering.
+The game begins with a basic home setup and allows the player to improve living conditions over time.
 
-- `NpcService` — updates NPC location by schedule
-- `RelationshipService` — relationship registration and social interactions
-- `AchievementService` — achievement evaluation and unlocking
-- `NotificationService` — temporary gameplay notifications
+### Houses for Sale
 
-### `ui`
+- Cozy Apartment
+- Modern House
+- Luxury Cottage
+- Mansion
 
-Owns all CLI rendering.
+### Upgrade Path
 
-- `Renderer` — top-level phase-based renderer
-- `views` — create-sim view and gameplay view
-- `panels` — stats, actions, skills, notifications panels
-- `ConsoleUtils` — console formatting helpers
+Better houses and furniture improve the Sim's available actions and overall efficiency. Housing is part of the gameplay strategy, not just decoration.
 
-### `test`
+<p align="right">(<a href="#top">back to top</a>)</p>
 
-Contains JUnit tests for selected classes.
-Current test classes include:
+## User Guide
 
-- `GameClockTest`
-- `RelationshipTest`
-- `LocationTest`
-- `HouseTest`
-- `XpTrackerTest`
+### 1. Starting the Game
 
----
+Run the application from the project entry point:
 
-## Design Notes
+```text
+src/app/Main.java
+```
 
-### Object-oriented design used in the project
+It loads world data, constructs the runtime systems, and starts the game loop.
 
-This project applies the following OO ideas in the current implementation:
+### 2. Creating Sims
 
-- **Encapsulation**: state is managed inside domain objects such as `CharacterStats`, `CharacterFinances`, and `CharacterHousing`
-- **Inheritance**: `SimCharacter` and `NPCCharacter` extend `Character`
-- **Polymorphism**: need behaviour is specialised through concrete `Need` subclasses
-- **Composition**: `SimCharacter` composes stats, finances, housing, career, and relationships rather than storing all logic in one place
-- **Separation of concerns**: `core`, `models`, `services`, and `ui` are kept distinct
-- **Rich domain model**: business rules are placed inside domain classes rather than only in controllers
+When the game starts, the Sim creation flow begins.
 
-### Content/data note
+You will be asked to:
 
-Static world content such as locations, furniture definitions, and NPC schedules is currently centralised behind classes such as `WorldRegistry` and `FurnitureFactory`.
+1. Choose how many Sims to create.
+2. Enter each Sim's name.
+3. Enter age.
+4. Enter gender.
+5. Confirm the created roster.
+6. Choose which Sim will be the active Sim.
 
-In this branch, that content is still assembled in code.
-If your team moves that content into text files later, this architecture still holds: the registry/factory layer becomes the loading boundary, while the rest of the gameplay flow can remain unchanged.
+After this, the game enters the main gameplay screen.
 
----
+### 3. Understanding the Gameplay Screen
 
-## Project Structure
+The gameplay UI is displayed as a multi-panel CLI screen.
+
+It presents:
+
+- Current day and time
+- Active Sim information
+- Current location
+- Available actions
+- Skill progress
+- Notifications
+
+This layout keeps the game readable while still showing multiple systems at once.
+
+### 4. Main Menu Actions
+
+#### Interact with Objects
+Use furniture or world objects at the current location.
+
+Examples include:
+
+- Sleep or nap
+- Cook or eat
+- Shower
+- Study
+- Work
+- Exercise
+- Leisure activities
+
+#### Socialise
+Interact with nearby Sims or NPCs to improve relationships and support the social need.
+
+#### Change Location
+Move to another location to access different furniture, activities, and characters.
+
+#### Switch Active Sim
+Swap control to another Sim when multiple Sims exist.
+
+#### Open the Shop
+Upgrade the house, buy furniture, or sell furniture.
+
+#### Exit the Game
+End the current session.
+
+### 5. How to Play Effectively
+
+#### Basic Strategy
+
+- Do not let one need collapse while focusing on another
+- Train skills that support the chosen career
+- Work when the Sim is in good condition, not when depleted
+- Upgrade furniture early for more efficient recovery
+
+#### Recommended Beginner Flow
+
+1. Recover energy and hunger at Home.
+2. Visit a location that helps the chosen skill direction.
+3. Build skill XP.
+4. Take or continue a career path.
+5. Earn money.
+6. Buy better furniture.
+7. Repeat the cycle.
+
+### 6. Example Progression Path
+
+A simple example:
+
+- Start with a basic home and limited resources
+- Use available furniture to maintain needs
+- Train Programming and Logic
+- Join the Software Developer career
+- Earn salary through work shifts
+- Upgrade from the starter home to a stronger property
+- Continue improving efficiency, skills, and income
+
+This demonstrates how the game systems connect into one coherent simulation.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## System Overview
+
+### Architecture Summary
+
+The project is organized into clear object-oriented layers:
+
+- **app** - application entry point
+- **core** - engine, state, clock, and world registry
+- **controller** - gameplay and creation flow handling
+- **models** - Sims, NPCs, needs, careers, skills, furniture, locations, debuffs, and progression
+- **services** - achievement, house, notification, NPC, and relationship logic
+- **data** - loading world data and shop data from text files
+- **ui** - CLI rendering and gameplay panels
+- **test** - JUnit tests for core systems and features
+
+This separation improves readability, maintainability, and extensibility.
+
+### Data-Driven Design
+
+World content is loaded from plain text files, including:
+
+- Locations
+- Furniture and actions
+- NPC data
+- Shop inventory
+
+This supports the specification constraint of avoiding databases and keeping data in file-based form.
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## File Hierarchy
 
 ```text
 OOP/
 ├─ README.md
 ├─ src/
-│  ├─ Types/
+│  ├─ app/
+│  ├─ controller/
 │  ├─ core/
+│  ├─ data/
 │  ├─ models/
 │  │  ├─ actions/
 │  │  ├─ career/
@@ -224,84 +374,161 @@ OOP/
 │  │  │  ├─ relationship/
 │  │  │  └─ stats/
 │  │  ├─ debuffs/
+│  │  ├─ furniture/
 │  │  ├─ location/
 │  │  ├─ need/
 │  │  ├─ progression/
 │  │  └─ skill/
 │  ├─ services/
-│  └─ ui/
-│     ├─ panels/
-│     └─ views/
-└─ test/
-   ├─ core/
-   └─ models/
+│  ├─ types/
+│  ├─ ui/
+│  │  ├─ panels/
+│  │  └─ views/
+└─ └─ test/
 ```
 
----
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Abstracted UML Diagram
+
+```mermaid
+classDiagram
+direction LR
+
+Main --> WorldLoader : loads data
+Main --> WorldRegistry : constructs
+Main --> GameEngine : starts
+
+WorldLoader ..> FurnitureParser : delegates parsing
+WorldLoader ..> LocationParser : delegates parsing
+WorldLoader ..> NpcParser : delegates parsing
+WorldLoader ..> ShopParser : delegates parsing
+WorldLoader --> WorldData : assembles
+
+WorldData --> WorldRegistry : seeds
+WorldData --> ShopInventory : provides
+
+GameEngine *-- GameState : owns runtime state
+GameEngine --> WorldRegistry : reads static world
+GameEngine --> NpcService : updates NPC movement
+GameEngine --> CreateSimController : routes CREATE_SIM
+GameEngine --> PlayController : routes PLAYING
+GameEngine ..> Renderer : redraws UI
+
+GameState *-- GameClock : tracks time
+GameState *-- RelationshipService : owns
+GameState *-- AchievementService : owns
+GameState o-- "many" SimCharacter : stores
+GameState --> SimCharacter : active player
+
+CreateSimController --> CreationStepHandler : delegates steps
+CreateSimController ..> SimCharacterBuilder : builds sims
+CreateSimController --> GameState : finalises into
+CreateSimController --> WorldRegistry : resolves home
+
+PlayController --> PlayInputHandler : delegates menus
+PlayController --> GameState : mutates and queries
+PlayController --> WorldRegistry : queries
+PlayController --> ShopInventory : shop data
+PlayController ..> NotificationService : emits updates
+
+Character <|-- SimCharacter
+Character <|-- NPCCharacter
+Character *-- CharacterRelationship : social graph
+Character --> Location : current location
+
+NPCCharacter --> Location : scheduled movement
+SimCharacter *-- CharacterStats
+SimCharacter *-- CharacterFinances
+SimCharacter *-- CharacterHousing
+SimCharacter *-- Career
+SimCharacter ..> DebuffRegistry : applies modifiers
+
+DebuffRegistry o-- "many" Debuff : global rules
+CharacterStats o-- "needs" Need
+CharacterStats o-- "skills" Skill
+CharacterHousing --> House : owns and upgrades
+House --|> Location
+Location o-- "many" Furniture
+Furniture o-- "many" FurnitureAction
+
+NpcService --> WorldRegistry : iterates NPCs
+RelationshipService ..> Character : applies interactions
+AchievementService ..> SimCharacter : evaluates unlocks
+NotificationService ..> SimCharacter : stores messages
+
+Renderer ..> CreateSimView : renders
+Renderer ..> GameplayView : renders
+GameplayView ..> StatsPanelView : builds panel
+GameplayView ..> ActionsPanelView : builds panel
+GameplayView ..> SkillsPanelView : builds panel
+GameplayView ..> NotificationsPanelView : builds panel
+```
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 
 ## Requirements
 
-### Required software
+### Required Software
 
-- **Java JDK 21 or newer**
-- A terminal that supports ANSI output
-  - macOS Terminal or iTerm2 recommended
-  - Windows Terminal or PowerShell recommended
+- **Java JDK 25 or newer**
+- A terminal that preferably supports ANSI output
 
 ### Notes
 
 - This project does **not** use Maven or Gradle.
-- Source files are compiled manually with `javac`.
-- Main entry point: `core.Main`
-- Tests use **JUnit 5**.
+- Source files are compiled manually with `java`.
+- Main entry point: `app.Main`
+- Tests use **JUnit 5 (Jupiter)**.
 
----
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ## How to Run the Game
 
-## macOS / Linux
+### macOS / Linux
 
 Open Terminal in the project root folder, then run:
 
 ```bash
-rm -rf out
-mkdir -p out/main
-find src -name "*.java" > sources.txt
-javac -d out/main @sources.txt
-java -cp out/main core.Main
+java app/Main.java
 ```
 
-### What this does
-
-- compiles all source files from `src/`
-- places compiled `.class` files into `out/main`
-- launches the game through `core.Main`
-
----
-
-## Windows (PowerShell)
+### Windows (PowerShell)
 
 Open PowerShell in the project root folder, then run:
 
 ```powershell
-Remove-Item -Recurse -Force out -ErrorAction SilentlyContinue
-New-Item -ItemType Directory -Force out\main | Out-Null
-Get-ChildItem -Recurse -Filter *.java src | ForEach-Object { $_.FullName } | Set-Content sources.txt
-javac -d out\main @sources.txt
-java -cp out\main core.Main
+javac -d out (Get-ChildItem -Recurse src\*.java).FullName; java -cp out app.Main
 ```
+
+### Alternative for Some Windows Users
+
+Some users may be able to run the project by pressing `Run Java` in their IDE.
+
+This usually works in editors such as:
+
+1. VS Code with the Java extensions installed
+2. IntelliJ IDEA
+3. Other IDEs with Java project support
+
+However, this depends on the editor being configured correctly. The most reliable method is still the PowerShell command above.
 
 ### Notes for Windows
 
-- Run this in **PowerShell** or **Windows Terminal**.
-- If `javac` or `java` is not recognised, install JDK 21 and make sure it is added to `PATH`.
+- If `javac` or `java` is not recognised, install a compatible JDK and make sure it is added to `PATH`.
+- Check with:
 
----
+```powershell
+java --version
+javac --version
+```
+
+<p align="right">(<a href="#top">back to top</a>)</p>
 
 ## How to Run Tests
 
-The project uses JUnit 5, but the repository does not include a build tool.
-You need a local copy of the **JUnit Platform Console Standalone** jar.
+The project uses JUnit 5, but the repository does not include a build tool. You need a local copy of the **JUnit Platform Console Standalone** jar.
 
 Place the jar in a folder named `lib/` at the project root, for example:
 
@@ -310,83 +537,4 @@ lib/
 └─ junit-platform-console-standalone.jar
 ```
 
----
-
-## Run Tests on macOS / Linux
-
-```bash
-rm -rf out
-mkdir -p out/main out/test
-find src -name "*.java" > sources.txt
-find test -name "*.java" > tests.txt
-javac -d out/main @sources.txt
-javac -cp "out/main:lib/junit-platform-console-standalone.jar" -d out/test @tests.txt
-java -jar lib/junit-platform-console-standalone.jar --class-path "out/main:out/test" --scan-class-path
-```
-
----
-
-## Run Tests on Windows (PowerShell)
-
-```powershell
-Remove-Item -Recurse -Force out -ErrorAction SilentlyContinue
-New-Item -ItemType Directory -Force out\main | Out-Null
-New-Item -ItemType Directory -Force out\test | Out-Null
-Get-ChildItem -Recurse -Filter *.java src | ForEach-Object { $_.FullName } | Set-Content sources.txt
-Get-ChildItem -Recurse -Filter *.java test | ForEach-Object { $_.FullName } | Set-Content tests.txt
-javac -d out\main @sources.txt
-javac -cp "out/main;lib/junit-platform-console-standalone.jar" -d out\test @tests.txt
-java -jar lib/junit-platform-console-standalone.jar --class-path "out/main;out/test" --scan-class-path
-```
-
----
-
-## Optional: Running in VS Code
-
-If you are using VS Code on either macOS or Windows:
-
-1. Open the project folder.
-2. Make sure JDK 21 is selected.
-3. Install the Java extensions needed for running Java and JUnit tests.
-4. Run `src/core/Main.java`.
-5. Use the Testing panel to run JUnit tests.
-
-This is optional. The command-line steps above are the manual setup the project expects.
-
----
-
-## Basic Controls / How to Play
-
-- Enter numbers to select menu options.
-- Follow on-screen prompts during the create-sim phase.
-- Use `0` where shown to go back from sub-menus.
-- During gameplay:
-  - interact with furniture to perform actions
-  - socialise to change relationships
-  - change location to access different characters and objects
-  - work to earn money once a career is chosen
-  - buy furniture or houses through the shop
-  - switch active Sim if multiple Sims exist
-
----
-
-## Known Implementation Notes
-
-- The current project is CLI-only.
-- Some static session state still exists inside controllers/services.
-- Static world content is currently code-backed, though it can be moved to text-file loaders behind the same content boundary.
-- Test coverage exists, but it does not yet cover every gameplay class.
-
----
-
-## Authors / Team Contribution
-
-Update this section to match your team.
-Example:
-
-- Developer 1 — game engine / controllers / CLI rendering
-- Developer 2 — world content / data loading / NPC setup
-- Developer 3 — domain systems / careers / housing / actions
-- Developer 4 — testing / QA / documentation
-
----
+<p align="right">(<a href="#top">back to top</a>)</p>
