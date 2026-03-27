@@ -1,4 +1,4 @@
-package models.character;
+package models.character.housing;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.Test;
 
 import models.character.finances.CharacterFinances;
-import models.character.housing.CharacterHousing;
 import models.furniture.Furniture;
 import models.location.House;
 

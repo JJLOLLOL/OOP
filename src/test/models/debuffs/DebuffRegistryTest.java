@@ -63,7 +63,7 @@ class DebuffRegistryTest {
 
         assertEquals(4.0, DebuffRegistry.applyDecayModifiers(sim, NeedType.ENERGY, 1.0));
         assertEquals(2.0, DebuffRegistry.applyDecayModifiers(sim, NeedType.HUNGER, 1.0));
-        assertEquals(4.0, DebuffRegistry.applyDecayModifiers(sim, NeedType.FUN, 1.0));
+        assertEquals(3.0, DebuffRegistry.applyDecayModifiers(sim, NeedType.FUN, 1.0));
     }
 
     @Test

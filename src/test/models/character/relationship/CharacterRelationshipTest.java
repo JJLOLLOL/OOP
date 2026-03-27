@@ -1,11 +1,11 @@
-package models.character;
+package models.character.relationship;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.ArrayList;
 
-import models.character.relationship.CharacterRelationship;
+import models.character.Character;
 import models.location.Location;
 import types.Gender;
 import types.RelationshipList;
