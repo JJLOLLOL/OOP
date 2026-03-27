@@ -36,6 +36,7 @@
 - [User Guide](#user-guide)
 - [System Overview](#system-overview)
 - [File Hierarchy](#file-hierarchy)
+- [Overview of UML Diagram](#overview-of-uml-diagram)
 - [Requirements](#requirements)
 - [How to Run the Game](#how-to-run-the-game)
 - [How to Run Tests](#how-to-run-tests)
