@@ -305,7 +305,10 @@ public class SimCharacter extends Character {
     public ActionResult sellFurniture(Furniture furniture) {
         CharacterHousing.HousingResult result = housing.sellFurniture(furniture, finances);
         switch (result) {
-            case SUCCESS: return ActionResult.success(getName() + " sold " + furniture.getName() + " for $" + furniture.getPrice());
+            case SUCCESS:
+                double refundAmount = furniture.getPrice() * 0.5;
+                String message = String.format("%s sold %s for $%.2f", getName(), furniture.getName(), refundAmount);
+                return ActionResult.success(message);
             case FURNITURE_NOT_FOUND: return ActionResult.failure("Your house is empty.");
             default: throw new IllegalStateException("Unexpected result: " + result);
         }
