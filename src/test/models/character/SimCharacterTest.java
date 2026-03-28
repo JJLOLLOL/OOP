@@ -131,16 +131,16 @@ class SimCharacterTest {
     }
 
     @Test
-    void updateNeedsDecaysAllNeedsUsingBaseDecayRates() {
+    void updateNeedsDecaysAllNeedsUsingBaseDecayRatesPerMinute() {
         SimCharacter sim = createSim();
 
         sim.updateNeeds(1);
 
-        assertEquals(72.0, sim.getNeed(NeedType.HUNGER).getValue());
-        assertEquals(77.0, sim.getNeed(NeedType.HYGIENE).getValue());
-        assertEquals(72.0, sim.getNeed(NeedType.ENERGY).getValue());
-        assertEquals(77.0, sim.getNeed(NeedType.FUN).getValue());
-        assertEquals(77.0, sim.getNeed(NeedType.SOCIAL).getValue());
+        assertEquals(79.86666666666666, sim.getNeed(NeedType.HUNGER).getValue(), 1e-9);
+        assertEquals(79.95, sim.getNeed(NeedType.HYGIENE).getValue(), 1e-9);
+        assertEquals(79.86666666666666, sim.getNeed(NeedType.ENERGY).getValue(), 1e-9);
+        assertEquals(79.95, sim.getNeed(NeedType.FUN).getValue(), 1e-9);
+        assertEquals(79.95, sim.getNeed(NeedType.SOCIAL).getValue(), 1e-9);
     }
 
     @Test

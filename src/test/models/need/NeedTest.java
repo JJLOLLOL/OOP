@@ -77,12 +77,12 @@ class NeedTest {
     }
 
     @Test
-    void decay_reducesValueByDecayRateTimesDeltaTime() {
+    void decay_reducesValueByDecayRateTimesElapsedMinutes() {
         TestNeed need = new TestNeed(NeedType.HYGIENE, 3.0);
 
         need.decay(2);
 
-        assertEquals(74.0, need.getValue());
+        assertEquals(79.9, need.getValue(), 1e-9);
     }
 
     @Test
@@ -175,6 +175,6 @@ class NeedTest {
 
         need.update(sim, 2, 5.0);
 
-        assertEquals(70.0, need.getValue());
+        assertEquals(79.83333333333333, need.getValue(), 1e-9);
     }
 }
