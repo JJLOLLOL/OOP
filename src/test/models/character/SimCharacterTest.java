@@ -134,7 +134,7 @@ class SimCharacterTest {
     void updateNeedsDecaysAllNeedsUsingBaseDecayRates() {
         SimCharacter sim = createSim();
 
-        sim.updateNeeds(1.0);
+        sim.updateNeeds(1);
 
         assertEquals(72.0, sim.getNeed(NeedType.HUNGER).getValue());
         assertEquals(77.0, sim.getNeed(NeedType.HYGIENE).getValue());
