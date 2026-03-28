@@ -74,10 +74,11 @@ public abstract class Need {
     /**
      * Applies passive decay using the current decay rate.
      *
-     * @param deltaTime the elapsed in-game time in hours
+     * @param minutesPassed the elapsed in-game time in minutes
      */
-    public void decay(double deltaTime) {
-        adjustValue(-(decayRate * deltaTime));
+    public void decay(int minutesPassed) {
+        double hoursPassed = minutesPassed / 60.0;
+        adjustValue(-(decayRate * hoursPassed));
     }
 
     /**
@@ -116,11 +117,12 @@ public abstract class Need {
      * once while the need remains in its critical range.
      *
      * @param sim the owning sim
-     * @param deltaTime the elapsed in-game time in hours
-     * @param decayRate the effective decay rate for this update
+     * @param minutesPassed the elapsed in-game time in minutes
+     * @param decayRatePerHour the effective decay rate for this update, in points per hour
      */
-    public void update(SimCharacter sim, double deltaTime, double decayRate) {
-        adjustValue(-(decayRate * deltaTime));
+    public void update(SimCharacter sim, int minutesPassed, double decayRatePerHour) {
+        double hoursPassed = minutesPassed / 60.0;
+        adjustValue(-(decayRatePerHour * hoursPassed));
 
         if (isCritical()) {
             if (criticallyLowNotifiedSent) {

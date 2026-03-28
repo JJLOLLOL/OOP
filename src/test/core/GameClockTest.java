@@ -25,8 +25,8 @@ class GameClockTest {
         clock.tick(1.0);
 
         assertEquals(8, clock.getHours());
-        assertEquals(3, clock.getMinutes());
-        assertEquals(803, clock.getTimeAsHHMM());
+        assertEquals(1, clock.getMinutes());
+        assertEquals(801, clock.getTimeAsHHMM());
     }
 
     @Test

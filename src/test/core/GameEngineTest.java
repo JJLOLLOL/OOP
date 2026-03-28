@@ -70,7 +70,7 @@ class GameEngineTest {
 
         state.setPhase(GameState.Phase.PLAYING);
 
-        invoke(engine, "tick", new Class<?>[]{double.class}, 0.5);
+        invoke(engine, "tick", new Class<?>[]{double.class}, 1.0);
 
         assertEquals(1, state.getGameClock().getMinutes());
         assertTrue(player.getNeed(NeedType.HUNGER).getValue() < hungerBefore);

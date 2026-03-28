@@ -77,12 +77,12 @@ class NeedTest {
     }
 
     @Test
-    void decay_reducesValueByDecayRateTimesDeltaTime() {
+    void decay_reducesValueByDecayRateTimesElapsedMinutes() {
         TestNeed need = new TestNeed(NeedType.HYGIENE, 3.0);
 
-        need.decay(2.0);
+        need.decay(2);
 
-        assertEquals(74.0, need.getValue());
+        assertEquals(79.9, need.getValue(), 1e-9);
     }
 
     @Test
@@ -144,24 +144,24 @@ class NeedTest {
                 new Location("Home", null));
 
         need.adjustValue(-60.0); // 80 -> 20, critical
-        need.update(sim, 0.0, 8.0);
+        need.update(sim, 0, 8.0);
 
         assertTrue(need.wasCriticallyLowTriggered());
         assertTrue(need.hasCriticalNotificationBeenSent());
 
         need.resetTrigger();
-        need.update(sim, 0.0, 8.0);
+        need.update(sim, 0, 8.0);
 
         assertFalse(need.wasCriticallyLowTriggered());
         assertTrue(need.hasCriticalNotificationBeenSent());
 
         need.adjustValue(10.0); // recover above critical
-        need.update(sim, 0.0, 8.0);
+        need.update(sim, 0, 8.0);
 
         assertFalse(need.hasCriticalNotificationBeenSent());
 
         need.adjustValue(-15.0); // critical again
-        need.update(sim, 0.0, 8.0);
+        need.update(sim, 0, 8.0);
 
         assertTrue(need.wasCriticallyLowTriggered());
         assertTrue(need.hasCriticalNotificationBeenSent());
@@ -173,8 +173,8 @@ class NeedTest {
         SimCharacter sim = new SimCharacter("Jamie", 21, types.Gender.FEMALE,
                 new Location("Room", null));
 
-        need.update(sim, 2.0, 5.0);
+        need.update(sim, 2, 5.0);
 
-        assertEquals(70.0, need.getValue());
+        assertEquals(79.83333333333333, need.getValue(), 1e-9);
     }
 }
