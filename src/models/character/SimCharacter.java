@@ -111,12 +111,16 @@ public class SimCharacter extends Character {
      * Advances every tracked need for one update step using the debuff-adjusted
      * decay rate for each need.
      *
-     * @param deltaTime the elapsed in-game time in hours
+     * @param minutesPassed the elapsed in-game time in minutes
      */
-    public void updateNeeds(double deltaTime) {
+    public void updateNeeds(int minutesPassed) {
+        if (minutesPassed <= 0) {
+            return;
+        }
+
         for (Need need : stats.getNeedViews()) {
             double effectiveDecay = DebuffRegistry.applyDecayModifiers(this, need.getType(), need.getBaseDecayRate());
-            need.update(this, deltaTime, effectiveDecay);
+            need.update(this, minutesPassed, effectiveDecay);
         }
     }
 

@@ -18,7 +18,7 @@ public class GameClock {
     /**
      * Real seconds that must elapse before one in-game minute advances.
      */
-    private static final double REAL_SECONDS_PER_GAME_MINUTE = 0.5;
+    private static final double REAL_SECONDS_PER_GAME_MINUTE = 1;
 
     private int days = 1;
     private int hours = 8;
@@ -38,10 +38,12 @@ public class GameClock {
      *
      * @param deltaTime seconds elapsed since the last tick
      */
-    public void tick(double deltaTime) {
+    public int tick(double deltaTime) {
+        int minutesPassed = 0;
         accumulator += deltaTime;
         while (accumulator >= REAL_SECONDS_PER_GAME_MINUTE) {
             accumulator -= REAL_SECONDS_PER_GAME_MINUTE;
+            minutesPassed++;
             if (++minutes >= 60) {
                 minutes = 0;
                 if (++hours >= 24) {
@@ -50,6 +52,7 @@ public class GameClock {
                 }
             }
         }
+        return minutesPassed;
     }
 
     // ── Accessors ─────────────────────────────────────────────────────────────
@@ -84,14 +87,22 @@ public class GameClock {
      * m)
      */
     public void advanceHours(double hoursToAdd) {
-        int totalMinutes = (int) Math.round(hoursToAdd * 60);
-        minutes += totalMinutes;
-        while (minutes >= 60) {
-            minutes -= 60;
-            if (++hours >= 24) {
-                hours = 0;
-                days++;
-            }
+        if (hoursToAdd <= 0) {
+            return;
+        }
+
+        // Add the total minutes from the fractional hours
+        int totalMinutesToAdd = (int) Math.round(hoursToAdd * 60);
+        this.minutes += totalMinutesToAdd;
+
+        // Cascade the minutes up to hours and days using calculation instead of loops
+        if (this.minutes >= 60) {
+            int hoursToAddFromMinutes = this.minutes / 60;
+            this.minutes %= 60;
+
+            this.hours += hoursToAddFromMinutes;
+            this.days += this.hours / 24;
+            this.hours %= 24;
         }
     }
 

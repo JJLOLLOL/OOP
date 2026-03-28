@@ -129,11 +129,12 @@ public class GameEngine {
      */
     private void tick(double dt) {
         if (state.getPhase() == GameState.Phase.PLAYING) {
-            state.getGameClock().tick(dt);
-
-            for (models.character.SimCharacter sim : state.getSims()) {
-                sim.updateNeeds(dt / 60.0);
-                services.NotificationService.tick(sim); // Tick notifications for all Sims
+            int minutesPassed = state.getGameClock().tick(dt);
+            if (minutesPassed > 0) {
+                for (models.character.SimCharacter sim : state.getSims()) {
+                    sim.updateNeeds(minutesPassed);
+                    services.NotificationService.tick(sim); // Tick notifications for all Sims
+                }
             }
 
             npcService.updateNPCLocations(state.getGameClock());
